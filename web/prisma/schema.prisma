@@ -38,15 +38,130 @@ model Session {
 }
 
 model User {
-  id               String    @id @default(cuid())
-  name             String?
-  email            String?   @unique
-  emailVerified    DateTime?
-  image            String?
-  stripeCustomerId String?   @unique
-  isActive         Boolean   @default(false)
-  accounts         Account[]
-  sessions         Session[]
+  id            String            @id @default(cuid())
+  name          String?
+  email         String?           @unique
+  emailVerified DateTime?
+  image         String?
+  websiteRole   WebsiteRole       @default(USER)
+  subscription  UserSubscription?
+  isActive      Boolean           @default(false)
+  hasCompletedOnboarding Boolean @default(false)
+workspaces    Workspace[]
+  accounts      Account[]
+  sessions      Session[]
+  workspaceMemberships WorkspaceMembership[]
+}
+ 
+model Workspace {
+  id           String                 @id @default(cuid())
+  name         String
+  ownerId      String
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  owner        User                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  membership  WorkspaceMembership[]
+  invitations  WorkspaceInvitation[]
+  projects     Project[]
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  workspaceId String
+  studios     Studio[]
+  editors     Editor[]
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+}
+
+model Studio {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  slug        String? @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  projectId   String
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Editor {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  slug        String? @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  projectId   String
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model WorkspaceMembership {
+  id          String        @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceRole @default(MEMBER)
+  createdAt   DateTime      @default(now())
+  status     Status @default(INACTIVE)
+  updatedAt   DateTime      @updatedAt
+
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+}
+
+enum Status {
+  ACTIVE
+  MUCH_ACTIVE
+  INACTIVE
+}
+
+model WorkspaceInvitation {
+  id          String        @id @default(cuid())
+  workspaceId String
+  email       String
+  role        WorkspaceRole @default(MEMBER)
+  token       String        @unique
+  status InvitationStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  expiresAt   DateTime
+
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum WorkspaceRole {
+  ADMIN
+  MEMBER
+  GUEST
+}
+
+model UserSubscription {
+  userId         String @unique
+  subscriptionId String             @unique
+  method         SubscriptionMethod
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum SubscriptionMethod {
+  STRIPE
+  WEB3
+}
+
+enum WebsiteRole {
+  USER
+  ADMIN
 }
 
 model VerificationToken {

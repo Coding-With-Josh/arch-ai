@@ -32,16 +32,25 @@ const webhookHandler = async (req: NextRequest) => {
     const subscription = event.data.object as Stripe.Subscription;
 
     switch (event.type) {
-      case 'customer.subscription.created':
-        await prisma.user.update({
+      case 'customer.subscription.created': {
+        // Locate the user by matching the subscriptionId on the user's subscription with subscription.customer
+        const user = await prisma.user.findFirst({
           where: {
-            stripeCustomerId: subscription.customer as string,
-          },
-          data: {
-            isActive: true,
+            subscription: {
+              subscriptionId: subscription.customer as string,
+            },
           },
         });
+        if (user) {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: {
+              isActive: true,
+            },
+          });
+        }
         break;
+      }
       default:
         break;
     }

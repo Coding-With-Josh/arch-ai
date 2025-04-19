@@ -20,10 +20,31 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (!session.user) return session;
 
       session.user.id = user.id;
-      session.user.stripeCustomerId = user.stripeCustomerId;
       session.user.isActive = user.isActive;
-
+      session.user.subscription = user.subscription
+        ? {
+            subscriptionId: user.subscription.subscriptionId,
+            method: user.subscription.method,
+          }
+        : null;
+      // Forward onboarding status if needed downstream.
+      session.user.hasCompletedOnboarding = user.hasCompletedOnboarding;
+      
       return session;
+    },
+    async redirect({ url, baseUrl, user }: any) {
+      // token.sub is populated with the user's id using the PrismaAdapter.
+      const userId = user?.id;
+      if (userId) {
+        const currentUser = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+        // Redirect to /start if onboarding is not complete.
+        if (currentUser && !currentUser.hasCompletedOnboarding) {
+          return `${baseUrl}/start`;
+        }
+      }
+      return `${baseUrl}/dashboard`;
     },
   },
   events: {
@@ -36,10 +57,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           name: user.name,
         })
         .then(async (customer) => {
-          return prisma.user.update({
-            where: { id: user.id },
+          await prisma.userSubscription.create({
             data: {
-              stripeCustomerId: customer.id,
+              user: { connect: { id: user.id } },
+              subscriptionId: customer.id,
+              method: 'STRIPE',
             },
           });
         });

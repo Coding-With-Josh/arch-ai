@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/sheet";
 import { JSX } from "react";
 import Image from "next/image";
+import archLogo from "@/assets/images/brand/arch_logo-transparent-bg.png";
 
 interface MenuItem {
   title: string;
@@ -46,14 +47,18 @@ interface NavbarProps {
     url: string;
   }[];
   auth?: {
-    login: {
+    auth: {
       text: string;
       url: string;
     };
-    signup: {
-      text: string;
-      url: string;
-    };
+    // login: {
+    //   text: string;
+    //   url: string;
+    // };
+    // signup: {
+    //   text: string;
+    //   url: string;
+    // };
   };
 }
 
@@ -143,8 +148,8 @@ const Navbar = ({
     { name: "Sitemap", url: "#" },
   ],
   auth = {
-    login: { text: "Log in", url: "#" },
-    signup: { text: "Sign up", url: "#" },
+    auth: { text: "Auth", url: "/auth" },
+    // signup: { text: "Sign up", url: "/signup" },
   },
 }: NavbarProps) => {
   return (
@@ -153,31 +158,32 @@ const Navbar = ({
         <nav className="hidden justify-between lg:flex w-full">
           <div className="flex items-center gap-6">
             <a href={logo.url} className="flex items-center gap-2">
-            <Image src={require("@/assets/images/brand/arch_logo-transparent-bg.png")} className="w-8" alt={logo.alt} />
-            <span className="text-lg font-semibold">{logo.title}</span>
+              <Image src={archLogo} className="w-8" alt={logo.alt} />
+              <span className="text-lg font-semibold">{logo.title}</span>
             </a>
           </div>
-            <div className="flex items-center">
-              <NavigationMenu>
-                <NavigationMenuList>
-                  {menu.map((item) => renderMenuItem(item))}
-                </NavigationMenuList>
-              </NavigationMenu>
-            </div>
+          <div className="flex items-center">
+            <NavigationMenu>
+              <NavigationMenuList>
+                {menu.map((item) => renderMenuItem(item))}
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
           <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm">
-              <a href={auth.login.url}>{auth.login.text}</a>
-            </Button>
-            <Button asChild size="sm">
-              <a href={auth.signup.url}>{auth.signup.text}</a>
+            <Button
+              asChild
+              size="sm"
+              className="relative overflow-hidden bg-zinc-900 text-white hover:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 transition-colors duration-300"
+            >
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_infinite]" />
+              <a href={auth.auth.url}>{auth.auth.text}</a>
             </Button>
           </div>
         </nav>
         <div className="block lg:hidden">
           <div className="flex items-center justify-between">
             <a href={logo.url} className="flex items-center gap-2">
-            <Image src={require("@/assets/images/brand/arch_logo-transparent-bg.png")} className="w-8" alt={logo.alt} />
-            {/* <span className="text-lg font-semibold">{logo.title}</span> */}
+              <Image src={archLogo} className="w-8" alt={logo.alt} />
             </a>
             <Sheet>
               <SheetTrigger asChild>
@@ -186,44 +192,48 @@ const Navbar = ({
                 </Button>
               </SheetTrigger>
               <SheetContent className="overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle>
-                    <a href={logo.url} className="flex items-center gap-2">
-                      <img src={logo.src} className="w-8" alt={logo.alt} />
-                      <span className="text-lg font-semibold">
-                        {logo.title}
-                      </span>
-                    </a>
-                  </SheetTitle>
-                </SheetHeader>
-                <div className="my-6 flex flex-col gap-6">
-                  <Accordion
-                    type="single"
-                    collapsible
-                    className="flex w-full flex-col gap-4"
-                  >
-                    {menu.map((item) => renderMobileMenuItem(item))}
-                  </Accordion>
-                  <div className="border-t py-4">
-                    <div className="grid grid-cols-2 justify-start">
-                      {mobileExtraLinks.map((link, idx) => (
-                        <a
-                          key={idx}
-                          className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-accent-foreground"
-                          href={link.url}
-                        >
-                          {link.name}
-                        </a>
-                      ))}
+                <div> {/* Single container wrapper */}
+                  <SheetHeader>
+                    <SheetTitle>
+                      <a href={logo.url} className="flex items-center gap-2">
+                        <img src={logo.src} className="w-8" alt={logo.alt} />
+                        <span className="text-lg font-semibold">
+                          {logo.title}
+                        </span>
+                      </a>
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="my-6 flex flex-col gap-6">
+                    <Accordion
+                      type="single"
+                      collapsible
+                      className="flex w-full flex-col gap-4"
+                    >
+                      {menu.map((item) => renderMobileMenuItem(item))}
+                    </Accordion>
+                    <div className="border-t py-4">
+                      <div className="grid grid-cols-2 justify-start">
+                        {mobileExtraLinks.map((link, idx) => (
+                          <a
+                            key={idx}
+                            className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-accent-foreground"
+                            href={link.url}
+                          >
+                            {link.name}
+                          </a>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <a href={auth.login.url}>{auth.login.text}</a>
-                    </Button>
-                    <Button asChild>
-                      <a href={auth.signup.url}>{auth.signup.text}</a>
-                    </Button>
+                    <div className="flex flex-col gap-3">
+                      <Button
+                        asChild
+                        size="sm"
+                        className="relative overflow-hidden bg-zinc-900 text-white hover:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 transition-colors duration-300"
+                      >
+                        <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_infinite]" />
+                        <a href={auth.auth.url}>{auth.auth.text}</a>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </SheetContent>
@@ -243,26 +253,28 @@ const renderMenuItem = (item: MenuItem) => {
         <NavigationMenuContent>
           <ul className="w-80 p-3">
             <NavigationMenuLink>
-              {item.items.map((subItem) => (
-                <li key={subItem.title}>
-                  <a
-                    className="flex select-none gap-4 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-muted hover:text-accent-foreground"
-                    href={subItem.url}
-                  >
-                    {subItem.icon}
-                    <div>
-                      <div className="text-sm font-semibold">
-                        {subItem.title}
+              <> {/* Added fragment wrapper */}
+                {item.items.map((subItem) => (
+                  <li key={subItem.title}>
+                    <a
+                      className="flex select-none gap-4 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-muted hover:text-accent-foreground"
+                      href={subItem.url}
+                    >
+                      {subItem.icon}
+                      <div>
+                        <div className="text-sm font-semibold">
+                          {subItem.title}
+                        </div>
+                        {subItem.description && (
+                          <p className="text-sm leading-snug text-muted-foreground">
+                            {subItem.description}
+                          </p>
+                        )}
                       </div>
-                      {subItem.description && (
-                        <p className="text-sm leading-snug text-muted-foreground">
-                          {subItem.description}
-                        </p>
-                      )}
-                    </div>
-                  </a>
-                </li>
-              ))}
+                    </a>
+                  </li>
+                ))}
+              </>
             </NavigationMenuLink>
           </ul>
         </NavigationMenuContent>

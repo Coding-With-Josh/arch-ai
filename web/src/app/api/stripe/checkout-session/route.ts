@@ -21,7 +21,7 @@ export const GET = async () => {
 
   const checkoutSession = await stripeServer.checkout.sessions.create({
     mode: 'subscription',
-    customer: session.user.stripeCustomerId,
+    customer: session.user.subscription?.subscriptionId,
     line_items: [
       {
         price: env.STRIPE_SUBSCRIPTION_PRICE_ID,

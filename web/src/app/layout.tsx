@@ -1,6 +1,6 @@
 import '@/styles/globals.css';
 
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 import { LanguageProvider } from '@inlang/paraglide-next';
 import type { Metadata } from 'next';
 
@@ -48,17 +48,22 @@ export const generateMetadata = (): Metadata => ({
   },
 });
 
-const RootLayout = ({ children }: PropsWithChildren) => {
+function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {  
   return (
     <LanguageProvider>
       <html lang={languageTag()} suppressHydrationWarning>
         <body className={cn('min-h-screen font-sans', fonts)}>
           <ThemeProvider attribute="class">
-            <Navbar />
-            {children}
-            <ThemeSwitcher className="absolute bottom-5 right-5 z-10" />
-            {/* <Footer /> */}
-            <Toaster />
+           <>
+              <Navbar />
+              {children}
+              <ThemeSwitcher className="absolute bottom-5 right-5 z-10" />
+              <Toaster />
+            </>
           </ThemeProvider>
         </body>
       </html>
