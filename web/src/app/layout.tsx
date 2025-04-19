@@ -60,7 +60,10 @@ function RootLayout({
           <ThemeProvider attribute="class">
            <>
               <Navbar />
+              <div>
+
               {children}
+              </div>
               <ThemeSwitcher className="absolute bottom-5 right-5 z-10" />
               <Toaster />
             </>
