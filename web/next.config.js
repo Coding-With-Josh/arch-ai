@@ -7,14 +7,22 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'avatars.githubusercontent.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'assets.basehub.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'resend.com',
+      },
     ],
   },
   eslint: {
     "ignoreDuringBuilds": true
-    },
-    typescript: {
+  },
+  typescript: {
     "ignoreBuildErrors": true
-    },
+  },
 };
 
 module.exports = paraglide({

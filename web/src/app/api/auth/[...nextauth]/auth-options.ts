@@ -33,18 +33,18 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return session;
     },
     async redirect({ url, baseUrl, user }: any) {
-      // token.sub is populated with the user's id using the PrismaAdapter.
-      const userId = user?.id;
-      if (userId) {
-        const currentUser = await prisma.user.findUnique({
-          where: { id: userId },
-        });
-        // Redirect to /start if onboarding is not complete.
-        if (currentUser && !currentUser.hasCompletedOnboarding) {
-          return `${baseUrl}/start`;
-        }
-      }
-      return `${baseUrl}/dashboard`;
+      // // token.sub is populated with the user's id using the PrismaAdapter.
+      // const userId = user?.id;
+      // if (userId) {
+      //   const currentUser = await prisma.user.findUnique({
+      //     where: { id: userId },
+      //   });
+      //   // Redirect to /start if onboarding is not complete.
+      //   if (currentUser && !currentUser.hasCompletedOnboarding) {
+      //     return `${baseUrl}/start`;
+      //   }
+      // }
+      return `${baseUrl}`;
     },
   },
   events: {
