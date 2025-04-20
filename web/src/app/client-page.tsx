@@ -2,7 +2,9 @@
 
 import { Blog } from "@/components/landing/blog";
 import FeaturesGrid from "@/components/landing/features-grid";
+import { Footer } from "@/components/landing/footer";
 import { Hero } from "@/components/landing/hero";
+// import LastCta from "@/components/landing/last-cta";
 import { Navbar } from "@/components/landing/nav";
 import Particles from "@/components/landing/particles";
 import Pricing from "@/components/landing/pricing";
@@ -40,8 +42,13 @@ export default function Home({ session }: { session: any }) {
       <Link href="https://x.com/build_with_arch" target="_blank">
         <div className="relative mt-[-2rem] mb-[2rem] inline-flex items-center px-6 py-2 bg-gradient-to-tr from-zinc-600/40 via-transparent to-transparent rounded-full border border-zinc-800/30 shadow-md backdrop-blur-lg cursor-pointer transform transition duration-300 hover:scale-[1.02] hover:border-zinc-800/50 text-sm">
           <div className="flex items-center space-x-2 animate-fade-in">
-            <Twitter className="h-4 w-4 text-foreground" strokeWidth={2} />
-            <span className="text-zinc-200/40 select-none">
+          <svg
+                    className="h-8 w-8 fill-current"
+                    viewBox="0 0 32 32"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="m13.063 9 3.495 4.475L20.601 9h2.454l-5.359 5.931L24 23h-4.938l-3.866-4.893L10.771 23H8.316l5.735-6.342L8 9h5.063Zm-.74 1.347h-1.457l8.875 11.232h1.36l-8.778-11.232Z" />
+                  </svg>            <span className="text-zinc-200/60 select-none">
               Introducing Arch v1...
             </span>
             <ChevronRightIcon className="h-2.5 w-2.5 text-foreground" />
@@ -109,8 +116,7 @@ The world's first multi-ecosystem, multi-chain developer tool.
         <FeaturesGrid />
         <Pricing />
         <Blog/>
-        {/* <CTA />
-      <SocialMedia /> */}
+        <Footer />
       </div>
     // </div>
   );

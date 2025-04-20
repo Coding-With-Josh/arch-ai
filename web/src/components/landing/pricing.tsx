@@ -5,50 +5,53 @@ import Particles from "./particles";
 const PricingSection = () => {
   const pricingPlans = [
     {
-      name: "Free",
-      price: "$0",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      popular: false,
-      features: [
-        "Curabitur faucibus",
-        "massa ut pretium maximus",
-        "Sed posuere nisi",
-        "Pellentesque eu nibh et neque",
-        "Suspendisse a leo",
-        "Praesent quis venenatis ipsum",
-        "Duis non diam vel tortor"
+      "name": "Free",
+      "price": "$0",
+      "description": "Perfect for hobby projects or testing out Arch's core features.",
+      "popular": false,
+      "features": [
+        "1 Organization",
+        "Up to 3 Projects",
+        "Basic Analytics",
+        "Community Support",
+        "500MB Database Storage",
+        "10K Monthly Requests",
+        "No Custom Domain"
       ]
     },
     {
-      name: "Gold",
-      price: "$20",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      popular: true,
-      features: [
-        "Curabitur faucibus",
-        "massa ut pretium maximus",
-        "Sed posuere nisi",
-        "Pellentesque eu nibh et neque",
-        "Suspendisse a leo",
-        "Praesent quis venenatis ipsum",
-        "Duis non diam vel tortor"
-      ]
-    },
-    {
-      name: "Platinum",
-      price: "$60",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      popular: false,
-      features: [
-        "Curabitur faucibus",
-        "massa ut pretium maximus",
-        "Sed posuere nisi",
-        "Pellentesque eu nibh et neque",
-        "Suspendisse a leo",
-        "Praesent quis venenatis ipsum",
-        "Duis non diam vel tortor"
+      "name": "Pro",
+      "price": "$20/month",
+      "description": "Ideal for solo developers or small teams building real-world applications with enhanced features.",
+      "popular": true,
+      "features": [
+        "Up to 5 Organizations",
+        "Unlimited Projects",
+        "Advanced Analytics",
+        "Priority Email Support",
+        "10GB Database Storage",
+        "1M Monthly Requests",
+        "Custom Domain Support",
+        "GitHub Integration"
       ],
-      specialGradient: true
+      "specialGradient": true
+    },
+    {
+      "name": "Enterprise",
+      "price": "$60/month",
+      "description": "Best for agencies/teams and large-scale applications.",
+      "popular": false,
+      "features": [
+        "Unlimited Organizations",
+        "Unlimited Projects",
+        "Team Collaboration Tools",
+        "Role-Based Access Control",
+        "100GB Database Storage",
+        "10M+ Monthly Requests",
+        "Custom Domains & SSL",
+        "99.9% Uptime SLA",
+        "Dedicated Support Manager"
+      ],
     }
   ];
 
@@ -95,9 +98,19 @@ const PricingCard = ({ plan }: { plan: any }) => {
           {plan.price} <span className="text-xl text-gray-900 dark:text-gray-200 font-normal">/mo</span>
         </div>
         <p>{plan.description}</p>
-        <button className="w-full font-geist tracking-tighter text-center rounded-md text-md bg-gradient-to-br from-neutral-400 to-neutral-700 px-4 py-2 text-lg text-zinc-50 ring-2 ring-neutral-500/50 ring-offset-2 ring-offset-zinc-950 transition-all hover:scale-[1.02] hover:ring-transparent active:scale-[0.98] active:ring-neutral-500/70 flex items-center justify-center gap-2">
-          {plan.name === "Free" ? "Get Started" : "Buy Now"}
-        </button>
+        {plan.name === "Free" ? (
+          <Link href="/auth" passHref>
+            <button className="mt-4 w-full font-geist tracking-tighter text-center rounded-md text-md bg-gradient-to-br from-neutral-400 to-neutral-700 px-4 py-2 text-lg text-zinc-50 ring-2 ring-neutral-500/50 ring-offset-2 ring-offset-zinc-950 transition-all hover:scale-[1.02] hover:ring-transparent active:scale-[0.98] active:ring-neutral-500/70 flex items-center justify-center gap-2">
+              Get Started
+            </button>
+          </Link>
+        ) : (
+          <Link href="#" passHref>
+            <button className="mt-4 w-full font-geist tracking-tighter text-center rounded-md text-md bg-gradient-to-br from-neutral-400 to-neutral-700 px-4 py-2 text-lg text-zinc-50 ring-2 ring-neutral-500/50 ring-offset-2 ring-offset-zinc-950 transition-all hover:scale-[1.02] hover:ring-transparent active:scale-[0.98] active:ring-neutral-500/70 flex items-center justify-center gap-2">
+              Buy Now
+            </button>
+          </Link>
+        )}
       </div>
 
       <ul className="p-8 space-y-3">

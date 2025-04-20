@@ -4,7 +4,7 @@ import { PropsWithChildren, ReactNode } from 'react';
 import { LanguageProvider } from '@inlang/paraglide-next';
 import type { Metadata } from 'next';
 
-import { Footer } from '@/components/footer';
+import { Footer } from '@/components/landing/footer';
 import { Navbar } from '@/components/landing/nav';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ThemeSwitcher } from '@/components/theme-switcher';
