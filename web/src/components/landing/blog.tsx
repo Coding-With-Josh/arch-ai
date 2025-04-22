@@ -2,7 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Calendar } from 'lucide-react'
-import noCode from "@/assets/images/ui/no-code.avif"
+import noCode from "@/assets/images/ui/no-code.png"
 
         export const Blog = () => {
             return (
