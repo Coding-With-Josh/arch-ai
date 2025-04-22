@@ -32,19 +32,17 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       
       return session;
     },
-    async redirect({ url, baseUrl, user }: any) {
-      // // token.sub is populated with the user's id using the PrismaAdapter.
-      // const userId = user?.id;
-      // if (userId) {
-      //   const currentUser = await prisma.user.findUnique({
-      //     where: { id: userId },
-      //   });
-      //   // Redirect to /start if onboarding is not complete.
-      //   if (currentUser && !currentUser.hasCompletedOnboarding) {
-      //     return `${baseUrl}/start`;
-      //   }
-      // }
+    async redirect({ url, baseUrl }) {
+      // Parse the incoming URL relative to the base URL.
+      const { pathname } = new URL(url, baseUrl);
+
+      // Redirect to the dashboard if the user is coming from "/" or "/auth"
+      if (pathname === '/' || pathname === '/auth') {
       return `${baseUrl}/dashboard`;
+      }
+
+      // Otherwise, ensure the redirect URL stays on the same domain.
+      return url.startsWith(baseUrl) ? url : baseUrl;
     },
   },
   events: {

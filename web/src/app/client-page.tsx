@@ -42,7 +42,7 @@ export default function Home({ session }: { session: any }) {
       <div className="absolute left-1/2 top-[calc(100%-90px)] lg:top-[calc(100%-150px)] h-[500px] w-[700px] md:h-[500px] md:w-[1100px] lg:h-[750px] lg:w-[140%] -translate-x-1/2 rounded-[100%] border-[#B48CDE] bg-black bg-[radial-gradient(closest-side,#000_82%,#ffffff)]"></div>
       
       {/* Tagline link */}
-      <Link href="https://x.com/build_with_arch" target="_blank">
+      <Link href="https://x.com/build_with_arch/status/1914665163631858117" target="_blank">
         <div className="relative mt-[-2rem] mb-[2rem] inline-flex items-center px-6 py-0 bg-gradient-to-tr from-zinc-600/40 via-transparent to-transparent rounded-full border border-zinc-800/30 shadow-md backdrop-blur-lg cursor-pointer transform transition duration-300 hover:scale-[1.02] hover:border-zinc-800/50 text-sm">
           <div className="flex items-center space-x-2 animate-fade-in">
           <svg
@@ -52,7 +52,7 @@ export default function Home({ session }: { session: any }) {
                   >
                     <path d="m13.063 9 3.495 4.475L20.601 9h2.454l-5.359 5.931L24 23h-4.938l-3.866-4.893L10.771 23H8.316l5.735-6.342L8 9h5.063Zm-.74 1.347h-1.457l8.875 11.232h1.36l-8.778-11.232Z" />
                   </svg>            <span className="text-zinc-200/60 select-none">
-              Introducing Arch v1...
+              We're joining the Colosseum Breakout Hacakthon...
             </span>
             <ChevronRightIcon className="h-2.5 w-2.5 text-foreground" />
           </div>

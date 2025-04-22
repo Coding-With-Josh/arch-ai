@@ -47,10 +47,56 @@ model User {
   subscription  UserSubscription?
   isActive      Boolean           @default(false)
   hasCompletedOnboarding Boolean @default(false)
-workspaces    Workspace[]
+  workspaces    Workspace[]
+  workspacesInvitations WorkspaceInvitation[] @relation("UserInvitations")
+  transactions Transaction[] @relation("TransactionUser")
+  transactionsReceived Transaction[] @relation("TransactionRecipient")
+  web3Wallets    Web3Wallet[]
   accounts      Account[]
   sessions      Session[]
   workspaceMemberships WorkspaceMembership[]
+  
+  tokens Token[]
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  recipientId String
+  userId      String
+  amount      Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  status      Status   @default(INACTIVE)
+  recipient   User     @relation("TransactionRecipient", fields: [recipientId], references: [id])
+  user        User     @relation("TransactionUser", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Token {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  user User @relation(fields: [identifier], references: [id], onDelete: Cascade)
+}
+
+model Web3Wallet {
+  id          String   @id @default(cuid())
+  userId      String
+  address     String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  type        walletType
+  balance    Float    @default(0.0)
+  status      Status   @default(INACTIVE)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum walletType {
+  ETHEREUM
+SUI
+  SOLANA
+  MULTICHAIN
 }
  
 model Workspace {
@@ -59,9 +105,8 @@ model Workspace {
   ownerId      String
   createdAt    DateTime               @default(now())
   updatedAt    DateTime               @updatedAt
-
   owner        User                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  membership  WorkspaceMembership[]
+  memberships  WorkspaceMembership[]
   invitations  WorkspaceInvitation[]
   projects     Project[]
 }
@@ -131,7 +176,10 @@ model WorkspaceInvitation {
   status InvitationStatus @default(PENDING)
   createdAt   DateTime      @default(now())
   expiresAt   DateTime
-
+  
+  userId    String?
+  user      User?   @relation("UserInvitations", fields: [userId], references: [id], onDelete: Cascade)
+  
   workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }
 
