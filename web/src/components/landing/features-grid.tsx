@@ -279,7 +279,7 @@ export default function FeaturesGrid() {
                 <p className="text-gray-600 dark:text-gray-400">RBAC</p>
                 </div>
                 <p className="max-w-md text-2xl font-normal tracking-tighter">
-                  Grow with us and move forward with 10x. <strong>Accelerate as speed of light</strong>
+                  Role-Based Access Control: Secure your projects with built-in RBAC.
                 </p>
                 <div className="flex flex-col gap-3 md:flex-col">
                   <p className="mt-1 text-md text-muted-foreground">
@@ -309,7 +309,7 @@ export default function FeaturesGrid() {
             </div>
             <h2 className="text-3xl font-normal tracking-tighter">Integrate with a <strong>seconds. </strong></h2>
             <p className="mt-2 text-md text-muted-foreground">
-              We are always looking for ways to make your experience better. Always looking for feedback and suggestions!
+              Arch is designed to be extensible and customizable. Integrate with your favorite tools and services, or build your own plugins to extend Arch's functionality.
             </p>
           </div>
         </div>

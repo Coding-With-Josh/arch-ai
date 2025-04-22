@@ -20,7 +20,7 @@ const PricingSection = () => {
       ]
     },
     {
-      "name": "Pro",
+      "name": "Gold",
       "price": "$20/month",
       "description": "Ideal for solo developers or small teams building real-world applications with enhanced features.",
       "popular": true,
@@ -37,7 +37,7 @@ const PricingSection = () => {
       "specialGradient": true
     },
     {
-      "name": "Enterprise",
+      "name": "Platinum",
       "price": "$60/month",
       "description": "Best for agencies/teams and large-scale applications.",
       "popular": false,
@@ -69,7 +69,9 @@ const PricingSection = () => {
             Pricing for all sizes
           </h3>
           <div className="mt-3 max-w-xl text-black/60 dark:text-white/40 font-geist font-normal">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam efficitur consequat nunc.</p>
+            <p className="mt-4 text-lg font-geist">
+              Choose the plan that best fits your needs and scale your projects with confidence.
+            </p>
           </div>
         </div>
 

@@ -1,5 +1,7 @@
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+'use client';
+
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
@@ -7,14 +9,11 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card'
+} from '@/components/ui/card';
 import { HelpCircle } from 'lucide-react';
-import { UserDropdown } from '@/components/navbar/user-dropdown';
 import { SignInButton } from '@/components/navbar/sign-in-button';
-import { auth } from '@/app/api/auth/[...nextauth]/auth-options';
 
-export default async function SignInPage() {
-     const session = await auth();
+export default function SignInPage() {
 
     return (
         <div className="grid w-full min-h-screen grow items-center bg-zinc-950 px-4 sm:justify-center">
@@ -24,16 +23,22 @@ export default async function SignInPage() {
                         Welcome back
                     </CardTitle>
                     <CardDescription className="text-zinc-400">
-                        Sign in with your GitHub account to continue
+                        Sign into your account with your GitHub.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-y-6">
-                         {session ? <UserDropdown session={session} /> : <SignInButton />}
-               
+
+                        <SignInButton />
+
                 </CardContent>
                 <CardFooter>
                     <div className="grid w-full gap-y-4">
-                        <Button variant="link" size="sm" asChild className="text-blue-500 hover:text-blue-400 transition-colors">
+                        <Button
+                            variant="link"
+                            size="sm"
+                            asChild
+                            className="text-blue-500 hover:text-blue-400 transition-colors"
+                        >
                             <Link href="/help/authentication">
                                 <HelpCircle className="mr-2 h-4 w-4" />
                                 Having trouble authenticating?
@@ -43,5 +48,5 @@ export default async function SignInPage() {
                 </CardFooter>
             </Card>
         </div>
-    )
+    );
 }

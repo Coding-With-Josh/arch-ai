@@ -44,7 +44,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       //     return `${baseUrl}/start`;
       //   }
       // }
-      return `${baseUrl}`;
+      return `${baseUrl}/dashboard`;
     },
   },
   events: {

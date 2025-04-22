@@ -32,6 +32,8 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
+    "@civic/auth": "^0.4.7",
+    "@civic/auth-web3": "^0.5.4",
     "@hookform/resolvers": "^3.10.0",
     "@inlang/paraglide-next": "0.7.9",
     "@prisma/client": "^6.2.1",

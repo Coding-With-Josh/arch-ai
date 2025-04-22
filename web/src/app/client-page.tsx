@@ -1,11 +1,14 @@
 "use client";
 
 import { Blog } from "@/components/landing/blog";
+import Faq from "@/components/landing/faq";
 import FeaturesGrid from "@/components/landing/features-grid";
 import { Footer } from "@/components/landing/footer";
 import { Hero } from "@/components/landing/hero";
+import LastCta from "@/components/landing/last-cta";
 // import LastCta from "@/components/landing/last-cta";
 import { Navbar } from "@/components/landing/nav";
+import OpenSource from "@/components/landing/open-source";
 import Particles from "@/components/landing/particles";
 import Pricing from "@/components/landing/pricing";
 import { SessionCheck } from "@/components/landing/session-check";
@@ -19,7 +22,7 @@ import { useEffect, useRef, useState } from "react";
 export default function Home({ session }: { session: any }) {
 
   return (
-    <div className="">
+    <div className="overflow-x-hidden">
       {/* <div className="flex flex-col items-center justify-start w-screen h-screen overflow-x-hidden bg-black/30">
         <div className="hidden w-screen h-px animate-glow md:block animate-fade-left bg-gradient-to-r from-zinc-300/0 via-zinc-300/20 to-zinc-300/0" />
         */}
@@ -40,7 +43,7 @@ export default function Home({ session }: { session: any }) {
       
       {/* Tagline link */}
       <Link href="https://x.com/build_with_arch" target="_blank">
-        <div className="relative mt-[-2rem] mb-[2rem] inline-flex items-center px-6 py-2 bg-gradient-to-tr from-zinc-600/40 via-transparent to-transparent rounded-full border border-zinc-800/30 shadow-md backdrop-blur-lg cursor-pointer transform transition duration-300 hover:scale-[1.02] hover:border-zinc-800/50 text-sm">
+        <div className="relative mt-[-2rem] mb-[2rem] inline-flex items-center px-6 py-0 bg-gradient-to-tr from-zinc-600/40 via-transparent to-transparent rounded-full border border-zinc-800/30 shadow-md backdrop-blur-lg cursor-pointer transform transition duration-300 hover:scale-[1.02] hover:border-zinc-800/50 text-sm">
           <div className="flex items-center space-x-2 animate-fade-in">
           <svg
                     className="h-8 w-8 fill-current"
@@ -115,8 +118,11 @@ The world's first multi-ecosystem, multi-chain developer tool.
         </div> */}
         <FeaturesGrid />
         <Pricing />
-        <Blog/>
-        <Footer />
+        {/* <Blog/> */}
+        <Faq />
+
+        <OpenSource />
+        {/* <LastCta/> */}
       </div>
     // </div>
   );

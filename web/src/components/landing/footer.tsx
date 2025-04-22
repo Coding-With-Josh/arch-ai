@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 export const Footer = () => {
   return (
@@ -6,8 +7,16 @@ export const Footer = () => {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="grid gap-10 py-8 sm:grid-cols-12 md:py-12">
           <div className="space-y-2 sm:col-span-12 lg:col-span-4">
-            <div />
-            <div className="text-sm text-black/60 dark:text-gray-400">
+            {/* <div className="flex items-center">
+              <Image
+                src={require('@/assets/images/brand/arch_logo-transparent-bg.png')}
+                alt="A"
+                className="h-10 w-auto"
+                width={100}
+                height={100}
+              /><span className="text-2xl ">rch</span>
+            </div> */}
+            <div className="text-sm ml-2 text-black/60 dark:text-gray-400">
               © Arch - All rights reserved.
             </div>
           </div>

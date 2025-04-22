@@ -1,11 +1,8 @@
 import '@/styles/globals.css';
 
-import { PropsWithChildren, ReactNode } from 'react';
 import { LanguageProvider } from '@inlang/paraglide-next';
 import type { Metadata } from 'next';
 
-import { Footer } from '@/components/landing/footer';
-import { Navbar } from '@/components/landing/nav';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { Toaster } from '@/components/ui/toaster';
@@ -49,7 +46,8 @@ export const generateMetadata = (): Metadata => ({
   },
 });
 
-function RootLayout({
+
+async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -61,6 +59,7 @@ function RootLayout({
           <ThemeProvider attribute="class">
             <Wrapper>
               {children}
+              <ThemeSwitcher className="fixed bottom-4 right-4 z-50" />
             </Wrapper>
           </ThemeProvider>
           <Toaster />
