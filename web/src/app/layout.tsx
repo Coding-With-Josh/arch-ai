@@ -39,7 +39,7 @@ export const generateMetadata = (): Metadata => ({
     locale: languageTag(),
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary_large_image',  
     title: siteConfig.title(),
     description: siteConfig.description(),
     images: '/opengraph-image.png',

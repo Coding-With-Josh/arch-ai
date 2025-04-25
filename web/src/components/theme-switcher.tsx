@@ -16,7 +16,7 @@ export const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
 
   return (
     <Button
-      className={className}
+      className="flex items-center justify-center rounded-full p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
       variant="secondary"
       size="icon"
       aria-label={m.theme_toggle_label()}

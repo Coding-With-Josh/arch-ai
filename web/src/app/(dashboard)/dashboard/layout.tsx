@@ -3,28 +3,34 @@ import '@/styles/globals.css';
 import ClientLayout from './client-layout';
 import prisma from '@/lib/prisma';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
+import { RedirectNoWorkspace } from './redirect-no-workspace';
 
 async function AppLayout({
-    children
+	children
 }: {
-    children: React.ReactNode;
+	children: React.ReactNode;
 }) {
 
-    const session = await auth()
-const workspaceCount = await prisma.workspace.count({
-    where : {
-        ownerId: session?.user.id
-    }
-})
-if (workspaceCount === 0) {
-    redirect('/dashboard/workspace/create');
-}
+	// const hdrs = await headers();
+	// const currentUrl = hdrs.get('x-nextjs-url') || '';
+  
+	const session = await auth();
 
-    return (
-        <ClientLayout session={session}>
-            {children}
-        </ClientLayout>
-    );
+	// if (currentUrl !== '/dashboard/workspaces/create') {
+		RedirectNoWorkspace({ session });
+	// }
+      const workspaceCount = await prisma.workspace.count({
+        where: {
+          ownerId: session?.user.id,
+        },
+      });
+
+	return (
+		<ClientLayout session={session}>
+			{children}
+		</ClientLayout>
+	);
 };
     
 export default AppLayout;

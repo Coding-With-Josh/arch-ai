@@ -259,11 +259,11 @@ const Navbar = ({
             <Button
               asChild
               size="sm"
-              className="relative overflow-hidden bg-zinc-900 text-white hover:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 hover:scale-105 px-6 transition-colors duration-300"
+              className="relative overflow-hidden bg-zinc-900 text-white hover:bg-zinc-800 focus:ring-2 ring-2 ring-zinc-700 focus:ring-zinc-500 hover:scale-105 px-6 transition-colors duration-300"
             >
               {session ? (
                 <a href="/dashboard">
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_infinite]" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent ring-2 ring-zinc-700 animate-[shimmer_2s_infinite]" />
                   <span className="relative z-10">Go to app</span>
                 </a>
               ) : (

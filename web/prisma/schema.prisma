@@ -102,6 +102,9 @@ SUI
 model Workspace {
   id           String                 @id @default(cuid())
   name         String
+  description  String?
+  slug         String @unique
+  logo         String?
   ownerId      String
   createdAt    DateTime               @default(now())
   updatedAt    DateTime               @updatedAt
@@ -192,6 +195,8 @@ enum InvitationStatus {
 enum WorkspaceRole {
   ADMIN
   MEMBER
+  DEVELOPER
+  DESIGNER
   GUEST
 }
 

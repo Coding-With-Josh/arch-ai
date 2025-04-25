@@ -2,16 +2,27 @@ import { SignInButton } from '@/components/navbar/sign-in-button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import '@/styles/globals.css';
 import { Session } from 'next-auth';
+import prisma from '@/lib/prisma';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
-function ClientLayout({
+async function ClientLayout({
     session,
     children
 }: {
     children: React.ReactNode, session: Session | null,
 }) {
+
+     const workspaceCount = await prisma.workspace.count({
+            where: {
+              ownerId: session?.user.id,
+            },
+          });
+
     return (
         <div className="min-h-screen overflow-x-hidden">
-            {!session ? (
+            {!session && (
+                <div className='flex items-center justify-center h-screen w-screen z-[5000]'>
                 <Dialog open>
                     <DialogContent
                         className="sm:max-w-[500px] border-zinc-800 bg-zinc-900/90 backdrop-blur-sm"
@@ -25,9 +36,27 @@ function ClientLayout({
                         <SignInButton />
                     </DialogContent>
                 </Dialog>
-            ) : (
-                session?.user.organizations
+                </div>
             )}
+            {/* {workspaceCount === 0 && typeof window !== 'undefined' && window.location.pathname === "/dashboard/workspaces/create" && (
+                <div className='flex items-center justify-center h-screen w-screen z-[5000]'>
+                <Dialog open>
+                    <DialogContent
+                        className="sm:max-w-[500px] border-zinc-800 bg-zinc-900/90 backdrop-blur-sm"
+                    >
+                        <DialogHeader>
+                            <DialogTitle className="text-xl text-zinc-100">No Workspaces</DialogTitle>
+                            <p className="text-sm text-zinc-400">
+                                You do not have any workspaces. Please create one to continue.
+                            </p>
+                        </DialogHeader>
+                        <Button>
+                           <Link href="/dashboard/workspaces/create">Create Workspace</Link>
+                        </Button>
+                    </DialogContent>
+                </Dialog>
+                </div>
+            )} */}
             {children}
         </div>
     );

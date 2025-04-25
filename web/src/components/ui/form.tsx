@@ -9,7 +9,7 @@ import {
 } from 'react-hook-form';
 import * as LabelPrimitive from '@radix-ui/react-label';
 import { Slot } from '@radix-ui/react-slot';
-
+  
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
@@ -93,7 +93,7 @@ const FormLabel = React.forwardRef<
   return (
     <Label
       ref={ref}
-      className={cn(error && 'text-destructive', className)}
+      className={cn(error && 'text-red-700/80', className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -156,7 +156,7 @@ const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
-      className={cn('text-destructive text-sm font-medium', className)}
+      className={cn('text-red-700/80 text-sm font-medium', className)}
       {...props}
     >
       {body}
