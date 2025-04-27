@@ -5,6 +5,8 @@ import { Session } from 'next-auth';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import Sidebar from '../_components/Sidebar';
+import Navbar from '../_components/Navbar';
 
 async function ClientLayout({
     session,
@@ -57,7 +59,15 @@ async function ClientLayout({
                 </Dialog>
                 </div>
             )} */}
-            {children}
+            <div className="flex min-h-screen w-screen bg-background overflow-hidden">
+          <Sidebar />
+          <div className="flex flex-col w-full">
+            <Navbar />
+            <main className="flex flex-1 flex-col gap-4 p-4 w-full md:gap-8 md:p-6">
+              {children}
+            </main>
+          </div>
+        </div>
         </div>
     );
 };

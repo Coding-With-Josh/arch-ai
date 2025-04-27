@@ -6,7 +6,6 @@ import { WorkspaceRole, InvitationStatus } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/app/api/auth/[...nextauth]/auth-options';
 import { CreateWorkspaceInput, InviteToWorkspaceInput, WorkspaceWithMembers } from '@/types/workspace';
-import { redirect } from 'next/navigation';
 
 export const createWorkspace = async (input: CreateWorkspaceInput) => {
   const session = await auth();
@@ -35,7 +34,6 @@ export const createWorkspace = async (input: CreateWorkspaceInput) => {
     });
 
     revalidatePath(`/dashboard/workspace/${workspace.slug}`);
-    redirect(`/dashboard/workspace/${workspace.slug}`);
     return workspace;
   } catch (error) {
     console.error('Error creating workspace:', error);

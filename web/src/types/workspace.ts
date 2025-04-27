@@ -1,4 +1,4 @@
-import { InvitationStatus, WorkspaceRole } from "@prisma/client";
+import { InvitationStatus, Project, User, WorkspaceMembership, WorkspaceRole } from "@prisma/client";
 
 // types/workspace.ts
 export type Workspace = {
@@ -57,3 +57,19 @@ export type Workspace = {
     userId: string;
     role: WorkspaceRole;
   };
+
+  export type WorkspaceWithDetails = Workspace & {
+    _count: {
+      projects: number
+      memberships: number
+      invitations: number
+    }
+    projects: Project[]
+    memberships: (WorkspaceMembership & {
+      user: User
+    })[]
+    owner: User
+    invitations: (WorkspaceInvitation & {
+      user: User | null
+    })[]
+  }

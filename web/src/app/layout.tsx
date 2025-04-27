@@ -59,7 +59,6 @@ async function RootLayout({
           <ThemeProvider attribute="class">
             <Wrapper>
               {children}
-              <ThemeSwitcher className="fixed bottom-4 right-4 z-50" />
             </Wrapper>
           </ThemeProvider>
           <Toaster />

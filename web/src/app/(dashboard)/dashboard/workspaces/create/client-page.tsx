@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { useWorkspace } from '@/hooks/useWorkspace';
 import { toast } from '@/components/ui/use-toast';
+import { redirect } from 'next/navigation';
 
 export const ClientPage = ({ session }: { session: { user?: { email: string } } | null }) => {
   const [step, setStep] = useState(1);
@@ -41,7 +42,7 @@ export const ClientPage = ({ session }: { session: { user?: { email: string } } 
 
   const onSubmit = async (data: any) => {
     try {
-      await createWorkspace({
+      const workspace = await createWorkspace({
         name: data.workspaceName,
         description: data.description,
         logo: data.logo,
@@ -50,6 +51,7 @@ export const ClientPage = ({ session }: { session: { user?: { email: string } } 
         title: "Success",
         description: "Workspace created successfully",
       });
+    //   redirect(`/dashboard/workspace/${workspace.slug}`);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -90,7 +92,7 @@ export const ClientPage = ({ session }: { session: { user?: { email: string } } 
   const onBack = () => setStep(step - 1);
 
   return (
-    <div className="h-screen w-screen flex flex-col">
+    <div className="h-screen w-screen flex flex-col overflow-hidden">
       <nav className="w-full flex border-b border-b-muted/80 items-center justify-start py-3 px-5">
         <div className="flex items-center justify-center gap-4">
           <Link href="/dashboard/workspaces">
@@ -109,16 +111,16 @@ export const ClientPage = ({ session }: { session: { user?: { email: string } } 
             {step === 1 && "Create a new workspace"}
             {step === 2 && "Workspace details"}
             {step === 3 && "Choose your style"}
-            {step === 4 && "Invite your team"}
-            {step === 5 && "Subscribe to updates"}
+            {step === 4 && "Subscribe to updates"}
+            {step === 5 && "Invite your team"}
             {step === 6 && "Review your workspace"}
           </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
             {step === 1 && "Embrace the challenge. Every big journey begins with a single bold step! Create a workspace."}
             {step === 2 && "Add some details about your workspace to make it unique"}
             {step === 3 && "Choose your preferred style for your workspace."}
-            {step === 4 && "Collaborate with your team members."}
-            {step === 5 && "Stay updated with our latest features and news"}
+            {step === 4 && "Stay updated with our latest features and news"}
+            {step === 5 && "Collaborate with your team members."}
             {step === 6 && "Review your workspace details before creation"}
           </p>
         </div>
@@ -139,8 +141,8 @@ export const ClientPage = ({ session }: { session: { user?: { email: string } } 
               {step === 1 && "Continue"}
               {step === 2 && "Continue"}
               {step === 3 && "Choose style"}
-              {step === 4 && "Invite or skip"}
-              {step === 5 && "Subscribe"}
+              {step === 4 && "Subscribe"}
+              {step === 5 && "Invite or skip"}
             </Button>
           ) : (
             <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={loading}>

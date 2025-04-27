@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import * as z from "zod";
+import Link from "next/link";
 
 export const formSchema = z.object({
   workspaceName: z.string().min(1, "Workspace name is required"),
@@ -23,22 +24,22 @@ export const formSchema = z.object({
   teamEmails: z.array(z.string().email("Invalid email format")).optional(),
 });
 
-export function CreateWorkspaceForm({ 
-  step, 
-  form, 
-  onBack, 
-  onNext, 
-  onSubmit, 
-  teamEmails, 
-  updateTeamEmail 
-}: { 
-  step: number, 
-  form: any, 
-  onBack: () => void, 
-  onNext: () => void, 
-  onSubmit: (data: any) => void, 
-  teamEmails: string[], 
-  updateTeamEmail: (index: number, value: string) => void 
+export function CreateWorkspaceForm({
+  step,
+  form,
+  onBack,
+  onNext,
+  onSubmit,
+  teamEmails,
+  updateTeamEmail
+}: {
+  step: number,
+  form: any,
+  onBack: () => void,
+  onNext: () => void,
+  onSubmit: (data: any) => void,
+  teamEmails: string[],
+  updateTeamEmail: (index: number, value: string) => void
 }) {
   const { theme, setTheme } = useTheme();
 
@@ -164,9 +165,9 @@ export function CreateWorkspaceForm({
                           />
                           {field.value && (
                             <div className="w-16 h-16 rounded-full overflow-hidden border">
-                              <img 
-                                src={field.value} 
-                                alt="Workspace logo preview" 
+                              <img
+                                src={field.value}
+                                alt="Workspace logo preview"
                                 className="w-full h-full object-cover"
                               />
                             </div>
@@ -179,183 +180,191 @@ export function CreateWorkspaceForm({
                 />
               </div>
             )}
-     {step === 3 && (
-                <div className="space-y-6">
+            {step === 3 && (
+              <div className="space-y-6">
 
 
-                  <div className="flex gap-4">
-                    <Button
-                      variant="outline"
-                      className="flex-1 h-24 flex-col gap-2 justify-center items-center border border-zinc-300 dark:border-zinc-700"
-                      onClick={() => setTheme("light")}
-                    >
-                      <Sun className="h-6 w-6" />
-                      <span className="text-lg font-semibold">Light Mode</span>
-                      <span className="text-sm text-zinc-500">Bright & Clear</span>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1 h-24 flex-col gap-2 justify-center items-center border border-zinc-300 dark:border-zinc-700"
-                      onClick={() => setTheme("dark")}
-                    >
-                      <Moon className="h-6 w-6" />
-                      <span className="text-lg font-semibold">Dark Mode</span>
-                      <span className="text-sm text-zinc-500">Elegant & Focused</span>
-                    </Button>
-                  </div>
+                <div className="flex gap-4">
+                  <Button
+                    variant="outline"
+                    className="flex-1 h-24 flex-col gap-2 justify-center items-center border border-zinc-300 dark:border-zinc-700"
+                    onClick={() => setTheme("light")}
+                  >
+                    <Sun className="h-6 w-6" />
+                    <span className="text-lg font-semibold">Light Mode</span>
+                    <span className="text-sm text-zinc-500">Bright & Clear</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1 h-24 flex-col gap-2 justify-center items-center border border-zinc-300 dark:border-zinc-700"
+                    onClick={() => setTheme("dark")}
+                  >
+                    <Moon className="h-6 w-6" />
+                    <span className="text-lg font-semibold">Dark Mode</span>
+                    <span className="text-sm text-zinc-500">Elegant & Focused</span>
+                  </Button>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Step 3: Subscription Options */}
-              {step === 4 && (
-                <div className="space-y-6">
-                  <div className="space-y-4">
-                    <div className=""></div>
-
-                    <FormField
-                      control={form.control}
-                      name="subscribeNewsletter"
-                      render={({ field }) => (
-                        <FormItem className="space-y-4">
-                          <div className="flex items-center space-x-3 justify-between">
-                            <div>
-                              <FormLabel>Subscribe to our monthly newsletter</FormLabel>
-                              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                                Receive monthly updates by user email inbox.
-                              </p>
-                            </div>
-                              <FormControl>
-                              <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                              </FormControl>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="border-t border-zinc-200 dark:border-zinc-900"></div>
-
-                    <FormField
-                      control={form.control}
-                      name="followOnX"
-                      render={({ field }) => (
-                        <FormItem className="space-y-4">
-                          <div className="flex items-center space-x-3 justify-between">
-                            <div>
-                              <FormLabel>Follow us on X</FormLabel>
-                              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                                Register posts with updates and tips.
-                              </p>
-                            </div>
-                            <Button variant={"secondary"}>@build_with_arch</Button>
-
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="border-t border-zinc-200 dark:border-zinc-900"></div>
-
-                    <FormField
-                      control={form.control}
-                      name="joinCommunity"
-                      render={({ field }) => (
-                        <FormItem className="space-y-4">
-                          <div className="flex items-center space-x-3 justify-between">
-                            <div>
-                              <FormLabel>Join our Discord community</FormLabel>
-                              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                                Chat with other developers and founders.
-                              </p>
-                            </div>
-                            <Button variant={"secondary"}>@build_with_arch</Button>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="border-t border-zinc-200 dark:border-zinc-900"></div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 4: Team Invites */}
-              {step === 5 && (
-                <div className="space-y-6">
+            {/* Step 3: Subscription Options */}
+            {step === 4 && (
+              <div className="space-y-6">
+                <div className="space-y-4">
                   <div className=""></div>
 
-                  <div className="space-y-4">
-                    <FormLabel>Email addresses</FormLabel>
-                    {teamEmails.map((email, index) => (
-  <div key={index} className="flex gap-2">
-    <Input
-      value={email}
-      onChange={(e) => updateTeamEmail(index, e.target.value)}
-      className="bg-white dark:bg-zinc-900 flex-1"
-    />
-    {index > 0 && (
-      <Button 
-        type="button" 
-        variant="outline" 
-        onClick={() => {
-          const newEmails = [...teamEmails];
-          newEmails.splice(index, 1);
-          form.setValue("teamEmails", newEmails);
-        }}
-      >
-        Remove
-      </Button>
-    )}
-  </div>
-))}
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => updateTeamEmail(teamEmails.length, "")}
-                    >
-                      Add Team Member
-                    </Button>
-                  </div>
-                </div>
-              )}
+                  <FormField
+                    control={form.control}
+                    name="subscribeNewsletter"
+                    render={({ field }) => (
+                      <FormItem className="space-y-4">
+                        <div className="flex items-center space-x-3 justify-between">
+                          <div>
+                            <FormLabel>Subscribe to our monthly newsletter</FormLabel>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                              Receive monthly updates by user email inbox.
+                            </p>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
 
-              {/* Step 5: Review */}
-              {step === 6 && (
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <div>
-                      <span className="font-semibold">Workspace Name: </span>
-                      {form.getValues("workspaceName")}
-                    </div>
-                    <div>
-                      <span className="font-semibold">Workspace URL: </span>
-                      {form.getValues("workspaceUrl")}
-                    </div>
-                    <div>
-                      <span className="font-semibold">Subscriptions: </span>
-                      {[
-                        form.getValues("subscribeNewsletter") && "Newsletter",
-                        form.getValues("followOnX") && "X (Twitter)",
-                        form.getValues("joinCommunity") && "Community",
-                      ].filter(Boolean).join(", ") || "None"}
-                    </div>
-                    <div>
-                      {teamEmails.filter(e => e).length > 0 ? (
-                        <>
-                          <span className="font-semibold">Team Members: </span>
-                          {teamEmails.filter(e => e).join(", ")}
-                        </>
-                      ) : (
-                        <span className="font-semibold">Team Members: <span className="font-normal">None</span></span>
+                  <div className="border-t border-zinc-200 dark:border-zinc-900"></div>
+
+                  <FormField
+                    control={form.control}
+                    name="followOnX"
+                    render={({ field }) => (
+                      <FormItem className="space-y-4">
+                        <div className="flex items-center space-x-3 justify-between">
+                          <div>
+                            <FormLabel>Follow us on X</FormLabel>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                              Register posts with updates and tips.
+                            </p>
+                          </div>
+                          <Button variant={"secondary"}>
+                            <Link href="https://x.com/build_with_arch" target="_blank" rel="noopener noreferrer">
+                              @build_with_arch
+                            </Link>
+                          </Button>
+
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="border-t border-zinc-200 dark:border-zinc-900"></div>
+
+                  <FormField
+                    control={form.control}
+                    name="joinCommunity"
+                    render={({ field }) => (
+                      <FormItem className="space-y-4">
+                        <div className="flex items-center space-x-3 justify-between">
+                          <div>
+                            <FormLabel>Join our Discord community</FormLabel>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                              Chat with other developers and founders.
+                            </p>
+                          </div>
+                          <Button variant={"secondary"}>
+                            <Link href="https://discord.gg/build_with_arch" target="_blank" rel="noopener noreferrer">
+                              Join Discord
+                            </Link>
+                          </Button>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="border-t border-zinc-200 dark:border-zinc-900"></div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Team Invites */}
+            {step === 5 && (
+              <div className="space-y-6">
+                <div className=""></div>
+
+                <div className="space-y-4">
+                  <FormLabel>Email addresses</FormLabel>
+                  {teamEmails.map((email, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={email}
+                        onChange={(e) => updateTeamEmail(index, e.target.value)}
+                        className="bg-white dark:bg-zinc-900 flex-1"
+                      />
+                      {index > 0 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            const newEmails = [...teamEmails];
+                            newEmails.splice(index, 1);
+                            form.setValue("teamEmails", newEmails);
+                          }}
+                        >
+                          Remove
+                        </Button>
                       )}
-                      {teamEmails.filter(e => e).join(", ")}
                     </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => updateTeamEmail(teamEmails.length, "")}
+                  >
+                    Add Team Member
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Review */}
+            {step === 6 && (
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <div>
+                    <span className="font-semibold">Workspace Name: </span>
+                    {form.getValues("workspaceName")}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Workspace URL: </span>
+                    {form.getValues("workspaceUrl")}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Subscriptions: </span>
+                    {[
+                      form.getValues("subscribeNewsletter") && "Newsletter",
+                      form.getValues("followOnX") && "X (Twitter)",
+                      form.getValues("joinCommunity") && "Community",
+                    ].filter(Boolean).join(", ") || "None"}
+                  </div>
+                  <div>
+                    {teamEmails.filter(e => e).length > 0 ? (
+                      <>
+                        <span className="font-semibold">Team Members: </span>
+                        {teamEmails.filter(e => e).join(", ")}
+                      </>
+                    ) : (
+                      <span className="font-semibold">Team Members: <span className="font-normal">None</span></span>
+                    )}
+                    {teamEmails.filter(e => e).join(", ")}
                   </div>
                 </div>
-              )}
-            
+              </div>
+            )}
+
           </form>
         </Form>
       </div>

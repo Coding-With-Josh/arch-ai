@@ -6,8 +6,10 @@ interface ClientPageProps {
     };
 }
 
-export default function ClientPage({ params }: ClientPageProps) {
-    const { slug } = params;
+export default async function ClientPage({ params }: ClientPageProps) {
+    const { slug } = await params;
+
+    
 
     return (
         <div>

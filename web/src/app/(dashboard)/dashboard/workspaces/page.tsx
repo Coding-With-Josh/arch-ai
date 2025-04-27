@@ -1,25 +1,61 @@
-import React from 'react'
+// app/workspaces/page.tsx
+import ClientPage from './client-page'
+import prisma from '@/lib/prisma'
+import { auth } from '@/app/api/auth/[...nextauth]/auth-options'
 
-const Page = () => {
-  return (
-    <div>
-        <h1 className="text-4xl font-bold mb-6">Organizations</h1>
-        <p className="mb-4 text-lg">
-            Manage your organizations here. You can create, edit, or delete organizations as needed.
-        </p>
-        <p className="mb-4 text-lg">
-            For more information, visit our <a href="/help" className="text-primary hover:underline">Help Center</a>.
-        </p>
-        <div className="mt-8">
-            <a 
-            href="/organizations/create" 
-            className="inline-block px-6 py-3 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors"
-            >
-            Create New Organization
-            </a>    
-        </div>
-    </div>
-  )
+const Page = async () => {
+  const session = await auth()
+  const workspaces = await prisma.workspace.findMany({
+    where: {
+      OR: [
+        { ownerId: session?.user.id },
+        {
+          memberships: {
+            some: {
+              userId: session?.user.id,
+              role: { in: ['ADMIN', 'MEMBER', 'DEVELOPER', 'DESIGNER', 'GUEST'] }
+            }
+          }
+        }
+      ]
+    },
+    include: {
+      _count: {
+        select: {
+          projects: true,
+          memberships: true,
+          invitations: true,
+        },
+      },
+      projects: true,
+      memberships: {
+        where: {
+          userId: session?.user.id
+        },
+        include: {
+          user: true,
+        },
+      },
+      owner: true,
+      invitations: {
+        where: {
+          OR: [
+            { email: session?.user.email || '' },
+            { userId: session?.user.id }
+          ],
+          status: 'PENDING'
+        },
+        include: {
+          user: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
+
+  return <ClientPage workspaces={workspaces} currentUserId={session?.user.id} />
 }
 
 export default Page
