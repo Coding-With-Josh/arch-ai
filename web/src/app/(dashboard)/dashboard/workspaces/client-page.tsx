@@ -47,10 +47,12 @@ export default function ClientPage({ workspaces, currentUserId }: ClientPageProp
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Your Workspaces</h1>
+        <Link href="/dashboard/workspaces/create" className="">
         <Button>
           <Plus className="mr-2 h-4 w-4" />
           New Workspace
         </Button>
+        </Link>
       </div>
 
     {workspaces.length === 0 ? (
