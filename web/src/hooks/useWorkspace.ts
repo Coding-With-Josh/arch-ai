@@ -58,7 +58,7 @@ export const useWorkspace = () => {
     } catch (err) {
       return handleError(err);
     }
-  }, []);
+  }, []); 
 
   const inviteMember = useCallback(async (input: InviteToWorkspaceInput) => {
     setLoading(true);

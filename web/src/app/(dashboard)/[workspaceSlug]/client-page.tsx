@@ -14,9 +14,9 @@ interface ClientPageProps {
 
 
 export default async function ClientPage({ params, udpdateActiveWorkspace, session, workspace }: ClientPageProps) {
-    useEffect(() => {
-        udpdateActiveWorkspace()
-      }, []);
+    // useEffect(() => {
+    //     udpdateActiveWorkspace()
+    //   }, []);
     const { workspaceSlug } = await params;
 
     

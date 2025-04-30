@@ -9,6 +9,31 @@ export default async function Page({ params }: { params: {workspaceSlug: string}
 
     const session = await auth();
 
+    const updateActiveWorkspace = async () => {
+      if (session?.user) {
+        await prisma.workspace.updateMany({
+          where: {
+            slug: workspaceSlug,
+            OR: [
+              { ownerId: session.user.id },
+              {
+                memberships: {
+                  some: {
+                    userId: session.user.id,
+                    role: {
+                      in: ['ADMIN', 'MEMBER', 'DEVELOPER', 'DESIGNER', 'GUEST']
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          data: { updatedAt: new Date() }
+        });
+      }
+    }
+
+    updateActiveWorkspace();
 
     const workspace = await prisma.workspace.findUnique({
         where: {
@@ -38,32 +63,10 @@ export default async function Page({ params }: { params: {workspaceSlug: string}
 
     });
 
-    const udpdateActiveWorkspace = async () => {
-      if (session?.user) {
-        await prisma.workspace.updateMany({
-          where: {
-            slug: workspaceSlug,
-            OR: [
-              { ownerId: session.user.id },
-              {
-                memberships: {
-                  some: {
-                    userId: session.user.id,
-                    role: {
-                      in: ['ADMIN', 'MEMBER', 'DEVELOPER', 'DESIGNER', 'GUEST']
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          data: { updatedAt: new Date() }
-        });
-      }
-    }
+
 
 
     return (
-       <ClientPage workspace={workspace} params={params} session={session} udpdateActiveWorkspace={udpdateActiveWorkspace} />
+       <ClientPage workspace={workspace} params={params} session={session} udpdateActiveWorkspace={updateActiveWorkspace} />
     );
 }

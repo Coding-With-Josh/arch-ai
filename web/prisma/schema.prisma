@@ -117,6 +117,7 @@ model Workspace {
 model Project {
   id               String            @id @default(cuid())
   name             String
+  slug             String
   description      String?
   projectType      ProjectType       @default(STANDARD)
   createdAt        DateTime          @default(now())

@@ -33,7 +33,7 @@ function ClientLayout({
     const { tabProps } = useTabs({ tabs });
 
     const pathname = usePathname()
-    const isCreatePage = pathname === "/create/workspace"
+    const isCreatePage = pathname === "/create/workspace" || "/create/projects"
     const isChoosePage = pathname === "/choose-workspace"
 
     return (
