@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Icons } from '@/components/icons'
 import { useTheme } from 'next-themes'
 import { WorkspaceWithDetails } from '@/types/workspace'
-import { Boxes, FolderOpen, Plus, Users } from 'lucide-react'
+import { Boxes, FolderOpen, MoreVertical, Option, Plus, Users } from 'lucide-react'
 import Link from 'next/link'
 
 interface ClientPageProps {
@@ -21,7 +21,7 @@ export default function ClientPage({ workspaces, currentUserId }: ClientPageProp
 
   const getRoleBadge = (workspace: WorkspaceWithDetails) => {
     if (workspace.ownerId === currentUserId) {
-      return          <Badge className="text-xs px-2 py-[3px] rounded-lg bg-zinc-200/70 border-zinc-200 text-zinc-700 dark:text-gray-300 cursor-pointer dark:hover:bg-zinc-900/40 hover:bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800/30 gap-2"><span className="size-[0.45rem] bg-orange-500 rounded-full" />Owner</Badge>
+      return          <Badge className="text-xs px-2 py-[3px] rounded-full bg-zinc-200/70 border-zinc-200 text-zinc-700 dark:text-gray-300 cursor-pointer dark:hover:bg-zinc-900/40 hover:bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800/30 gap-2"><span className="size-[0.45rem] bg-orange-500 rounded-full" />Owner</Badge>
       
     }
 
@@ -46,45 +46,27 @@ export default function ClientPage({ workspaces, currentUserId }: ClientPageProp
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Your Workspaces</h1>
-        <Link href="/dashboard/workspaces/create" className="">
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          New Workspace
-        </Button>
-        </Link>
+        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Choose a workspace</h1>
       </div>
 
-    {workspaces.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12">
-          <div className="bg-zinc-100 dark:bg-zinc-800 p-6 rounded-full mb-4">
-            <Boxes className="h-8 w-8 text-zinc-500 dark:text-zinc-400" />
-          </div>
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
-            No workspaces found
-          </h2>
-          <p className="text-zinc-500 dark:text-zinc-400 mb-4">
-            You don't have access to any workspaces yet.
-          </p>
-          <Button>
-            <Link href="/dashboard/workspaces/create">Create your first workspace</Link>
-          </Button>
-        </div>
-      ) : (
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {workspaces.map((workspace) => (
-            <Link href={`/dashboard/workspace/${workspace.slug}`}>
-            <Card key={workspace.id} className="hover:shadow-lg transition-all cursor-pointer  rounded-lg py-4">
+            <Link href={`/${workspace.slug}`}>
+            <Card key={workspace.id} className="hover:shadow-lg transition-all cursor-pointer relative rounded-2xl py-4 dark:hover:bg-zinc-900/30 border-zinc-200 dark:border-zinc-900 bg-white dark:bg-zinc-900/10 shadow-sm border hover:border-zinc-300 dark:hover:border-zinc-800">
+              <div className="absolute top-4 right-4 " onClick={(e) => e.stopPropagation()}>
+                <MoreVertical className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                </div>
               <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
                 <div className="space-y-3">
-                  <CardTitle className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
+                  <CardTitle className="flex items-center gap-3.5">
+                    <Avatar className="size-8 rounded-md">
                       <AvatarImage src={workspace.logo || ''} />
-                      <AvatarFallback>
+                      <AvatarFallback className='text-sm font-semibold rounded-md'>
                         {workspace.name.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-zinc-900 dark:text-zinc-100">
+                    <span className="text-zinc-900 dark:text-zinc-100 text-lg font-semibold ">
                       {workspace.name}
                     </span>
                   </CardTitle>
@@ -129,8 +111,15 @@ export default function ClientPage({ workspaces, currentUserId }: ClientPageProp
             </Card>
             </Link>
           ))}
+          <Link href={`/create/workspace`}>
+          <Card className='border-dashed flex items-center justify-center cursor-pointer hover:bg-zinc-300/70 dark:hover:bg-zinc-900/40 duration-300 dark:hover:border-zinc-500 transition-all py-8 rounded-xl'>
+            <CardContent className='flex flex-col items-center justify-center w-full gap-5'>
+                <Plus className="h-8 w-8 text-zinc-700 dark:text-zinc-300" />
+                <h2 className="text-lg font-semibold text-zinc-700 dark:text-zinc-300">Create a new workspace</h2>
+            </CardContent>
+          </Card>
+            </Link>
         </div>
-      )}
     </div>
   )
 }

@@ -1,7 +1,5 @@
 import { ClientPage } from "./client-page";
 import { auth } from "@/app/api/auth/[...nextauth]/auth-options";
-import { useWorkspace } from "@/hooks/useWorkspace";
-import prisma from "@/lib/prisma";
 
 export const metadata = {
     title: "Create Workspace",

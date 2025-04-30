@@ -120,7 +120,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply dark:border-muted/50;
   }
 
   body {

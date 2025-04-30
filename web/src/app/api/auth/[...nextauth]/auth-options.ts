@@ -27,21 +27,24 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             method: user.subscription.method,
           }
         : null;
-      // Forward onboarding status if needed downstream.
-      session.user.hasCompletedOnboarding = user.hasCompletedOnboarding;
-      
       return session;
     },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
     async redirect({ url, baseUrl }) {
-      // Parse the incoming URL relative to the base URL.
+      // Parse the incoming URL relative to the base URL
       const { pathname } = new URL(url, baseUrl);
 
-      // Redirect to the dashboard if the user is coming from "/" or "/auth"
+      // If coming from auth flow
       if (pathname === '/' || pathname === '/auth') {
-      return `${baseUrl}/dashboard`;
+        return `${baseUrl}/choose-workspace`;
       }
 
-      // Otherwise, ensure the redirect URL stays on the same domain.
+      // Otherwise, ensure the redirect URL stays on the same domain
       return url.startsWith(baseUrl) ? url : baseUrl;
     },
   },
