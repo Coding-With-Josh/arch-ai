@@ -38,24 +38,24 @@ model Session {
 }
 
 model User {
-  id            String            @id @default(cuid())
-  name          String?
-  email         String?           @unique
-  emailVerified DateTime?
-  image         String?
-  websiteRole   WebsiteRole       @default(USER)
-  subscription  UserSubscription?
-  isActive      Boolean           @default(false)
-  hasCompletedOnboarding Boolean @default(false)
-  workspaces    Workspace[]
-  workspacesInvitations WorkspaceInvitation[] @relation("UserInvitations")
-  transactions Transaction[] @relation("TransactionUser")
-  transactionsReceived Transaction[] @relation("TransactionRecipient")
-  web3Wallets    Web3Wallet[]
-  accounts      Account[]
-  sessions      Session[]
-  workspaceMemberships WorkspaceMembership[]
-  
+  id                     String                @id @default(cuid())
+  name                   String?
+  email                  String?               @unique
+  emailVerified          DateTime?
+  image                  String?
+  websiteRole            WebsiteRole           @default(USER)
+  subscription           UserSubscription?
+  isActive               Boolean               @default(false)
+  hasCompletedOnboarding Boolean               @default(false)
+  workspaces             Workspace[]
+  workspacesInvitations  WorkspaceInvitation[] @relation("UserInvitations")
+  transactions           Transaction[]         @relation("TransactionUser")
+  transactionsReceived   Transaction[]         @relation("TransactionRecipient")
+  web3Wallets            Web3Wallet[]
+  accounts               Account[]
+  sessions               Session[]
+  workspaceMemberships   WorkspaceMembership[]
+
   tokens Token[]
 }
 
@@ -81,72 +81,137 @@ model Token {
 }
 
 model Web3Wallet {
-  id          String   @id @default(cuid())
-  userId      String
-  address     String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  type        walletType
-  balance    Float    @default(0.0)
-  status      Status   @default(INACTIVE)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String     @id @default(cuid())
+  userId    String
+  address   String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  type      walletType
+  balance   Float      @default(0.0)
+  status    Status     @default(INACTIVE)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum walletType {
   ETHEREUM
-SUI
+  SUI
   SOLANA
   MULTICHAIN
 }
- 
+
 model Workspace {
-  id           String                 @id @default(cuid())
-  name         String
-  description  String?
-  slug         String @unique
-  logo         String?
-  ownerId      String
-  createdAt    DateTime               @default(now())
-  updatedAt    DateTime               @updatedAt
-  owner        User                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  memberships  WorkspaceMembership[]
-  invitations  WorkspaceInvitation[]
-  projects     Project[]
+  id          String                @id @default(cuid())
+  name        String
+  description String?
+  slug        String                @unique
+  logo        String?
+  ownerId     String
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  owner       User                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  memberships WorkspaceMembership[]
+  invitations WorkspaceInvitation[]
+  projects    Project[]
 }
 
 model Project {
-  id          String        @id @default(cuid())
+  id               String            @id @default(cuid())
+  name             String
+  description      String?
+  projectType      ProjectType       @default(STANDARD)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  workspaceId      String
+  studios          Studio[]
+  editors          Editor[]
+  workspace        Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  hackathonDetails HackathonDetails?
+  startDate        DateTime?
+  endDate          DateTime?
+  milestones       Milestone[]
+}
+
+enum ProjectType {
+  STANDARD
+  HACKATHON
+}
+
+model HackathonDetails {
+  id                   String              @id @default(cuid())
+  projectId            String              @unique
+  project              Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  hackathonName        String?
+  organizer            String?
+  website              String?
+  prizePool            String?
+  rules                String?
+  registrationDeadline DateTime?
+  submissionDeadline   DateTime?
+  judgingDate          DateTime?
+  winnersAnnounced     DateTime?
+  maxTeamSize          Int?
+  minTeamSize          Int?
+  categories           HackathonCategory[]
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+}
+
+model HackathonCategory {
+  id                 String           @id @default(cuid())
+  hackathonDetailsId String
+  hackathonDetails   HackathonDetails @relation(fields: [hackathonDetailsId], references: [id], onDelete: Cascade)
+  name               String
+  description        String?
+}
+
+model Milestone {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   name        String
   description String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  workspaceId String
-  studios     Studio[]
-  editors     Editor[]
-  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  dueDate     DateTime
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
+  // For hackathon-specific milestones
+  isHackathonPhase Boolean             @default(false)
+  phaseType        HackathonPhaseType?
+}
+
+enum HackathonPhaseType {
+  ANNOUNCEMENT // Initial announcement of the hackathon
+  REGISTRATION // Team registration period
+  KICKOFF // Official start event
+  SUBMISSION // Final project submission
+  JUDGING // Evaluation period
+  FINALS // Final presentations/demos
+  WINNERS_ANNOUNCEMENT
+  POST_HACKATHON // Follow-up activities
 }
 
 model Studio {
-  id          String        @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
-  slug        String? @unique
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  slug        String?  @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   projectId   String
-  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model Editor {
-  id          String        @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
-  slug        String? @unique
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  slug        String?  @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   projectId   String
-  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model WorkspaceMembership {
@@ -155,11 +220,11 @@ model WorkspaceMembership {
   userId      String
   role        WorkspaceRole @default(MEMBER)
   createdAt   DateTime      @default(now())
-  status     Status @default(INACTIVE)
+  status      Status        @default(INACTIVE)
   updatedAt   DateTime      @updatedAt
 
-  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, userId])
 }
@@ -171,19 +236,19 @@ enum Status {
 }
 
 model WorkspaceInvitation {
-  id          String        @id @default(cuid())
+  id          String           @id @default(cuid())
   workspaceId String
   email       String
-  role        WorkspaceRole @default(MEMBER)
-  token       String        @unique
-  status InvitationStatus @default(PENDING)
-  createdAt   DateTime      @default(now())
+  role        WorkspaceRole    @default(MEMBER)
+  token       String           @unique
+  status      InvitationStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
   expiresAt   DateTime
-  
-  userId    String?
-  user      User?   @relation("UserInvitations", fields: [userId], references: [id], onDelete: Cascade)
-  
-  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation("UserInvitations", fields: [userId], references: [id], onDelete: Cascade)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }
 
 enum InvitationStatus {
@@ -201,10 +266,10 @@ enum WorkspaceRole {
 }
 
 model UserSubscription {
-  userId         String @unique
+  userId         String             @unique
   subscriptionId String             @unique
   method         SubscriptionMethod
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum SubscriptionMethod {

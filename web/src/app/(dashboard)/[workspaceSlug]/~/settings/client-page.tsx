@@ -18,22 +18,9 @@ type ClientPageProps = {
     params: {
         workspaceSlug: string;
     };
-    currentWorkspace: {
-        id: string;
-        name: string;
-        slug: string;
-        description: string | null;
-        logo: string | null;
-        ownerId: string;
-        projects: any[];
-        _count: {
-            projects: number;
-        };
-    };
+    currentWorkspace: any
     session: Session | null;
-    currentMembership: {
-        role: string;
-    };
+    currentMembership: any
     updateWorkspace: (formData: FormData) => Promise<any>;
     uploadLogo: (formData: FormData) => Promise<any>;
 };
@@ -155,9 +142,9 @@ const ClientPage = ({
             });
             
             // Redirect if slug changed
-            if (result.slug !== workspaceSlug) {
-                redirect(`/${result.slug}/settings`);
-            }
+            // if (result.slug !== workspaceSlug) {
+            //     redirect(`/${result.slug}/settings`);
+            // }
         } catch (error: any) {
             toast({
                 title: "Error",

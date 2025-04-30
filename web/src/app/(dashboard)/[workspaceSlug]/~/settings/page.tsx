@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 
 const Page = async ({ params }: { params: { workspaceSlug: string } }) => {
     const session = await auth();
-    const { workspaceSlug } = params;
+    const { workspaceSlug } = await     params;
     
     // Fetch current workspace data
     const currentWorkspace = await prisma.workspace.findFirst({
