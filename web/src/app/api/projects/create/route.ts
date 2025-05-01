@@ -39,8 +39,9 @@ export async function POST(req: Request) {
     const project = await prisma.project.create({
       data: {
         name: body.name,
+        slug: body.slug,
         description: body.description,
-        workspaceId: body.workspaceId,
+        workspace: { connect: { id: workspace.id } },
         projectType: body.projectType,
         startDate: body.startDate ? new Date(body.startDate) : undefined,
         endDate: body.endDate ? new Date(body.endDate) : undefined,

@@ -16,17 +16,18 @@ import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { Session } from 'next-auth';
 
-export const ClientPage = async ({
-    session
+export const ClientPage = ({
+    session,
+    params
 }: {
-    session: Session | null
+    session: Session | null,
+    params: any
 }) => {
-    const params = useParams();
-    const { workspaceSlug } = await params as { workspaceSlug: string };
     const [step, setStep] = useState(1);
     const [success, setSuccess] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
+    const workspaceSlug = params.workspaceSlug as string;   
 
     const form = useForm<z.infer<typeof projectFormSchema>>({
         resolver: zodResolver(projectFormSchema),
@@ -45,8 +46,11 @@ export const ClientPage = async ({
             // Prepare the complete project data
             const projectData = {
                 name: data.name,
+                slug: data.name.trim()
+                .toLowerCase()
+                .replace(/[\s\W-]+/g, "-"),
                 description: data.description,
-                workspaceSLug: workspaceSlug,
+                workspaceSlug: workspaceSlug,
                 projectType: data.projectType,
                 startDate: data.startDate?.toISOString(),
                 endDate: data.endDate?.toISOString(),
@@ -235,6 +239,7 @@ export const ClientPage = async ({
                             {step < 5 ? (
                                 <Button
                                     type="button"
+                                    className='w-72'
                                     onClick={onNext}
                                     disabled={isSubmitting}
                                 >
@@ -243,6 +248,7 @@ export const ClientPage = async ({
                             ) : (
                                 <Button
                                     type="button"
+                                    className='w-64'
                                     onClick={form.handleSubmit(onSubmit)}
                                     disabled={isSubmitting}
                                 >

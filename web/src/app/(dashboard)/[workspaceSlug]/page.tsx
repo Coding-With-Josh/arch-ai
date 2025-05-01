@@ -67,6 +67,6 @@ export default async function Page({ params }: { params: {workspaceSlug: string}
 
 
     return (
-       <ClientPage workspace={workspace} params={params} session={session} udpdateActiveWorkspace={updateActiveWorkspace} />
+       <ClientPage workspace={workspace} params={params} session={session} />
     );
 }

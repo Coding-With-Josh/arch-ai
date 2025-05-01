@@ -7,13 +7,12 @@ interface ClientPageProps {
     params: {
         workspaceSlug: string;
     };
-    udpdateActiveWorkspace: () => void;
     session: Session | null;
     workspace: any; // Replace with the actual type of your workspace object
 }
 
 
-export default async function ClientPage({ params, udpdateActiveWorkspace, session, workspace }: ClientPageProps) {
+export default async function ClientPage({ params, session, workspace }: ClientPageProps) {
     // useEffect(() => {
     //     udpdateActiveWorkspace()
     //   }, []);

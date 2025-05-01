@@ -3,8 +3,9 @@ import { Project, HackathonDetails, Milestone } from '@prisma/client';
 
 export interface CreateProjectPayload {
   name: string;
+  slug: string;
   description?: string;
-  workspaceSLug: string;
+  workspaceSlug: string;
   projectType: 'STANDARD' | 'HACKATHON';
   startDate?: string;
   endDate?: string;
