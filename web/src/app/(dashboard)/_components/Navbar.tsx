@@ -212,7 +212,7 @@ const Navbar = ({ session, workspaces }: { session: Session | null, workspaces: 
       </div>
 
       {/* Center section - Search */}
-      <div className="flex-1 max-w-xl mx-4 relative">
+      <div className="flex-1 max-w-xl mx-4 relative lg:flex hidden">
         <Button
           variant="outline"
           className="w-full h-8 px-3 bg-white dark:bg-zinc-900 border-muted/70 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 flex items-center justify-between"
@@ -238,9 +238,13 @@ const Navbar = ({ session, workspaces }: { session: Session | null, workspaces: 
       {/* Right section - Actions and user */}
       <div className="flex items-center gap-1.5">
         {connection ? (
+          <div className="lg:flex hidden">
             <appkit-account-button />
+          </div>
         ):(
-          <appkit-connect-button size="sm" loadingLabel="Connecting" label="Connect a wallet" />
+          <div className="lg:flex hidden">
+            <appkit-connect-button size="sm" loadingLabel="Connecting" label="Connect a wallet" />
+          </div>
 
         )}
         {/* {connection ? (
@@ -255,7 +259,7 @@ const Navbar = ({ session, workspaces }: { session: Session | null, workspaces: 
           */}
         <Button variant="ghost" size="sm" className="h-6 px-2.5 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50">
           Feedback
-        </Button> 
+        </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
