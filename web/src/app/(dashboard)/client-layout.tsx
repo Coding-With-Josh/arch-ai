@@ -33,9 +33,9 @@ function ClientLayout({
     const { tabProps } = useTabs({ tabs });
 
     const pathname = usePathname()
-    // const isCreatePage = pathname === "/create/workspace" || "/create/project"
-    const isCreatePage = pathname === "/create/workspace"
-    const isChoosePage = pathname === "/choose-workspace"
+    // const isCreatePage = pathname === "/~/create/workspace" || "/~/create/project"
+    const isCreatePage = pathname === "/~/create/workspace"
+    const isChoosePage = pathname === "/~/choose-workspace"
 
     return (
         <div className="min-h-screen overflow-x-hidden">

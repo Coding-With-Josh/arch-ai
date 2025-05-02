@@ -119,7 +119,7 @@ export default function ClientPage({ workspaces, currentUserId }: ClientPageProp
               </Card>
             </Link>
           ))}
-          <Link href={`/create/workspace`}>
+          <Link href={`/~/create/workspace`}>
             <Card className='border-dashed flex items-center justify-center cursor-pointer hover:bg-zinc-300/70 dark:hover:bg-zinc-900/40 duration-300 dark:hover:border-zinc-500 transition-all py-8 rounded-xl'>
               <CardContent className='flex flex-col items-center justify-center w-full gap-5'>
                 <Plus className="h-8 w-8 text-zinc-700 dark:text-zinc-300" />

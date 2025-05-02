@@ -95,14 +95,14 @@ const ClientPage = ({
                     <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-10">
                         <h2 className="text-lg font-semibold text-zinc-700 dark:text-zinc-300">No projects yet</h2>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400">Create a new project to get started.</p>
-                        <Link href={`/create/project`}>
+                        <Link href={`/~/create/project`}>
                             <Button className="w-full max-w-xs mt-4">
                                 Create a project
                             </Button>
                         </Link>
                     </div>
                 ) : (
-                    <Link href={`/create/project`}>
+                    <Link href={`/~/create/project`}>
                         <Card className='border-dashed max-w-md flex items-center justify-center cursor-pointer hover:bg-zinc-300/70 dark:hover:bg-zinc-900/40 duration-300 dark:hover:border-zinc-500 transition-all py-8 rounded-xl'>
                             <CardContent className='flex flex-col items-center justify-center w-full gap-5'>
                                 <Plus className="h-8 w-8 text-zinc-700 dark:text-zinc-300" />
