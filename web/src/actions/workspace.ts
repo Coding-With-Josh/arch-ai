@@ -190,6 +190,48 @@ export const acceptWorkspaceInvitation = async (token: string) => {
   }
 };
 
+export const saveWalletToUser = async (wallet: any) => {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized');
+  }
+
+  try {
+      await prisma.user.update({
+        where: {
+          id: session?.user.id
+        },
+        data: {
+          web3Wallets: {
+            upsert: {
+              where: {
+                address: wallet?.walletAddress
+              },
+              create: {
+                address: wallet?.walletAddress,
+                type: "SOLANA",
+                status: "ACTIVE",
+                balance: wallet?.balance
+              },
+              update: {
+                address: wallet?.walletAddress,
+                type: "SOLANA",
+                status: "ACTIVE",
+                balance: wallet?.balance
+              }
+            }
+          }
+        }
+      })
+
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error) {
+    console.error('Error saving wallet:', error);
+    throw new Error('Failed to save wallet');
+  }
+};
+
 export const getWorkspaceById = async (workspaceId: string) => {
   const session = await auth();
   if (!session?.user?.id) {

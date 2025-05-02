@@ -23,7 +23,7 @@ const Sidebar = () => {
       ...item,
       href: `/${params.workspaceSlug}/${params.projectSlug}${item.href.replace('/project', '')}`
     }))
-  } else if (params.workspaceSlug && pathname.includes('/~/')) {
+  } else if (params.workspaceSlug && !params.projectSlug ) {
     // Workspace context - /[workspaceSlug]/~/
     items = workspaceNavItems.map(item => ({
       ...item,
@@ -54,7 +54,7 @@ const Sidebar = () => {
             />
             <span>Arch</span>
           </Link>
-        </div> */}
+        </div> */}    
         {/* <div className="mx-4 flex group mt-4 group-hover:bg-blue-500 items-center rounded-md border dark:border-muted/50 focus-visible:border-zinc-600 px-3 h-9">
           <Search className="mr-2 h-4 w-4 text-xs text-zinc-500 dark:text-zinc-400" />
           <Input

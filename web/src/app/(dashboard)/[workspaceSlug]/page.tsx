@@ -2,6 +2,7 @@ import React from 'react';
 import prisma from '@/lib/prisma';
 import ClientPage from './client-page';
 import { auth } from '@/app/api/auth/[...nextauth]/auth-options';
+import { redirect } from 'next/navigation';
 
 
 export default async function Page({ params }: { params: {workspaceSlug: string} }) {
@@ -35,38 +36,7 @@ export default async function Page({ params }: { params: {workspaceSlug: string}
 
     updateActiveWorkspace();
 
-    const workspace = await prisma.workspace.findUnique({
-        where: {
-            slug: workspaceSlug,
-        },
-        include: {
-            _count: {
-                select: {
-                    projects: true,
-                    memberships: true,
-                    invitations: true,
-                },
-            },
-            projects: true,
-            memberships: {
-                include: {
-                    user: true,
-                },
-            },
-            owner: true,
-            invitations: {
-                include: {
-                    user: true,
-                },
-            },
-        },
-
-    });
-
-
-
-
     return (
-       <ClientPage workspace={workspace} params={params} session={session} />
+    redirect(`/${workspaceSlug}/~/overview`)
     );
 }

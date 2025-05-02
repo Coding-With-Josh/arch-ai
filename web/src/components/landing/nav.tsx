@@ -25,6 +25,36 @@ import { JSX } from "react";
 import Image from "next/image";
 import archLogo from "@/assets/images/brand/arch_logo-transparent-bg.png";
 import { Session } from "next-auth";
+import { createAppKit } from "@reown/appkit/react";
+import { SolanaAdapter } from "@reown/appkit-adapter-solana/react";
+import { solana, solanaTestnet, solanaDevnet } from "@reown/appkit/networks";
+import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
+
+const solanaWeb3JsAdapter = new SolanaAdapter({
+  wallets: [
+
+  ],
+});
+
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "YOUR_PROJECT_ID";
+
+const metadata = {
+  name: "Arch",
+  description: "Arch",
+  url: "https://arch-ai-dev.vercel.app",
+  icons: ["../assets/brand/arch-logo.jpg"],
+};
+
+createAppKit({
+  adapters: [solanaWeb3JsAdapter],
+  networks: [solana, solanaTestnet, solanaDevnet],
+  metadata,
+  projectId,
+  features: {
+    analytics: true,
+  },
+});
+
 
 interface MenuItem {
   title: string;
@@ -36,6 +66,7 @@ interface MenuItem {
 
 interface NavbarProps {
   session: Session | null;
+  activeWorkspace: any
   logo?: {
     url: string;
     src: string;
@@ -57,6 +88,7 @@ interface NavbarProps {
 
 const Navbar = ({
   session,
+  activeWorkspace,
   logo = {
     url: "/",
     src: "../../assets/images/brand/arch_logo-transparent-bg.png",
@@ -262,7 +294,7 @@ const Navbar = ({
               className="relative overflow-hidden bg-zinc-900 text-white hover:bg-zinc-800 focus:ring-2 ring-2 ring-zinc-700 focus:ring-zinc-500 hover:scale-105 px-6 transition-colors duration-300"
             >
               {session ? (
-                <a href="/dashboard">
+                <a href={`/${activeWorkspace.slug}/~/overview`}>
                   <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent ring-2 ring-zinc-700 animate-[shimmer_2s_infinite]" />
                   <span className="relative z-10">Go to app</span>
                 </a>
@@ -297,13 +329,13 @@ const Navbar = ({
                   <SheetHeader>
                     <SheetTitle>
                       <a href={logo.url} className="flex items-center gap-2">
-                      <Image
-                src={archLogo}
-                className="w-8"
-                alt={logo.alt}
-                width={32}
-                height={32}
-              />                        <span className="text-lg font-semibold">
+                        <Image
+                          src={archLogo}
+                          className="w-8"
+                          alt={logo.alt}
+                          width={32}
+                          height={32}
+                        />                        <span className="text-lg font-semibold">
                           {logo.title}
                         </span>
                       </a>
@@ -336,10 +368,17 @@ const Navbar = ({
                         size="sm"
                         className="relative overflow-hidden bg-zinc-900 text-white hover:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 transition-colors duration-300"
                       >
-                        <a href={auth.auth.url}>
-                          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_infinite]" />
-                          <span className="relative z-10">{auth.auth.text}</span>
-                        </a>
+                        {session ? (
+                          <a href={`/${activeWorkspace.slug}/~/overview`}>
+                            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent ring-2 ring-zinc-700 animate-[shimmer_2s_infinite]" />
+                            <span className="relative z-10">Go to app</span>
+                          </a>
+                        ) : (
+                          <a href={auth.auth.url}>
+                            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_infinite]" />
+                            <span className="relative z-10">{auth.auth.text}</span>
+                          </a>
+                        )}
                       </Button>
                     </div>
                   </div>

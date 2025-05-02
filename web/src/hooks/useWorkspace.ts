@@ -8,6 +8,7 @@ import {
   inviteToWorkspace,
   acceptWorkspaceInvitation,
   getWorkspaceById,
+  saveWalletToUser,
 } from '@/actions/workspace';
 import {
   WorkspaceWithMembers,
@@ -17,6 +18,7 @@ import {
   UpdateMemberRoleInput,
 } from '@/types/workspace';
 import { toast } from '@/components/ui/use-toast';
+import prisma from '@/lib/prisma';
 
 export const useWorkspace = () => {
   const [loading, setLoading] = useState(false);
@@ -35,6 +37,16 @@ export const useWorkspace = () => {
     setLoading(false);
     return message;
   };
+
+  const saveWallet = useCallback(async (wallet: any) => {
+    setLoading(true);
+    setError(null);
+    try {
+      saveWalletToUser(wallet)
+    } catch (err) {
+      return handleError(err);
+    }
+  }, []);
 
   const createNewWorkspace = useCallback(async (input: CreateWorkspaceInput) => {
     setLoading(true);
@@ -105,6 +117,8 @@ export const useWorkspace = () => {
     setError(null);
   }, []);
 
+
+
   return {
     loading,
     error,
@@ -114,6 +128,7 @@ export const useWorkspace = () => {
     inviteToWorkspace: inviteMember,
     acceptInvitation,
     getWorkspace: fetchWorkspace,
+    saveWallet,
     clearWorkspace,
     clearError,
   };
