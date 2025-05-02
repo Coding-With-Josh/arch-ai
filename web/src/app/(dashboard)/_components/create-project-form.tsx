@@ -602,120 +602,120 @@ export function CreateProjectForm({
 
                     {/* Step 5: Review */}
                     {step === 5 && (
-  <div className="space-y-6">
-    <div className="relative">
-      <div className="absolute right-3 top-3 z-10">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-xs text-muted-foreground hover:text-primary"
-          onClick={() => {
-            navigator.clipboard.writeText(
-              JSON.stringify(
-                {
-                  name: form.getValues("name"),
-                  slug: form.getValues("slug"),
-                  description: form.getValues("description") || "None",
-                  projectType: form.getValues("projectType") === "HACKATHON" 
-                    ? "Hackathon" 
-                    : "Standard",
-                  timeline: form.getValues("startDate")
-                    ? `${format(form.getValues("startDate"), "PPP")} to ${format(
-                        form.getValues("endDate"),
-                        "PPP"
-                      )}`
-                    : "Not specified",
-                  ...(isHackathon && {
-                    hackathonDetails: {
-                      hackathonName: form.getValues("hackathonDetails.hackathonName") || "None",
-                      registrationDeadline: form.getValues("hackathonDetails.registrationDeadline")
-                        ? format(
-                            form.getValues("hackathonDetails.registrationDeadline"),
-                            "PPP"
-                          )
-                        : "Not specified",
-                      categories: hackathonCategories.length > 0 
-                        ? hackathonCategories 
-                        : "None",
-                    },
-                  }),
-                  milestones: milestones.length > 0
-                    ? milestones.map((m: any, i: number) => ({
-                        milestone: i + 1,
-                        name: m.name,
-                        dueDate: format(m.dueDate, "PPP"),
-                        ...(m.isHackathonPhase && { phaseType: m.phaseType }),
-                      }))
-                    : "None",
-                },
-                null,
-                2
-              )
-            );
-            toast({
-              title: "Copied to clipboard",
-              description: "Project configuration copied",
-            });
-          }}
-        >
-          <Copy className="h-4 w-4 mr-1" />
-          Copy Config
-        </Button>
-      </div>
-      
-      <div className="bg-[#1E1E1E] rounded-lg p-4 overflow-auto max-h-[500px]">
-        <pre className="text-sm font-mono">
-          <code className="language-json">
-            {JSON.stringify(
-              {
-                "✨ Project": {
-                  name: form.getValues("name"),
-                  slug: form.getValues("slug"),
-                  description: form.getValues("description") || "None",
-                  type: form.getValues("projectType") === "HACKATHON" 
-                    ? "Hackathon" 
-                    : "Standard",
-                  timeline: form.getValues("startDate")
-                    ? `${format(form.getValues("startDate"), "PPP")} → ${format(
-                        form.getValues("endDate"),
-                        "PPP"
-                      )}`
-                    : "Not specified",
-                },
-                ...(isHackathon && {
-                  "🏆 Hackathon": {
-                    name: form.getValues("hackathonDetails.hackathonName") || "None",
-                    "📅 Registration": form.getValues(
-                      "hackathonDetails.registrationDeadline"
-                    )
-                      ? format(
-                          form.getValues("hackathonDetails.registrationDeadline"),
-                          "PPP"
-                        )
-                      : "Not specified",
-                    "🏷️ Categories": hackathonCategories.length > 0 
-                      ? hackathonCategories 
-                      : "None",
-                  },
-                }),
-                "⏱️ Milestones": milestones.length > 0
-                  ? milestones.map((m: any, i: number) => ({
-                      "#": i + 1,
-                      "📌 Name": m.name,
-                      "📅 Due": format(m.dueDate, "PPP"),
-                      ...(m.isHackathonPhase && { "🚩 Phase": m.phaseType }),
-                    }))
-                  : "None",
-              },
-              null,
-              2
-            )}
-          </code>
-        </pre>
-      </div>
-    </div>
-    </div>
-)}
+                        <div className="space-y-6">
+                            <div className="relative">
+                                <div className="absolute right-3 top-3 z-10">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-xs text-muted-foreground hover:text-primary"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(
+                                                JSON.stringify(
+                                                    {
+                                                        name: form.getValues("name"),
+                                                        slug: form.getValues("slug"),
+                                                        description: form.getValues("description") || "None",
+                                                        projectType: form.getValues("projectType") === "HACKATHON"
+                                                            ? "Hackathon"
+                                                            : "Standard",
+                                                        timeline: form.getValues("startDate")
+                                                            ? `${format(form.getValues("startDate"), "PPP")} to ${format(
+                                                                form.getValues("endDate"),
+                                                                "PPP"
+                                                            )}`
+                                                            : "Not specified",
+                                                        ...(isHackathon && {
+                                                            hackathonDetails: {
+                                                                hackathonName: form.getValues("hackathonDetails.hackathonName") || "None",
+                                                                registrationDeadline: form.getValues("hackathonDetails.registrationDeadline")
+                                                                    ? format(
+                                                                        form.getValues("hackathonDetails.registrationDeadline"),
+                                                                        "PPP"
+                                                                    )
+                                                                    : "Not specified",
+                                                                categories: hackathonCategories.length > 0
+                                                                    ? hackathonCategories
+                                                                    : "None",
+                                                            },
+                                                        }),
+                                                        milestones: milestones.length > 0
+                                                            ? milestones.map((m: any, i: number) => ({
+                                                                milestone: i + 1,
+                                                                name: m.name,
+                                                                dueDate: format(m.dueDate, "PPP"),
+                                                                ...(m.isHackathonPhase && { phaseType: m.phaseType }),
+                                                            }))
+                                                            : "None",
+                                                    },
+                                                    null,
+                                                    2
+                                                )
+                                            );
+                                            toast({
+                                                title: "Copied to clipboard",
+                                                description: "Project configuration copied",
+                                            });
+                                        }}
+                                    >
+                                        <Copy className="h-4 w-4 mr-1" />
+                                        Copy Config
+                                    </Button>
+                                </div>
+
+                                <div className="bg-[#1E1E1E] rounded-lg p-4 overflow-auto max-h-[500px]">
+                                    <pre className="text-sm font-mono">
+                                        <code className="language-json">
+                                            {JSON.stringify(
+                                                {
+                                                    "✨ Project": {
+                                                        name: form.getValues("name"),
+                                                        slug: form.getValues("slug"),
+                                                        description: form.getValues("description") || "None",
+                                                        type: form.getValues("projectType") === "HACKATHON"
+                                                            ? "Hackathon"
+                                                            : "Standard",
+                                                        timeline: form.getValues("startDate")
+                                                            ? `${format(form.getValues("startDate"), "PPP")} → ${format(
+                                                                form.getValues("endDate"),
+                                                                "PPP"
+                                                            )}`
+                                                            : "Not specified",
+                                                    },
+                                                    ...(isHackathon && {
+                                                        "🏆 Hackathon": {
+                                                            name: form.getValues("hackathonDetails.hackathonName") || "None",
+                                                            "📅 Registration": form.getValues(
+                                                                "hackathonDetails.registrationDeadline"
+                                                            )
+                                                                ? format(
+                                                                    form.getValues("hackathonDetails.registrationDeadline"),
+                                                                    "PPP"
+                                                                )
+                                                                : "Not specified",
+                                                            "🏷️ Categories": hackathonCategories.length > 0
+                                                                ? hackathonCategories
+                                                                : "None",
+                                                        },
+                                                    }),
+                                                    "⏱️ Milestones": milestones.length > 0
+                                                        ? milestones.map((m: any, i: number) => ({
+                                                            "#": i + 1,
+                                                            "📌 Name": m.name,
+                                                            "📅 Due": format(m.dueDate, "PPP"),
+                                                            ...(m.isHackathonPhase && { "🚩 Phase": m.phaseType }),
+                                                        }))
+                                                        : "None",
+                                                },
+                                                null,
+                                                2
+                                            )}
+                                        </code>
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* <div className="flex gap-4">
               {step > 1 && (
