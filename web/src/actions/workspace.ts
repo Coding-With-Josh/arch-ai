@@ -195,29 +195,32 @@ export const saveWalletToUser = async (wallet: any) => {
   if (!session?.user?.id) {
     throw new Error('Unauthorized');
   }
+  
+  // Destructure wallet properties safely
+  const { walletAddress, balance } = JSON.parse(JSON.stringify(wallet));
 
   try {
       await prisma.user.update({
         where: {
-          id: session?.user.id
+          id: session.user.id
         },
         data: {
           web3Wallets: {
             upsert: {
               where: {
-                address: wallet?.walletAddress
+                address: walletAddress
               },
               create: {
-                address: wallet?.walletAddress,
+                address: walletAddress,
                 type: "SOLANA",
                 status: "ACTIVE",
-                balance: wallet?.balance
+                balance: balance
               },
               update: {
-                address: wallet?.walletAddress,
+                address: walletAddress,
                 type: "SOLANA",
                 status: "ACTIVE",
-                balance: wallet?.balance
+                balance: balance
               }
             }
           }

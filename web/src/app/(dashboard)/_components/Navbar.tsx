@@ -72,12 +72,12 @@ const Navbar = ({ session, workspaces }: { session: Session | null, workspaces: 
     balance: connection?.getBalance
   }
 
-  useEffect(() => {
-    connection && saveWallet(wallet)
-  }, [wallet])
+  // useEffect(() => {
+  //   connection && saveWallet(wallet)
+  // }, [wallet])
   
 
-  connection && saveWallet(wallet)
+  // connection && saveWallet(wallet)
 
   return (
     // <header className="sticky top-0 z-10 w-full h-14 items-center gap-4 border-b bg-background px-6 lg:h-[50px] flex">
@@ -237,18 +237,25 @@ const Navbar = ({ session, workspaces }: { session: Session | null, workspaces: 
 
       {/* Right section - Actions and user */}
       <div className="flex items-center gap-1.5">
-        {/* <appkit-connect-button/> */}
         {connection ? (
+            <appkit-account-button />
+        ):(
+          <appkit-connect-button size="sm" loadingLabel="Connecting" label="Connect a wallet" />
+
+        )}
+        {/* {connection ? (
           <Button variant="ghost" size="sm" className="h-6 px-2.5 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50" onClick={() => open}>
             {address?.toString()}
           </Button>) : (
-          <Button variant="ghost" size="sm" className="h-6 px-2.5 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50" onClick={() => open}>
-            Connect wallet
-          </Button>
+          // <Button variant="ghost" size="sm" className="h-6 px-2.5 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50" onClick={() => open}>
+          //   Connect wallet
+          // </Button>
+          <appkit-connect-button size="sm" />
         )}
+          */}
         <Button variant="ghost" size="sm" className="h-6 px-2.5 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50">
           Feedback
-        </Button>
+        </Button> 
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
