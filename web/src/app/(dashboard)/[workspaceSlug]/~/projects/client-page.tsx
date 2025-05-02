@@ -50,7 +50,7 @@ const ClientPage = ({
                 </div>
 
                 {currentWorkspace.projects.map((project: any) => (
-                    <Link href={`/${currentWorkspace.slug}/projects/${project.id}`} key={project.id}>
+                    <Link href={`/${currentWorkspace.slug}/${project.slug}`} key={project.id}>
                         <Card className="hover:shadow-lg transition-all cursor-pointer relative rounded-2xl py-4 dark:hover:bg-zinc-900/30 border-zinc-200 dark:border-zinc-900 bg-white dark:bg-zinc-900/10 shadow-sm border hover:border-zinc-300 dark:hover:border-zinc-800">
                             <div className="absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
                                 <MoreVertical className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
@@ -78,11 +78,11 @@ const ClientPage = ({
                                 <div className="flex justify-between text-sm text-zinc-500 dark:text-zinc-400">
                                     <div className="flex items-center">
                                         <FolderOpen className="mr-1 h-4 w-4" />
-                                        <span>{project.studios.length} studios</span>
+                                        <span>{project._count.studios} studios</span>
                                     </div>
                                     <div className="flex items-center">
                                         <Users className="mr-1 h-4 w-4" />
-                                        <span>{project.editors.length} editors</span>
+                                        <span>{project._count.editors} editors</span>
                                     </div>
                                 </div>
                             </CardContent>
@@ -91,7 +91,7 @@ const ClientPage = ({
                 ))} 
 
 
-                {currentWorkspace.projects.length === 0 ? (
+                {currentWorkspace._count.project === 0 ? (
                     <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-10">
                         <h2 className="text-lg font-semibold text-zinc-700 dark:text-zinc-300">No projects yet</h2>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400">Create a new project to get started.</p>

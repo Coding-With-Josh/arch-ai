@@ -16,8 +16,18 @@ const Page = async ({ params }: { params: { workspaceSlug: string } }) => {
                     projects: true,
                 },
             },
-            projects: true,
-
+            projects: {
+                include: {
+                    editors: true,
+                    studios: true,
+                    _count: {
+                        select: {
+                            editors: true,
+                            studios: true,
+                        },
+                    },
+                },
+            },
         },
         orderBy: {
             createdAt: 'desc'
