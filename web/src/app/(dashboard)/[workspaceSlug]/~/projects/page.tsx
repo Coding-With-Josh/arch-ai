@@ -33,6 +33,7 @@ const Page = async ({ params }: { params: { workspaceSlug: string } }) => {
             createdAt: 'desc'
         }
     });
+    
 
     const currentMembership = await prisma.workspaceMembership.findFirst({
         where: {

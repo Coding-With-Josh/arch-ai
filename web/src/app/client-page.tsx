@@ -73,7 +73,7 @@ export default function Home({ session, activeWorkspace }: { session: any, activ
         {/* CTA button */}
         <div className="flex justify-center">
           {session ? (
-            <Link href={`/${activeWorkspace.slug}`} className="mt-[-20px] w-fit md:w-52 z-20 tracking-tighter text-center rounded-md text-md bg-gradient-to-br from-zinc-100 to-zinc-200 px-4 py-2 text-lg text-black ring-4 ring-zinc-700/90 ring-offset-4 ring-offset-zinc-100 transition-all hover:scale-[1.02] hover:ring-transparent active:scale-[0.98] active:ring-zinc-500/70 flex items-center justify-center gap-2 cursor-pointer">
+            <Link href="/~/choose-workspace" className="mt-[-20px] w-fit md:w-52 z-20 tracking-tighter text-center rounded-md text-md bg-gradient-to-br from-zinc-100 to-zinc-200 px-4 py-2 text-lg text-black ring-4 ring-zinc-700/90 ring-offset-4 ring-offset-zinc-100 transition-all hover:scale-[1.02] hover:ring-transparent active:scale-[0.98] active:ring-zinc-500/70 flex items-center justify-center gap-2 cursor-pointer">
               Continue
             </Link>
           ) : (

@@ -1,6 +1,5 @@
 import React from 'react';
 import prisma from '@/lib/prisma';
-import ClientPage from './client-page';
 import { auth } from '@/app/api/auth/[...nextauth]/auth-options';
 import { redirect } from 'next/navigation';
 

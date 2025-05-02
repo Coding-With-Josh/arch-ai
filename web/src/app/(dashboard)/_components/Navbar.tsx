@@ -229,9 +229,7 @@ const Navbar = ({ session, workspaces }: { session: Session | null, workspaces: 
           </div>
         </Button>
         {isCommandCenterVisible && (
-          <div className="absolute left-0 top-full mt-1 w-full z-10">
             <CommandCenter />
-          </div>
         )}
       </div>
 

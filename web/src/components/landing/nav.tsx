@@ -296,7 +296,7 @@ const Navbar = ({
             >
               {session ? (
                 <a href={
-                  activeWorkspace ? `/${activeWorkspace.slug}` : "/~/choose-workspace"
+                  "/~/choose-workspace"
                 }>
                   <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent ring-2 ring-zinc-700 animate-[shimmer_2s_infinite]" />
                   <span className="relative z-10">Go to app</span>
@@ -373,9 +373,7 @@ const Navbar = ({
                         className="relative overflow-hidden bg-zinc-900 text-white hover:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 transition-colors duration-300"
                       >
                         {session ? (
-                          <a href={
-                            activeWorkspace ? `/${activeWorkspace.slug}` : "/~/choose-workspace"
-                          }>
+                          <a href="/~/choose-workspace">
                             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent ring-2 ring-zinc-700 animate-[shimmer_2s_infinite]" />
                             <span className="relative z-10">Go to app</span>
                           </a>
