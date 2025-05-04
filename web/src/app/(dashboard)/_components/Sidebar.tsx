@@ -8,6 +8,7 @@ import { NavItem, navItems, projectNavItems, workspaceNavItems } from "../data/n
 import { Input } from "@/components/ui/input"
 import { useParams, usePathname } from "next/navigation"
 import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
 
 const Sidebar = () => {
   const pathname = usePathname()
@@ -72,14 +73,18 @@ const Sidebar = () => {
               <Link
                 key={item.name}
                 className={cn(
-                  "flex items-center gap-3 text-xs rounded-lg px-3 py-2 text-zinc-500 transition-all hover:bg-zinc-200/50 duration-300",
+                  "relative flex items-center gap-3 text-xs rounded-lg px-3 py-2 text-zinc-500 transition-all hover:bg-zinc-200/50 duration-300",
                   "dark:text-zinc-400 dark:hover:bg-zinc-800/50",
                   isActive(item.href) && "bg-zinc-200 hover:bg-zinc-200 text-zinc-900 dark:bg-zinc-800 dark:hover:bg-zinc-800 dark:text-zinc-50"
                 )}
                 href={item.href}
+                aria-disabled={item.isComingSoon}
               >
                 <item.icon className="h-4 w-4" />
                 {item.name}
+                {item.isComingSoon && (
+                                  <Badge variant={"outline"} className="absolute right-2">Coming Soon</Badge>
+                )}
               </Link>
             ))}
           </nav>

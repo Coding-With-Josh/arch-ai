@@ -4,6 +4,7 @@ export type NavItem = {
     name: string;
     icon: React.ComponentType<any>;
     href: string;
+    isComingSoon?: boolean
 };
 
 export const navItems: NavItem[] = [
@@ -76,7 +77,8 @@ export const projectNavItems: NavItem[] = [
     {
         name: "Studios",
         icon: Boxes,
-        href: "/project/studios"
+        href: "/project/studios",
+        isComingSoon: true,
     },
     {
         name: "Editors",
@@ -86,7 +88,8 @@ export const projectNavItems: NavItem[] = [
     {
         name: "Integrations",
         icon: ShoppingCart,
-        href: "/project/integrations"
+        href: "/project/integrations",
+        isComingSoon: true,
     },
     {
         name: "Analytics",
@@ -96,7 +99,8 @@ export const projectNavItems: NavItem[] = [
     {
         name: "APIs",
         icon: Trees,
-        href: "/project/apis"
+        href: "/project/apis",
+        isComingSoon: true,
     },
     {
         name: "Settings",
