@@ -40,19 +40,21 @@ async function HomeLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
-  let activeWorkspace;
-  if (session) {
-    const userWithWorkspaces = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: {
-        workspaces: {
-          orderBy: { updatedAt: 'desc' },
-          take: 1,
-        },
-      },
-    });
-    activeWorkspace = userWithWorkspaces?.workspaces[0];
-  }
+  // let activeWorkspace;
+  // if (session) {
+  //   const userWithWorkspaces = await prisma.user.findUnique({
+  //     where: { id: session.user.id },
+  //     include: {
+  //       workspaces: {
+  //         orderBy: { updatedAt: 'desc' },
+  //         take: 1,
+  //       },
+  //     },
+  //   });
+  //   activeWorkspace = userWithWorkspaces?.workspaces[0];
+  // }
+
+  const activeWorkspace = "test"
 
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden">
