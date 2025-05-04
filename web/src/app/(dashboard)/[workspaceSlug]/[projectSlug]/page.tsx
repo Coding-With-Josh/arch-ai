@@ -1,10 +1,8 @@
-const Page = async ({ params}: { params: { projectSlug: string }}) => {
-    const {projectSlug} = await params
-    return (
-        <div>
-            <h1>{projectSlug}</h1>
-        </div>
-    );
+import { redirect } from "next/navigation";
+
+const Page = async ({ params}: { params: { projectSlug: string, workspaceSlug: string}}) => {
+    const {workspaceSlug, projectSlug} = await params
+    return redirect(`/${workspaceSlug}/${projectSlug}/overview`);
 };
 
 export default Page;

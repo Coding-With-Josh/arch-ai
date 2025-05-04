@@ -72,7 +72,7 @@ export const projectNavItems: NavItem[] = [
     {
         name: "Overview",
         icon: Home,
-        href: "/project"
+        href: "/project/overview"
     },
     {
         name: "Studios",

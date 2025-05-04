@@ -184,10 +184,10 @@ const ClientPage = ({
 
             <div className='grid grid-cols-2 w-full gap-4 mt-10'>
                 <Card className='px-6 pt-7 animate-in fade-in-50 slide-in-from-bottom-10'>
-                    <CardTitle>Workspace details</CardTitle>
+                    {/* <CardTitle>Workspace details</CardTitle>
                     <CardDescription className='text-xs mt-1.5'>
                         {canEdit ? "Manage your workspace details." : "View your workspace details."}
-                    </CardDescription>
+                    </CardDescription> */}
                     <CardContent className='py-6 px-0'>
                         <form onSubmit={handleSubmit} className='flex flex-col gap-5'>
                             <div className='flex flex-col gap-2'>

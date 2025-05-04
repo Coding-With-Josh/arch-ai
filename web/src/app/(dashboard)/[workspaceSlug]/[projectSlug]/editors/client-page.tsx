@@ -29,12 +29,12 @@ const ClientPage = ({
     return (
         <div className="flex flex-col gap-4">
             <div className='flex flex-col'>
-                <h1 className="text-lg font-semibold">Project overview</h1>
+                <h1 className="text-lg font-semibold">Project analytics</h1>
                 {currentWorkspace.ownerId === session?.user.id || (currentMembership.role === "OWNER" || currentMembership.role === "ADMIN") ?
                     (
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400">Get an overview of your project.</p>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400">Get an extensive analysis of your project.</p>
                     ) : (
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400">You are a member of this project. Have an overview of the project.</p>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400">You are a member of this project. Have an extensive analysis of the project.</p>
                     )}
                 <div className='flex items-center justify-center gap-3'>
                     <div className="flex items-center justify-center gap-2 mt-5">
