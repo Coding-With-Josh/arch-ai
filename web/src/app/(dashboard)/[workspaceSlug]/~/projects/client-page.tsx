@@ -102,7 +102,7 @@ const ClientPage = ({
                     </div>
                 ) : (
                     <Link href={`/~/create/project`}>
-                        <Card className='border-dashed max-w-[34rem] flex items-center justify-center cursor-pointer hover:bg-zinc-300/70 dark:hover:bg-zinc-900/40 duration-300 dark:hover:border-zinc-500 transition-all py-10 rounded-xl'>
+                        <Card className='border-dashed max-w-md flex items-center justify-center cursor-pointer hover:bg-zinc-300/70 dark:hover:bg-zinc-900/40 duration-300 dark:hover:border-zinc-500 transition-all py-8 rounded-xl'>
                             <CardContent className='flex flex-col items-center justify-center w-full gap-5'>
                                 <Plus className="h-8 w-8 text-zinc-700 dark:text-zinc-300" />
                                 <h2 className="text-lg font-semibold text-zinc-700 dark:text-zinc-300">Create a new project</h2>
