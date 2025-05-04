@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { languageTag } from '@/paraglide/runtime.js';
 import { Wrapper } from './wrapper';
 
+
 export const generateMetadata = (): Metadata => ({
   metadataBase: new URL(siteConfig.url()),
   title: {

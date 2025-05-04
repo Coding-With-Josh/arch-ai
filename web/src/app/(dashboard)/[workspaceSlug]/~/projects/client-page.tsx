@@ -48,11 +48,12 @@ const ClientPage = ({
                         <Badge className="text-xs px-2 py-[3px] min-w-fit max-w-32 rounded-full bg-zinc-200/70 border-zinc-200 text-zinc-700 dark:text-gray-300 cursor-pointer dark:hover:bg-zinc-900/40 hover:bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800/30 gap-2"><span className="size-[0.45rem] bg-purple-700 rounded-full" />{currentWorkspace.name}</Badge>
                     </Link>
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                 {currentWorkspace.projects.map((project: any) => (
-                    <Link href={`/${currentWorkspace.slug}/projects/${project.id}`} key={project.id}>
-                        <Card className="hover:shadow-lg transition-all cursor-pointer relative rounded-2xl py-4 dark:hover:bg-zinc-900/30 border-zinc-200 dark:border-zinc-900 bg-white dark:bg-zinc-900/10 shadow-sm border hover:border-zinc-300 dark:hover:border-zinc-800">
-                            <div className="absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
+                    <Link href={`/${currentWorkspace.slug}/${project.slug}`} key={project.id}>
+                        <Card className="max-w-[34rem] hover:shadow-lg transition-all cursor-pointer relative rounded-2xl py-4 dark:hover:bg-zinc-900/30 border-zinc-200 dark:border-zinc-900 bg-white dark:bg-zinc-900/10 shadow-sm border hover:border-zinc-300 dark:hover:border-zinc-800">
+                            <div className="absolute top-4 right-4 hover:bg-muted px-[0.35rem] py-[0.45rem] rounded-md transition-all" onClick={(e) => e.stopPropagation()}>
                                 <MoreVertical className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                             </div>
                             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
@@ -74,24 +75,22 @@ const ClientPage = ({
                                 </div>
                                 {/* {getRoleBadge(project)} */}
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className='pt-3'>
                                 <div className="flex justify-between text-sm text-zinc-500 dark:text-zinc-400">
                                     <div className="flex items-center">
                                         <FolderOpen className="mr-1 h-4 w-4" />
-                                        <span>{project.studios.length} studios</span>
+                                        <span>{project._count.studios} studios</span>
                                     </div>
                                     <div className="flex items-center">
                                         <Users className="mr-1 h-4 w-4" />
-                                        <span>{project.editors.length} editors</span>
+                                        <span>{project._count.editors} editors</span>
                                     </div>
                                 </div>
                             </CardContent>
                         </Card>
                     </Link>
-                ))} 
-
-
-                {currentWorkspace.projects.length === 0 ? (
+                ))}
+                {currentWorkspace._count.project === 0 ? (
                     <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-10">
                         <h2 className="text-lg font-semibold text-zinc-700 dark:text-zinc-300">No projects yet</h2>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400">Create a new project to get started.</p>
@@ -111,6 +110,9 @@ const ClientPage = ({
                         </Card>
                     </Link>
                 )}
+                </div>
+
+
 
 
 

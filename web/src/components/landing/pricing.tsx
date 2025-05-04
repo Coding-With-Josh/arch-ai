@@ -34,6 +34,7 @@ const PricingSection = () => {
         "Custom Domain Support",
         "GitHub Integration"
       ],
+      "standout": true,
       "specialGradient": true
     },
     {
@@ -108,9 +109,15 @@ const PricingCard = ({ plan }: { plan: any }) => {
           </Link>
         ) : (
           <Link href="#" passHref>
+           {plan.standout ? (
+            <button className="mt-4 w-full font-geist tracking-tighter text-center rounded-md text-md bg-gradient-to-br from-zinc-400 to-zinc-700 px-4 py-2 text-lg text-zinc-50 ring-2 ring-zinc-500/50 ring-offset-2 ring-offset-zinc-950 transition-all hover:scale-[1.02] hover:ring-transparent active:scale-[0.98] active:ring-zinc-500/70 flex items-center justify-center gap-2">
+              Buy Now
+            </button>
+           ) : ( 
             <button className="mt-4 w-full font-geist tracking-tighter text-center rounded-md text-md bg-gradient-to-br from-neutral-400 to-neutral-700 px-4 py-2 text-lg text-zinc-50 ring-2 ring-neutral-500/50 ring-offset-2 ring-offset-zinc-950 transition-all hover:scale-[1.02] hover:ring-transparent active:scale-[0.98] active:ring-neutral-500/70 flex items-center justify-center gap-2">
               Buy Now
             </button>
+           )}
           </Link>
         )}
       </div>

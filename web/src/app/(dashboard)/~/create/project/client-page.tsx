@@ -82,7 +82,7 @@ export const ClientPage = ({
             });
 
             // Redirect to the new project
-            router.push(`/${workspaceSlug}/${newProject}`);
+            router.push(`/${workspaceSlug}/${newProject.slug}`);
             setSuccess(true);
         } catch (error: any) {
             console.error("Project creation error:", error);

@@ -2,10 +2,10 @@ import { auth } from "@/app/api/auth/[...nextauth]/auth-options";
 import ClientPage from "./client-page";
 import prisma from "@/lib/prisma";
 
-const Page = async ({ params }: { params: { workspaceSlug: string } }) => {
+const Page = async ({ params }: { params: { workspaceSlug: string, projectSlug: string } }) => {
 
     const session = await auth()
-    const { workspaceSlug } = await params;
+    const { workspaceSlug, projectSlug } = await params;
     const currentWorkspace = await prisma.workspace.findFirst({
         where: {
             slug: workspaceSlug,
@@ -16,24 +16,31 @@ const Page = async ({ params }: { params: { workspaceSlug: string } }) => {
                     projects: true,
                 },
             },
-            projects: {
-                include: {
-                    editors: true,
-                    studios: true,
-                    _count: {
-                        select: {
-                            editors: true,
-                            studios: true,
-                        },
-                    },
-                },
-            },
+            projects: true,
+
         },
         orderBy: {
             createdAt: 'desc'
         }
     });
-    
+    const currentProject = await prisma.project.findFirst({
+        where: {
+            slug: projectSlug,
+        },
+        include: {
+            _count: {
+                select: {
+                    editors: true,
+                    studios: true,
+                    milestones: true
+                }
+            },
+            editors: true,
+            studios: true,
+        }
+
+    })
+
 
     const currentMembership = await prisma.workspaceMembership.findFirst({
         where: {
@@ -44,7 +51,7 @@ const Page = async ({ params }: { params: { workspaceSlug: string } }) => {
 
 
     return (
-        <ClientPage params={params} currentWorkspace={currentWorkspace} session={session} currentMembership={currentMembership} />
+        <ClientPage params={params} currentWorkspace={currentWorkspace} session={session} currentMembership={currentMembership} currentProject={currentProject} />
     );
 };
 

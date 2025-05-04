@@ -24,23 +24,16 @@ function ClientLayout({
     children: React.ReactNode, session: Session | null, workspaces: any
 }) {
 
-    const tabs = [
-        { label: "Home", id: "home", href: "/" },
-        { label: "About", id: "about", href: "/about" },
-        { label: "Contact", id: "contact", href: "/contact" },
-    ];
-
-    const { tabProps } = useTabs({ tabs });
 
     const pathname = usePathname()
-    // const isCreatePage = pathname === "/~/create/workspace" || "/~/create/project"
-    const isCreatePage = pathname === "/~/create/workspace"
+    const isCreatePage = pathname === "/~/create/workspace" || "/~/create/project"
+    // const isCreatePage = pathname === "/~/create/workspace"
     const isChoosePage = pathname === "/~/choose-workspace"
 
     return (
         <div className="min-h-screen overflow-x-hidden">
             <CommandCenter />
-            {!session && (  
+            {!session && (
                 <div className='flex items-center justify-center h-screen w-screen z-[5000]'>
                     <Dialog open>
                         <DialogContent

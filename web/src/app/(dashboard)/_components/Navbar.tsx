@@ -19,11 +19,46 @@ import Image from "next/image"
 import { Session } from "next-auth"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CommandCenter } from "./command"
+import { useAppKit, useAppKitAccount, useWalletInfo } from "@reown/appkit/react"
+import { createAppKit } from "@reown/appkit/react";
+import { SolanaAdapter, useAppKitConnection } from "@reown/appkit-adapter-solana/react";
+import { solana, solanaTestnet, solanaDevnet } from "@reown/appkit/networks";
+import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
+import { useWorkspace } from "@/hooks/useWorkspace"
+
+const solanaWeb3JsAdapter = new SolanaAdapter({
+  wallets: [
+
+  ],
+});
+
+const projectId = "e9023d2f88fbf472c48e4e2be75c48aa";
+
+const metadata = {
+  name: "Arch",
+  description: "Arch",
+  url: "https://arch-ai-dev.vercel.app",
+  icons: ["../assets/brand/arch-logo.jpg"],
+};
+
+createAppKit({
+  adapters: [solanaWeb3JsAdapter],
+  networks: [solana, solanaTestnet, solanaDevnet],
+  metadata,
+  projectId,
+  features: {
+    analytics: true,
+  },
+});
 
 const Navbar = ({ session, workspaces }: { session: Session | null, workspaces: any }) => {
+  const { open } = useAppKit()
+  const { connection } = useAppKitConnection()
+  const { address } = useAppKitAccount()
   const { theme, setTheme } = useTheme()
+  const { saveWallet } = useWorkspace()
   const [isCommandCenterVisible, setIsCommandCenterVisible] = useState(false)
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean)
@@ -31,6 +66,19 @@ const Navbar = ({ session, workspaces }: { session: Session | null, workspaces: 
     const pathname = usePathname();
     return pathname.split("/").filter(Boolean);
   };
+
+  const wallet = {
+    address,
+    balance: connection?.getBalance
+  }
+
+  // useEffect(() => {
+  //   connection && saveWallet(wallet)
+  // }, [wallet])
+  
+
+  // connection && saveWallet(wallet)
+
   return (
     // <header className="sticky top-0 z-10 w-full h-14 items-center gap-4 border-b bg-background px-6 lg:h-[50px] flex">
     //   <div className="flex-1 text-zinc-300/80 text-xs first-letter:uppercase font-semibold flex items-center gap-2">
@@ -152,19 +200,19 @@ const Navbar = ({ session, workspaces }: { session: Session | null, workspaces: 
             ))}
 
             <Separator className="my-1 bg-zinc-300 dark:bg-zinc-700" />
-            <DropdownMenuItem className="px-2 py-1 text-xs hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50">
-              <Link href={"/~/create/workspace"} className="flex items-center gap-2">
+            <Link href={"/~/create/workspace"} className="px-2 py-1 text-xs hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50">
+              <DropdownMenuItem className="flex items-center gap-2">
                 <Plus className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                 <span className="text-zinc-800 dark:text-zinc-200">Create new</span>
-              </Link>
-            </DropdownMenuItem>
+              </DropdownMenuItem>
+            </Link>
           </DropdownMenuContent>
         </DropdownMenu>
 
       </div>
 
       {/* Center section - Search */}
-      <div className="flex-1 max-w-xl mx-4 relative">
+      <div className="flex-1 max-w-xl mx-4 relative lg:flex hidden">
         <Button
           variant="outline"
           className="w-full h-8 px-3 bg-white dark:bg-zinc-900 border-muted/70 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 flex items-center justify-between"
@@ -181,14 +229,32 @@ const Navbar = ({ session, workspaces }: { session: Session | null, workspaces: 
           </div>
         </Button>
         {isCommandCenterVisible && (
-          <div className="absolute left-0 top-full mt-1 w-full z-10">
             <CommandCenter />
-          </div>
         )}
       </div>
 
       {/* Right section - Actions and user */}
       <div className="flex items-center gap-1.5">
+        {connection ? (
+          <div className="lg:flex hidden">
+            <appkit-account-button />
+          </div>
+        ):(
+          <div className="lg:flex hidden">
+            <appkit-connect-button size="sm" loadingLabel="Connecting" label="Connect a wallet" />
+          </div>
+
+        )}
+        {/* {connection ? (
+          <Button variant="ghost" size="sm" className="h-6 px-2.5 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50" onClick={() => open}>
+            {address?.toString()}
+          </Button>) : (
+          // <Button variant="ghost" size="sm" className="h-6 px-2.5 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50" onClick={() => open}>
+          //   Connect wallet
+          // </Button>
+          <appkit-connect-button size="sm" />
+        )}
+          */}
         <Button variant="ghost" size="sm" className="h-6 px-2.5 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50">
           Feedback
         </Button>
