@@ -21,85 +21,77 @@ function ClientLayout({
     children,
     workspaces
 }: {
-    children: React.ReactNode, session: Session | null, workspaces: any
+    children: React.ReactNode, 
+    session: Session | null, 
+    workspaces: any
 }) {
-
-
     const pathname = usePathname()
-    const isCreatePage = pathname === "/~/create/workspace" || "/~/create/project"
-    // const isCreatePage = pathname === "/~/create/workspace"
+    const isCreatePage = pathname === "/~/create/workspace" || pathname === "/~/create/project"
     const isChoosePage = pathname === "/~/choose-workspace"
 
-    return (
-        <div className="min-h-screen overflow-x-hidden">
-            <CommandCenter />
-            {!session && (
-                <div className='flex items-center justify-center h-screen w-screen z-[5000]'>
-                    <Dialog open>
-                        <DialogContent
-                            className="sm:max-w-[500px] border-zinc-800 bg-zinc-900/90 backdrop-blur-sm"
-                        >
-                            <DialogHeader>
-                                <DialogTitle className="text-xl text-zinc-100">Not Authenticated</DialogTitle>
-                                <p className="text-sm text-zinc-400">
-                                    You are not authenticated. Please sign in to continue.
-                                </p>
-                            </DialogHeader>
-                            <SignInButton />
-                        </DialogContent>
-                    </Dialog>
-                </div>
-            )}
-            {/* {workspaceCount === 0 && typeof window !== 'undefined' && window.location.pathname === "/dashboard/workspaces/create" && (
-                <div className='flex items-center justify-center h-screen w-screen z-[5000]'>
+    // Debugging logs (remove in production)
+    console.log('Rendering ClientLayout', {
+        session,
+        pathname,
+        isCreatePage,
+        isChoosePage
+    })
+
+    if (!session) {
+        return (
+            <div className='flex items-center justify-center h-screen w-screen z-[5000]'>
                 <Dialog open>
-                    <DialogContent
-                        className="sm:max-w-[500px] border-zinc-800 bg-zinc-900/90 backdrop-blur-sm"
-                    >
+                    <DialogContent className="sm:max-w-[500px] border-zinc-800 bg-zinc-900/90 backdrop-blur-sm">
                         <DialogHeader>
-                            <DialogTitle className="text-xl text-zinc-100">No Workspaces</DialogTitle>
+                            <DialogTitle className="text-xl text-zinc-100">Not Authenticated</DialogTitle>
                             <p className="text-sm text-zinc-400">
-                                You do not have any workspaces. Please create one to continue.
+                                You are not authenticated. Please sign in to continue.
                             </p>
                         </DialogHeader>
-                        <Button>
-                           <Link href="/dashboard/workspaces/create">Create Workspace</Link>
-                        </Button>
+                        <SignInButton />
                     </DialogContent>
                 </Dialog>
-                </div>
-            )} */}
-            {isCreatePage && session ? (
-                <div className="flex min-h-screen w-screen bg-background overflow-hidden">
-                    {children}
-                </div>
-            ) : (
-                <div className="flex flex-col min-h-screen w-screen bg-background !overflow-hidden">
-                    {/* Navbar at the top */}
-                    <Navbar session={session} workspaces={workspaces} />
+            </div>
+        )
+    }
 
-                    {/* Main content area with sidebar and content */}
-                    <div className="flex flex-1 overflow-hidden">
-                        {isChoosePage ? null : <Sidebar />}
+    if (isCreatePage) {
+        return (
+            <div className="flex min-h-screen w-screen bg-background overflow-hidden">
+                {children}
+            </div>
+        )
+    }
 
-                        {/* Content area */}
-                        <div className="flex-1 overflow-auto">
-                            <main className="flex flex-1 flex-col gap-4 p-4 w-full md:gap-8 md:p-6 overflow-y-scroll">
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.5 }}
-                                    className="flex flex-col gap-4"
-                                >
-                                    {children}
-                                </motion.div>
-                            </main>
-                        </div>
-                    </div>
+    return (
+        <div className="flex flex-col min-h-screen w-screen bg-background overflow-hidden">
+            {/* Always show Navbar for authenticated users except on create pages */}
+            <Navbar session={session} workspaces={workspaces} />
+
+            {/* Main content area */}
+            <div className="flex flex-1 overflow-hidden">
+                {/* Show Sidebar unless on choose page */}
+                {!isChoosePage && <Sidebar />}
+
+                {/* Content area */}
+                <div className="flex-1 overflow-auto">
+                    <main className="flex flex-1 flex-col gap-4 p-4 w-full md:gap-8 md:p-6 overflow-y-auto">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                            className="flex flex-col gap-4"
+                        >
+                            {children}
+                        </motion.div>
+                    </main>
                 </div>
-            )}
+            </div>
+            
+            {/* Command center (assuming this should always be available) */}
+            <CommandCenter />
         </div>
-    );
-};
+    )
+}
 
-export default ClientLayout;
+export default ClientLayout
