@@ -54,11 +54,11 @@ async function HomeLayout({
   //   activeWorkspace = userWithWorkspaces?.workspaces[0];
   // }
 
-  const activeWorkspace = "test"
+  // const activeWorkspace = "test"
 
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden">
-      <Navbar session={session} activeWorkspace={activeWorkspace} />
+      <Navbar session={session} />
       {children}
       <Footer />
     </div>

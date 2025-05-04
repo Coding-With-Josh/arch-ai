@@ -67,7 +67,6 @@ interface MenuItem {
 
 interface NavbarProps {
   session: Session | null;
-  activeWorkspace: any
   logo?: {
     url: string;
     src: string;
@@ -89,7 +88,6 @@ interface NavbarProps {
 
 const Navbar = ({
   session,
-  activeWorkspace,
   logo = {
     url: "/",
     src: "../../assets/images/brand/arch_logo-transparent-bg.png",
