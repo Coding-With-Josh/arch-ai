@@ -1,36 +1,50 @@
 "use client";
 
-import { Blog } from "@/components/landing/blog";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { ChevronRightIcon } from "lucide-react";
 import Faq from "@/components/landing/faq";
 import FeaturesGrid from "@/components/landing/features-grid";
-import { Footer } from "@/components/landing/footer";
-import { Hero } from "@/components/landing/hero";
-import LastCta from "@/components/landing/last-cta";
-// import LastCta from "@/components/landing/last-cta";
-import { Navbar } from "@/components/landing/nav";
 import OpenSource from "@/components/landing/open-source";
-import Particles from "@/components/landing/particles";
 import Pricing from "@/components/landing/pricing";
-import { SessionCheck } from "@/components/landing/session-check";
-import { UserDropdown } from "@/components/navbar/user-dropdown";
-import { ChevronRight, ChevronRightIcon, Twitter } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 
+export default function Home({ session }: { session: any }) {
+  // Typewriter effect state
+  const [currentText, setCurrentText] = useState("dApps");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [loopNum, setLoopNum] = useState(0);
+  const [typingSpeed, setTypingSpeed] = useState(150);
+  const textArray = ["dApps", "DAOs", "DeFi Apps"];
 
-export default function Home({ session, activeWorkspace }: { session: any, activeWorkspace: any }) {
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    const handleType = () => {
+      const i = loopNum % textArray.length;
+      const fullText = textArray[i];
+      
+      if (isDeleting) {
+        setCurrentText(fullText.substring(0, currentText.length - 1));
+        setTypingSpeed(20);
+      } else {
+        setCurrentText(fullText.substring(0, currentText.length + 1));
+        setTypingSpeed(20);
+      }
+
+      if (!isDeleting && currentText === fullText) {
+        timer = setTimeout(() => setIsDeleting(true), 800);
+      } else if (isDeleting && currentText === "") {
+        setIsDeleting(false);
+        setLoopNum(loopNum + 1);
+        setTypingSpeed(50);
+      }
+    };
+
+    timer = setTimeout(handleType, typingSpeed);
+    return () => clearTimeout(timer);
+  }, [currentText, isDeleting, loopNum, textArray]);
 
   return (
     <div className="overflow-x-hidden">
-      {/* <div className="flex flex-col items-center justify-start w-screen h-screen overflow-x-hidden bg-black/30">
-        <div className="hidden w-screen h-px animate-glow md:block animate-fade-left bg-gradient-to-r from-zinc-300/0 via-zinc-300/20 to-zinc-300/0" />
-        */}
-      {/* <Particles
-          className="absolute inset-0 -z-10 animate-fade-in"
-          quantity={100}
-        />  */}
-
       <section
         id="hero"
         className="relative mx-auto w-full pt-40 px-6 text-center md:px-8 min-h-[calc(100vh-40px)] overflow-hidden bg-[linear-gradient(to_bottom,#fff,#ffffff_50%,#e8e8e8_88%)] dark:bg-[linear-gradient(to_bottom,#000,#0000_30%,#898e8e_78%,#ffffff_99%_50%)] rounded-b-xl"
@@ -51,7 +65,8 @@ export default function Home({ session, activeWorkspace }: { session: any, activ
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path d="m13.063 9 3.495 4.475L20.601 9h2.454l-5.359 5.931L24 23h-4.938l-3.866-4.893L10.771 23H8.316l5.735-6.342L8 9h5.063Zm-.74 1.347h-1.457l8.875 11.232h1.36l-8.778-11.232Z" />
-              </svg>            <span className="text-zinc-900/80 dark:text-zinc-200/60 select-none">
+              </svg>
+              <span className="text-zinc-900/80 dark:text-zinc-200/60 select-none">
                 We're joining the Colosseum Breakout Hacakthon...
               </span>
               <ChevronRightIcon className="h-2.5 w-2.5 text-foreground" />
@@ -59,9 +74,16 @@ export default function Home({ session, activeWorkspace }: { session: any, activ
           </div>
         </Link>
 
-        {/* Main heading */}
+        {/* Main heading with typewriter effect */}
         <h1 className="text-balance bg-gradient-to-br from-black from-30% to-black/40 bg-clip-text py-6 text-5xl font-semibold leading-none tracking-tighter text-transparent sm:text-6xl md:text-7xl lg:text-8xl dark:from-white dark:to-white/40">
-          <span className="text-edge-outline dark:text-edge-outline-dark whitespace-normal bg-gradient-to-t from-zinc-700/40 via-zinc-500/20 to-zinc-100 bg-clip-text text-transparent">Arch</span> is a new way of<br className="hidden md:block" /> creating software
+          <span className="text-edge-outline dark:text-edge-outline-dark whitespace-normal bg-gradient-to-t from-zinc-700/40 via-zinc-500/20 to-zinc-100 bg-clip-text text-transparent">
+            Ship{" "}
+            <span className="relative">
+              <span className="text-white">{currentText}</span>
+              {/* <span className="absolute -right-2 top-4 h-20 w-1.5 bg-white animate-pulse"></span> */}
+            </span>{" "}
+            in days <br/>not months
+          </span>
         </h1>
 
         {/* Subheading */}
@@ -81,49 +103,16 @@ export default function Home({ session, activeWorkspace }: { session: any, activ
               Get Started
             </Link>
           )}
-
         </div>
 
         {/* Animation container */}
         <div className="animate-fade-up relative mt-32 opacity-0 [--animation-delay:400ms] [perspective:2000px] after:absolute after:inset-0 after:z-50 after:[background:linear-gradient(to_top,hsl(var(--background))_10%,transparent)]"></div>
       </section>
-      {/* <div className="w-full flex items-center justify-center">
-          {session ? (
-            <UserDropdown session={session} />
-          ) : (
-            <a
-              href={"/auth"}
-              className="font-display2 rounded-2xl text-md mt-5 px-6 py-3 border-2 bg-gradient-to-tr from-zinc-600/40 via-transparent to-transparent text-zinc-200/40 flex justify-center items-center border-zinc-900/20"
-            >
-              <span className="relative flex items-center">
-                <Particles
-                  className="absolute inset-0 -z-10 animate-fade-in"
-                  quantity={100}
-                />
-                Auth
-              </span>
-            </a>
-          )}
-        </div> */}
-      {/* <div ref={imageRef} className={` px-10 w-screen ${inView ? "flex items-center justify-center" : ""}`}>
-          <Image
-            src={require("@/assets/images/ui/dash-ui-transparent-bg.png")}
-            alt="Dash-ui"
-            className="w-4/5 transition-all rounded-xl duration-500 hover:scale-105"
-            style={{
-              transform: inView ? "none" : "perspective(1000px) rotateX(30deg) rotateY(720deg)",
-              opacity: 0.5,
-            }}
-          />
-        </div> */}
+      {/* ... rest of your components ... */}
       <FeaturesGrid />
       <Pricing />
-      {/* <Blog/> */}
       <Faq />
-
       <OpenSource />
-      {/* <LastCta/> */}
     </div>
-    // </div>
   );
 }

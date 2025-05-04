@@ -110,7 +110,7 @@ const PricingCard = ({ plan }: { plan: any }) => {
         ) : (
           <Link href="#" passHref>
            {plan.standout ? (
-            <button className="mt-4 w-full font-geist tracking-tighter text-center rounded-md text-md bg-gradient-to-br from-indigo-400 to-blue-700 px-4 py-2 text-lg text-zinc-50 ring-2 ring-blue-500/50 ring-offset-2 ring-offset-blue-950 transition-all hover:scale-[1.02] hover:ring-transparent active:scale-[0.98] active:ring-blue-500/70 flex items-center justify-center gap-2">
+            <button className="mt-4 w-full font-geist tracking-tighter text-center rounded-md text-md bg-gradient-to-br from-zinc-400 to-zinc-700 px-4 py-2 text-lg text-zinc-50 ring-2 ring-zinc-500/50 ring-offset-2 ring-offset-zinc-950 transition-all hover:scale-[1.02] hover:ring-transparent active:scale-[0.98] active:ring-zinc-500/70 flex items-center justify-center gap-2">
               Buy Now
             </button>
            ) : ( 
