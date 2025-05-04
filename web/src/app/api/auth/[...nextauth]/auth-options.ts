@@ -41,7 +41,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
       // If coming from auth flow
       if (pathname === '/' || pathname === '/auth') {
-        return `${baseUrl}/choose-workspace`;
+        return `${baseUrl}/~/choose-workspace`;
       }
 
       // Otherwise, ensure the redirect URL stays on the same domain

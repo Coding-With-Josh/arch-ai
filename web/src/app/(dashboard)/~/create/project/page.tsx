@@ -1,4 +1,3 @@
-import { ClientPage } from "./client-page";
 import { auth } from "@/app/api/auth/[...nextauth]/auth-options";
 import Shell from "./shell";
 

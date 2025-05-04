@@ -153,7 +153,7 @@ const Navbar = ({ session, workspaces }: { session: Session | null, workspaces: 
 
             <Separator className="my-1 bg-zinc-300 dark:bg-zinc-700" />
             <DropdownMenuItem className="px-2 py-1 text-xs hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50">
-              <Link href={"/create/workspace"} className="flex items-center gap-2">
+              <Link href={"/~/create/workspace"} className="flex items-center gap-2">
                 <Plus className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                 <span className="text-zinc-800 dark:text-zinc-200">Create new</span>
               </Link>
