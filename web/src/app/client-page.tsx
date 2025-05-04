@@ -24,10 +24,10 @@ export default function Home({ session }: { session: any }) {
       
       if (isDeleting) {
         setCurrentText(fullText.substring(0, currentText.length - 1));
-        setTypingSpeed(20);
+        setTypingSpeed(80);
       } else {
         setCurrentText(fullText.substring(0, currentText.length + 1));
-        setTypingSpeed(20);
+        setTypingSpeed(80);
       }
 
       if (!isDeleting && currentText === fullText) {
@@ -35,7 +35,7 @@ export default function Home({ session }: { session: any }) {
       } else if (isDeleting && currentText === "") {
         setIsDeleting(false);
         setLoopNum(loopNum + 1);
-        setTypingSpeed(50);
+        setTypingSpeed(200);
       }
     };
 
