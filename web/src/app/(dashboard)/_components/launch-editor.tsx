@@ -17,7 +17,7 @@ export function EditorDialog({
     <Dialog>
       <DialogTrigger asChild>
         {isEmptyState ? (
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button size="sm" className="gap-2">
             <Plus className="h-4 w-4" />
             Launch Editor
           </Button>
@@ -31,10 +31,10 @@ export function EditorDialog({
         )}
       </DialogTrigger>
       <DialogContent
-        className="sm:max-w-[500px] border-zinc-800 bg-zinc-900/90 backdrop-blur-sm"
+        className="sm:max-w-[500px] bg-white/90 dark:border-zinc-800 dark:bg-zinc-900/90 backdrop-blur-sm"
       >
         <DialogHeader>
-          <DialogTitle className="text-xl text-zinc-100">Launch New Editor</DialogTitle>
+          <DialogTitle className="text-xl">Launch New Editor</DialogTitle>
           <p className="text-sm text-zinc-400">
             Set up a new editor to start building your decentralized applications.
           </p>

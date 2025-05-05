@@ -79,7 +79,7 @@ export default function Home({ session }: { session: any }) {
           <span className="text-edge-outline dark:text-edge-outline-dark whitespace-normal bg-gradient-to-t from-zinc-700/40 via-zinc-500/20 to-zinc-100 bg-clip-text text-transparent">
             Ship{" "}
             <span className="relative">
-              <span className="text-white">{currentText}</span>
+              <span className="dark:text-white text-black">{currentText}</span>
               {/* <span className="absolute -right-2 top-4 h-20 w-1.5 bg-white animate-pulse"></span> */}
             </span>{" "}
             in days <br/>not months

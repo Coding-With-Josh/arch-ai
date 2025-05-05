@@ -31,8 +31,8 @@ const ClientPage = ({
 }: ClientPageProps) => {
 
     return (
-        <div className="flex flex-col gap-4">
-            <div className='flex flex-col'>
+        <div className="flex flex-col gap-4 justify-start">
+            <div className='flex justify-start flex-col'>
                 <h1 className="text-lg font-semibold">Editors</h1>
                 {currentWorkspace.ownerId === session?.user.id || (currentMembership.role === "OWNER" || currentMembership.role === "ADMIN") ?
                     (
@@ -40,16 +40,14 @@ const ClientPage = ({
                     ) : (
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">You are a member of this project. Get all the editors in the project.</p>
                     )}
-                <div className='flex items-center justify-center gap-3'>
-                    <div className="flex items-center justify-center gap-2 mt-5">
-                        <Link href={`/${currentWorkspace.slug}`} className="">
-                            <Badge className="text-xs px-2 py-[3px] min-w-fit max-w-32 rounded-full bg-zinc-200/70 border-zinc-200 text-zinc-700 dark:text-gray-300 cursor-pointer dark:hover:bg-zinc-900/40 hover:bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800/30 gap-2"><span className="size-[0.45rem] bg-purple-700 vgt rounded-full" />{currentWorkspace.name}</Badge>
-                        </Link>
-                        <Slash className="h-2.5 w-2.5 text-zinc-500 dark:text-zinc-600 rotate-12" />
-                        <Link href={`/${currentWorkspace.slug}/${currentProject.slug}`} className="">
-                            <Badge className="text-xs px-2 py-[3px] min-w-fit max-w-32 rounded-full bg-zinc-200/70 border-zinc-200 text-zinc-700 dark:text-gray-300 cursor-pointer dark:hover:bg-zinc-900/40 hover:bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800/30 gap-2"><span className="size-[0.45rem] bg-yellow-600 rounded-full" />{currentProject.name}</Badge>
-                        </Link>
-                    </div>
+                <div className="flex items-center justify-start gap-2 mt-5">
+                    <Link href={`/${currentWorkspace.slug}`} className="">
+                        <Badge className="text-xs px-2 py-[3px] min-w-fit max-w-32 rounded-full bg-zinc-200/70 border-zinc-200 text-zinc-700 dark:text-gray-300 cursor-pointer dark:hover:bg-zinc-900/40 hover:bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800/30 gap-2"><span className="size-[0.45rem] bg-purple-700 vgt rounded-full" />{currentWorkspace.name}</Badge>
+                    </Link>
+                    <Slash className="h-2.5 w-2.5 text-zinc-500 dark:text-zinc-600 rotate-12" />
+                    <Link href={`/${currentWorkspace.slug}/${currentProject.slug}`} className="">
+                        <Badge className="text-xs px-2 py-[3px] min-w-fit max-w-32 rounded-full bg-zinc-200/70 border-zinc-200 text-zinc-700 dark:text-gray-300 cursor-pointer dark:hover:bg-zinc-900/40 hover:bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800/30 gap-2"><span className="size-[0.45rem] bg-yellow-600 rounded-full" />{currentProject.name}</Badge>
+                    </Link>
                 </div>
             </div>
 
@@ -57,7 +55,7 @@ const ClientPage = ({
                 {currentProject.editors.map((editor: Editor) => (
                     <Link href={`/${currentWorkspace.slug}/${currentProject.slug}/editors/${editor.slug}`}>
                         <div className='flex flex-col'>
-                            <div className="h-64 w-32 bg-black"></div>
+                            <div className="h-72 w- hover:opacity-95 transition-all bg-black"></div>
                             <div className="flex items-center justify-between text-sm">
                                 <div className='flex flex-col gap-2'>
                                     <h2 className="text-sm font-semibold">{editor.name}</h2>
@@ -96,10 +94,10 @@ const ClientPage = ({
                 <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-10">
                     <h2 className="text-lg font-semibold text-zinc-700 dark:text-zinc-300">No editors yet</h2>
                     <p className="text-sm text-zinc-500 dark:text-zinc-400">Launch an editor to get started.</p>
-                    <EditorDialog projectId={currentProject.id} />
+                    <EditorDialog projectId={currentProject.id} isEmptyState />
                 </div>
             ) : (
-                <EditorDialog projectId={currentProject.id} isEmptyState/>
+                <EditorDialog projectId={currentProject.id} />
             )}
 
 

@@ -7,7 +7,7 @@ import { Session } from 'next-auth';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Slash } from 'lucide-react';
-import { Card, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 type ClientPageProps = {
     params: {
@@ -28,7 +28,7 @@ const ClientPage = ({
 
     return (
         <div className="flex flex-col gap-4">
-            <div className='flex flex-col'>
+            <div className='flex flex-col justify-start'>
                 <h1 className="text-lg font-semibold">Project overview</h1>
                 {currentWorkspace.ownerId === session?.user.id || (currentMembership.role === "OWNER" || currentMembership.role === "ADMIN") ?
                     (
@@ -36,16 +36,14 @@ const ClientPage = ({
                     ) : (
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">You are a member of this project. Have an overview of the project.</p>
                     )}
-                <div className='flex items-center justify-center gap-3'>
-                    <div className="flex items-center justify-center gap-2 mt-5">
-                        <Link href={`/${currentWorkspace.slug}`} className="">
-                            <Badge className="text-xs px-2 py-[3px] min-w-fit max-w-32 rounded-full bg-zinc-200/70 border-zinc-200 text-zinc-700 dark:text-gray-300 cursor-pointer dark:hover:bg-zinc-900/40 hover:bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800/30 gap-2"><span className="size-[0.45rem] bg-purple-700 vgt rounded-full" />{currentWorkspace.name}</Badge>
-                        </Link>
-                        <Slash className="h-2.5 w-2.5 text-zinc-500 dark:text-zinc-600 rotate-12" />
-                        <Link href={`/${currentWorkspace.slug}/${currentProject.slug}`} className="">
-                            <Badge className="text-xs px-2 py-[3px] min-w-fit max-w-32 rounded-full bg-zinc-200/70 border-zinc-200 text-zinc-700 dark:text-gray-300 cursor-pointer dark:hover:bg-zinc-900/40 hover:bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800/30 gap-2"><span className="size-[0.45rem] bg-yellow-600 rounded-full" />{currentProject.name}</Badge>
-                        </Link>
-                    </div>
+                <div className="flex items-center justify-start gap-2 mt-5">
+                    <Link href={`/${currentWorkspace.slug}`} className="">
+                        <Badge className="text-xs px-2 py-[3px] min-w-fit max-w-32 rounded-full bg-zinc-200/70 border-zinc-200 text-zinc-700 dark:text-gray-300 cursor-pointer dark:hover:bg-zinc-900/40 hover:bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800/30 gap-2"><span className="size-[0.45rem] bg-purple-700 vgt rounded-full" />{currentWorkspace.name}</Badge>
+                    </Link>
+                    <Slash className="h-2.5 w-2.5 text-zinc-500 dark:text-zinc-600 rotate-12" />
+                    <Link href={`/${currentWorkspace.slug}/${currentProject.slug}`} className="">
+                        <Badge className="text-xs px-2 py-[3px] min-w-fit max-w-32 rounded-full bg-zinc-200/70 border-zinc-200 text-zinc-700 dark:text-gray-300 cursor-pointer dark:hover:bg-zinc-900/40 hover:bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-800/30 gap-2"><span className="size-[0.45rem] bg-yellow-600 rounded-full" />{currentProject.name}</Badge>
+                    </Link>
                 </div>
             </div>
 
@@ -54,30 +52,24 @@ const ClientPage = ({
                 <>
                     <Card className="flex flex-col">
                         <CardHeader>
-                            <h2 className="text-lg font-semibold">Editors</h2>
+                            <h2 className="text-xl font-bold">5</h2>
                         </CardHeader>
-                        <div className="p-4">
-                            <div className="flex justify-between">
-                                <span className="text-sm font-medium">Total Editors</span>
-                                <span className="text-sm">5</span>
-                            </div>
-                        </div>
+
+                        <CardContent className="text-sm font-medium">Total Editors</CardContent>
+
                     </Card>
                     <Card className="flex flex-col">
                         <CardHeader>
-                            <h2 className="text-lg font-semibold">Deployments</h2>
+                            <h2 className="text-xl font-bold">5</h2>
                         </CardHeader>
-                        <div className="p-4">
-                            <div className="flex justify-between">
-                                <span className="text-sm font-medium">Total Deployments</span>
-                                <span className="text-sm">3</span>
-                            </div>
-                        </div>
+
+                        <CardContent className="text-sm font-medium">Total Deployments</CardContent>
+
                     </Card>
                 </>
 
                 {/* Timeline Card */}
-                <Card className="flex flex-col">
+                <Card className="flex flex-col min-w-fit px-6">
                     <CardHeader>
                         <h2 className="text-lg font-semibold">Timeline</h2>
                     </CardHeader>
@@ -110,7 +102,7 @@ const ClientPage = ({
                                     description: 'Introduction of new modules, interactive features, and extended integrations.'
                                 }
                             ].map((event, index) => (
-                                <li key={index} className="mb-6 ml-6 relative">
+                                <li key={index} className="mb-6 ml-10 relative">
                                     <span className="absolute flex items-center justify-center w-4 h-4 bg-purple-600 rounded-full -left-2 ring-8 ring-white dark:ring-gray-900 dark:bg-purple-400">
                                         <span className="absolute inline-flex w-4 h-4 bg-purple-600 rounded-full opacity-75 animate-ping"></span>
                                     </span>
