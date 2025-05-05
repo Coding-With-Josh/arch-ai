@@ -6,8 +6,12 @@ import { redirect } from 'next/navigation';
 import { Session } from 'next-auth';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { Slash } from 'lucide-react';
-import { Card, CardHeader } from '@/components/ui/card';
+import { MoreVertical, Plus, Slash } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Editor } from '@prisma/client';
+import { Button } from '@/components/ui/button';
+import { LaunchEditorForm } from '@/app/(dashboard)/_components/launch-editor-form';
+import { EditorDialog } from '@/app/(dashboard)/_components/launch-editor';
 
 type ClientPageProps = {
     params: {
@@ -23,18 +27,18 @@ const ClientPage = ({
     session,
     currentWorkspace,
     currentMembership,
-    currentProject
+    currentProject,
 }: ClientPageProps) => {
 
     return (
         <div className="flex flex-col gap-4">
             <div className='flex flex-col'>
-                <h1 className="text-lg font-semibold">Project analytics</h1>
+                <h1 className="text-lg font-semibold">Editors</h1>
                 {currentWorkspace.ownerId === session?.user.id || (currentMembership.role === "OWNER" || currentMembership.role === "ADMIN") ?
                     (
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400">Get an extensive analysis of your project.</p>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400">Get all the editors in your project.</p>
                     ) : (
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400">You are a member of this project. Have an extensive analysis of the project.</p>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400">You are a member of this project. Get all the editors in the project.</p>
                     )}
                 <div className='flex items-center justify-center gap-3'>
                     <div className="flex items-center justify-center gap-2 mt-5">
@@ -49,84 +53,54 @@ const ClientPage = ({
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
-                {/* Stats Card */}
-                <>
-                    <Card className="flex flex-col">
-                        <CardHeader>
-                            <h2 className="text-lg font-semibold">Editors</h2>
-                        </CardHeader>
-                        <div className="p-4">
-                            <div className="flex justify-between">
-                                <span className="text-sm font-medium">Total Editors</span>
-                                <span className="text-sm">5</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {currentProject.editors.map((editor: Editor) => (
+                    <Link href={`/${currentWorkspace.slug}/${currentProject.slug}/editors/${editor.slug}`}>
+                        <div className='flex flex-col'>
+                            <div className="h-64 w-32 bg-black"></div>
+                            <div className="flex items-center justify-between text-sm">
+                                <div className='flex flex-col gap-2'>
+                                    <h2 className="text-sm font-semibold">{editor.name}</h2>
+                                    <h2 className="text-sm font-semibold text-muted-foreground">
+                                        {(() => {
+                                            const diff = Date.now() - new Date(editor.updatedAt).getTime();
+                                            const seconds = Math.floor(diff / 1000);
+                                            const minutes = Math.floor(diff / (1000 * 60));
+                                            const hours = Math.floor(diff / (1000 * 60 * 60));
+                                            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                                            const weeks = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
+                                            if (seconds < 60) {
+                                                return `Viewed ${seconds} seconds ago`;
+                                            } else if (minutes < 60) {
+                                                return `Viewed ${minutes} minutes ago`;
+                                            } else if (hours < 24) {
+                                                return `Viewed ${hours} hours ago`;
+                                            } else if (days < 7) {
+                                                return `Viewed ${days} days ago`;
+                                            } else {
+                                                return `Viewed ${weeks} weeks ago`;
+                                            }
+                                        })()}
+                                    </h2>
+                                </div>
+                                <Button variant={"ghost"}>
+                                    <MoreVertical className="h-4 w-4" />
+                                </Button>
                             </div>
                         </div>
-                    </Card>
-                    <Card className="flex flex-col">
-                        <CardHeader>
-                            <h2 className="text-lg font-semibold">Deployments</h2>
-                        </CardHeader>
-                        <div className="p-4">
-                            <div className="flex justify-between">
-                                <span className="text-sm font-medium">Total Deployments</span>
-                                <span className="text-sm">3</span>
-                            </div>
-                        </div>
-                    </Card>
-                </>
-
-                {/* Timeline Card */}
-                <Card className="flex flex-col">
-                    <CardHeader>
-                        <h2 className="text-lg font-semibold">Timeline</h2>
-                    </CardHeader>
-                    <div className="p-4">
-                        <ul className="relative border-l border-zinc-300 dark:border-zinc-700">
-                            {[
-                                {
-                                    version: 'Version 1.0',
-                                    date: '2023-01-01',
-                                    description: 'Initial release with core features and basic UI components.'
-                                },
-                                {
-                                    version: 'Version 1.1',
-                                    date: '2023-02-15',
-                                    description: 'Bug fixes, minor performance improvements, and usability enhancements.'
-                                },
-                                {
-                                    version: 'Version 2.0',
-                                    date: '2023-05-20',
-                                    description: 'Major feature updates, complete UI overhaul, and improved accessibility.'
-                                },
-                                {
-                                    version: 'Version 2.1',
-                                    date: '2023-07-10',
-                                    description: 'Additional performance tuning and stability improvements.'
-                                },
-                                {
-                                    version: 'Version 3.0',
-                                    date: '2023-09-05',
-                                    description: 'Introduction of new modules, interactive features, and extended integrations.'
-                                }
-                            ].map((event, index) => (
-                                <li key={index} className="mb-6 ml-6 relative">
-                                    <span className="absolute flex items-center justify-center w-4 h-4 bg-purple-600 rounded-full -left-2 ring-8 ring-white dark:ring-gray-900 dark:bg-purple-400">
-                                        <span className="absolute inline-flex w-4 h-4 bg-purple-600 rounded-full opacity-75 animate-ping"></span>
-                                    </span>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sm font-medium">{event.version}</span>
-                                        <span className="text-xs text-zinc-500 dark:text-zinc-400">{event.date}</span>
-                                    </div>
-                                    <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-                                        {event.description}
-                                    </p>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </Card>
+                    </Link>
+                ))}
             </div>
+
+            {currentProject._count.editors === 0 ? (
+                <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-10">
+                    <h2 className="text-lg font-semibold text-zinc-700 dark:text-zinc-300">No editors yet</h2>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">Launch an editor to get started.</p>
+                    <EditorDialog projectId={currentProject.id} />
+                </div>
+            ) : (
+                <EditorDialog projectId={currentProject.id} isEmptyState/>
+            )}
 
 
         </div>
