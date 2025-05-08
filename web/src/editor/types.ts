@@ -6,34 +6,34 @@ type Timestamp = number;
 type HexColor = `#${string}`;
 type URLString = `http://${string}` | `https://${string}`;
 type AssetID = `asset_${UUID}`;
-type EthereumAddress = `0x${string}`;
+type walletAddresses = `0x${string}`;
 type IPFSCid = `Qm${string}` | `bafy${string}`;
 
-interface Position {
+type Position = {
   x: number;
   y: number;
-  z?: number; // For 3D canvas support
-}
+  z?: number;
+};
 
-interface Dimensions {
+type Dimensions = {
   width: number;
   height: number;
-  depth?: number; // For 3D elements
-}
+  depth?: number;
+};
 
-interface Rect {
+type Rect = {
   position: Position;
   dimensions: Dimensions;
-}
+};
 
 /***********************
  * AUTH & COLLABORATION
  ***********************/
-interface User {
+type User = {
   id: UUID;
   auth: {
     email: string;
-    walletAddresses: EthereumAddress[];
+    walletAddresses: walletAddresses[];
     oauthProviders: {
       google?: string;
       github?: string;
@@ -50,9 +50,9 @@ interface User {
   activity: UserActivity[];
   createdAt: Timestamp;
   lastActive: Timestamp;
-}
+};
 
-interface UserPreferences {
+type UserPreferences = {
   ui: {
     theme: 'light' | 'dark' | 'system' | 'oled';
     density: 'compact' | 'normal' | 'spacious';
@@ -71,88 +71,94 @@ interface UserPreferences {
     showRulers: boolean;
   };
   shortcuts: KeyboardShortcut[];
-}
+};
 
-interface UserPermissions {
+type UserPermissions = {
   roles: ('admin' | 'editor' | 'viewer' | 'developer')[];
   projects: {
     id: UUID;
     role: 'owner' | 'collaborator' | 'viewer';
     permissions: ('edit' | 'deploy' | 'share' | 'export')[];
   }[];
-}
+};
 
-interface UserActivity {
+type UserActivity = {
   timestamp: Timestamp;
   type: 'login' | 'project_open' | 'element_create' | 'deployment';
   projectId?: UUID;
   details?: Record<string, any>;
-}
+};
 
 /***********************
- * PROJECT STRUCTURE
+ * EDITOR STRUCTURE
  ***********************/
-interface Project {
+type Editor = {
   id: UUID;
   meta: {
     name: string;
+    slug: string;
     description: string;
     icon: AssetID;
     tags: string[];
     isTemplate: boolean;
     templateId?: UUID;
   };
-  state: ProjectState;
-  versions: ProjectVersion[];
-  collaborators: ProjectCollaborator[];
-  settings: ProjectSettings;
-  environments: ProjectEnvironment[];
+  state: EditorState;
+  versions: EditorVersion[];
+  collaborators: EditorCollaborator[];
+  settings: EditorSettings;
+  environments: EditorEnvironment[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
-}
+};
 
-interface ProjectState {
-  currentVersionId: UUID;
-  publishedVersions: UUID[];
-  draftVersion?: UUID;
-}
-
-interface ProjectVersion {
+type EditorVersion = {
   id: UUID;
   name: string;
   description?: string;
-  snapshot: ProjectSnapshot;
+  snapshot: EditorSnapshot;
   createdBy: UUID;
   createdAt: Timestamp;
-  parentVersionId?: UUID; // For version branching
-}
+  parentVersionId?: UUID;
+};
 
-interface ProjectSnapshot {
+type EditorSnapshot = {
   design: DesignViewState;
   flow: FlowViewState;
-  data: ProjectData;
-}
+  data: EditorData;
+};
 
-interface ProjectData {
+type EditorData = {
   variables: Variable[];
   dataSources: DataSource[];
   content: ContentEntry[];
   i18n: I18nBundle[];
   apiEndpoints: ApiEndpoint[];
-}
+};
 
-interface ProjectCollaborator {
+type EditorCollaborator = {
   userId: UUID;
   role: 'admin' | 'editor' | 'developer' | 'viewer';
   joinedAt: Timestamp;
   lastActive?: Timestamp;
   permissions: string[];
-}
+};
+
+type EditorEnvironment = {
+  id: UUID;
+  name: string;
+  type: 'development' | 'staging' | 'production';
+  config: {
+    apiBaseUrl: string;
+    chainId: number;
+    contractAddresses: Record<string, string>;
+  };
+};
 
 /***********************
  * DESIGN VIEW - CANVAS
  ***********************/
-interface DesignViewState {
+type DesignViewState = {
   canvas: CanvasState;
   elements: DesignElement[];
   selectedElements: UUID[];
@@ -161,9 +167,9 @@ interface DesignViewState {
   viewport: ViewportState;
   guides: Guide[];
   assetOverrides: AssetOverride[];
-}
+};
 
-interface CanvasState {
+type CanvasState = {
   type: '2d' | '3d';
   dimensions: Dimensions;
   background: CanvasBackground;
@@ -172,9 +178,9 @@ interface CanvasState {
   currentBreakpointId: UUID;
   artboards: Artboard[];
   currentArtboardId: UUID;
-}
+};
 
-interface CanvasBackground {
+type CanvasBackground = {
   type: 'color' | 'image' | 'gradient' | 'pattern';
   color?: HexColor;
   image?: AssetID;
@@ -182,35 +188,35 @@ interface CanvasBackground {
   pattern?: CanvasPattern;
   opacity: number;
   blendMode: BlendMode;
-}
+};
 
-type BlendMode = 
+type BlendMode =
   | 'normal' | 'multiply' | 'screen' | 'overlay'
   | 'darken' | 'lighten' | 'color-dodge' | 'color-burn'
   | 'hard-light' | 'soft-light' | 'difference' | 'exclusion'
   | 'hue' | 'saturation' | 'color' | 'luminosity';
 
-interface CanvasGradient {
+type CanvasGradient = {
   type: 'linear' | 'radial' | 'conic';
   stops: GradientStop[];
   rotation?: number;
   position?: Position;
-}
+};
 
-interface GradientStop {
+type GradientStop = {
   position: number;
   color: HexColor;
   opacity?: number;
-}
+};
 
-interface CanvasPattern {
+type CanvasPattern = {
   assetId: AssetID;
   repeat: 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat';
   scale: number;
   position: Position;
-}
+};
 
-interface GridSettings {
+type GridSettings = {
   enabled: boolean;
   size: number;
   subdivisions: number;
@@ -220,9 +226,9 @@ interface GridSettings {
     enabled: boolean;
     strength: number;
   };
-}
+};
 
-interface Breakpoint {
+type Breakpoint = {
   id: UUID;
   name: string;
   minWidth: number;
@@ -230,9 +236,9 @@ interface Breakpoint {
   baseFontSize: number;
   mediaQuery?: string;
   icon: AssetID;
-}
+};
 
-interface Artboard {
+type Artboard = {
   id: UUID;
   name: string;
   position: Position;
@@ -243,19 +249,19 @@ interface Artboard {
     device?: string;
     orientation?: 'portrait' | 'landscape';
   };
-}
+};
 
 /***********************
  * DESIGN ELEMENTS
  ***********************/
-type DesignElement = 
-  | VisualElement 
-  | LayoutElement 
-  | ComponentInstance 
+type DesignElement =
+  | VisualElement
+  | LayoutElement
+  | ComponentInstance
   | SmartContractElement
   | CanvasGroup;
 
-interface VisualElement {
+type VisualElement = {
   id: UUID;
   type: 'rectangle' | 'ellipse' | 'text' | 'image' | 'vector' | 'icon';
   position: Position;
@@ -266,18 +272,18 @@ interface VisualElement {
   parentId?: UUID;
   childrenIds: UUID[];
   meta: ElementMetadata;
-}
+};
 
-interface ElementTransform {
+type ElementTransform = {
   rotation: number;
   skew: {
     x: number;
     y: number;
   };
   origin: Position;
-}
+};
 
-interface ElementStyle {
+type ElementStyle = {
   fills: Paint[];
   borders: Border[];
   shadows: Shadow[];
@@ -287,51 +293,51 @@ interface ElementStyle {
   filters: ElementFilter[];
   clip: ClipSettings;
   overflow: 'visible' | 'hidden' | 'scroll';
-}
+};
 
-interface Paint {
+type Paint = {
   type: 'solid' | 'gradient' | 'image' | 'noise';
   color?: HexColor;
   gradient?: CanvasGradient;
   image?: AssetID;
   opacity: number;
   blendMode: BlendMode;
-}
+};
 
-interface Border {
+type Border = {
   position: 'inside' | 'center' | 'outside';
   thickness: number;
   color: HexColor;
   style: 'solid' | 'dashed' | 'dotted';
   dashPattern?: [number, number];
-}
+};
 
-interface Shadow {
+type Shadow = {
   type: 'drop-shadow' | 'inner-shadow';
   color: HexColor;
   blur: number;
   spread: number;
   offset: Position;
-}
+};
 
-interface ElementEffect {
+type ElementEffect = {
   type: 'blur' | 'glow' | 'background-blur';
   radius: number;
   color?: HexColor;
-}
+};
 
-interface ElementFilter {
+type ElementFilter = {
   type: 'brightness' | 'contrast' | 'saturate' | 'hue-rotate';
   value: number;
-}
+};
 
-interface ClipSettings {
+type ClipSettings = {
   enabled: boolean;
   mode: 'rect' | 'circle' | 'path';
-  path?: string; // SVG path for custom clipping
-}
+  path?: string;
+};
 
-interface LayoutElement {
+type LayoutElement = {
   id: UUID;
   type: 'frame' | 'section' | 'grid' | 'stack';
   layoutMode: 'none' | 'horizontal' | 'vertical' | 'grid';
@@ -343,9 +349,9 @@ interface LayoutElement {
   constraints: LayoutConstraints;
   parentId?: UUID;
   meta: ElementMetadata;
-}
+};
 
-interface LayoutConfig {
+type LayoutConfig = {
   padding: Spacing;
   gap: number;
   itemSpacing?: number;
@@ -353,16 +359,16 @@ interface LayoutConfig {
   gridRows?: number;
   alignment?: 'start' | 'center' | 'end' | 'space-between';
   wrap?: boolean;
-}
+};
 
-interface Spacing {
+type Spacing = {
   top: number;
   right: number;
   bottom: number;
   left: number;
-}
+};
 
-interface ComponentInstance {
+type ComponentInstance = {
   id: UUID;
   type: 'component';
   componentId: UUID;
@@ -375,43 +381,43 @@ interface ComponentInstance {
   parentId?: UUID;
   constraints: LayoutConstraints;
   meta: ElementMetadata;
-}
+};
 
-interface ComponentProps {
+type ComponentProps = {
   [key: string]: PropValue;
-}
+};
 
-type PropValue = 
-  | string 
-  | number 
-  | boolean 
+type PropValue =
+  | string
+  | number
+  | boolean
   | PropValue[]
   | { [key: string]: PropValue }
   | Expression;
 
-interface Expression {
+type Expression = {
   type: 'expression';
-  language: 'javascript' | 'solidity' | 'jsonata';
+  language: 'javascript' | 'rust' | 'jsonata';
   code: string;
   dependencies: string[];
-}
+};
 
-interface ComponentVariant {
+type ComponentVariant = {
   name: string;
   condition: string;
   props: ComponentProps;
-}
+};
 
-interface ComponentOverride {
+type ComponentOverride = {
   targetId: UUID;
   props: ComponentProps;
-}
+};
 
-interface SmartContractElement {
+type SmartContractElement = {
   id: UUID;
   type: 'contract';
-  contractType: 'ethereum' | 'solana' | 'cosmos';
-  address: EthereumAddress;
+  contractType: 'ethereum' | 'solana' | 'sui';
+  address: walletAddresses;
   abi: any;
   methods: ContractMethod[];
   events: ContractEvent[];
@@ -419,28 +425,28 @@ interface SmartContractElement {
   dimensions: Dimensions;
   style: ElementStyle;
   meta: ElementMetadata;
-}
+};
 
-interface ContractMethod {
+type ContractMethod = {
   name: string;
   inputs: ContractParam[];
   outputs: ContractParam[];
   stateMutability: 'pure' | 'view' | 'nonpayable' | 'payable';
-}
+};
 
-interface ContractEvent {
+type ContractEvent = {
   name: string;
   inputs: ContractParam[];
   anonymous: boolean;
-}
+};
 
-interface ContractParam {
+type ContractParam = {
   name: string;
   type: string;
   indexed?: boolean;
-}
+};
 
-interface CanvasGroup {
+type CanvasGroup = {
   id: UUID;
   type: 'group';
   name: string;
@@ -450,12 +456,12 @@ interface CanvasGroup {
   isLocked: boolean;
   isHidden: boolean;
   meta: ElementMetadata;
-}
+};
 
 /***********************
  * FLOW VIEW
  ***********************/
-interface FlowViewState {
+type FlowViewState = {
   nodes: FlowNode[];
   connections: FlowConnection[];
   variables: FlowVariable[];
@@ -471,19 +477,19 @@ interface FlowViewState {
     snapToGrid: boolean;
     gridSize: number;
   };
-}
+};
 
-type FlowNode = 
-  | ContractNode 
-  | FunctionNode 
-  | EventNode 
-  | VariableNode 
-  | ApiNode 
-  | DataNode 
-  | LogicNode 
+type FlowNode =
+  | ContractNode
+  | FunctionNode
+  | EventNode
+  | VariableNode
+  | ApiNode
+  | DataNode
+  | LogicNode
   | UiNode;
 
-interface BaseFlowNode {
+type BaseFlowNode = {
   id: UUID;
   type: string;
   position: Position;
@@ -493,50 +499,50 @@ interface BaseFlowNode {
   style: FlowNodeStyle;
   ports: FlowPort[];
   metadata: FlowNodeMetadata;
-}
+};
 
-interface ContractNode extends BaseFlowNode {
+type ContractNode = BaseFlowNode & {
   type: 'contract';
-  contractAddress: EthereumAddress;
+  contractAddress: walletAddresses;
   network: string;
   abi: any;
   methods: ContractMethodReference[];
   events: ContractEventReference[];
-}
+};
 
-interface ContractMethodReference {
+type ContractMethodReference = {
   name: string;
   nodeId: UUID;
-}
+};
 
-interface ContractEventReference {
+type ContractEventReference = {
   name: string;
   nodeId: UUID;
-}
+};
 
-interface FunctionNode extends BaseFlowNode {
+type FunctionNode = BaseFlowNode & {
   type: 'function';
-  language: 'javascript' | 'typescript' | 'solidity';
+  language: 'javascript' | 'typescript' | 'rust';
   code: string;
   inputs: FlowParam[];
   outputs: FlowParam[];
-}
+};
 
-interface EventNode extends BaseFlowNode {
+type EventNode = BaseFlowNode & {
   type: 'event';
   eventName: string;
   payloadSchema: any;
-}
+};
 
-interface VariableNode extends BaseFlowNode {
+type VariableNode = BaseFlowNode & {
   type: 'variable';
   dataType: 'string' | 'number' | 'boolean' | 'object' | 'array';
   initialValue: any;
   isConstant: boolean;
   scope: 'global' | 'local';
-}
+};
 
-interface ApiNode extends BaseFlowNode {
+type ApiNode = BaseFlowNode & {
   type: 'api';
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   url: string;
@@ -544,53 +550,53 @@ interface ApiNode extends BaseFlowNode {
   queryParams: Record<string, string>;
   body?: any;
   auth?: ApiAuth;
-}
+};
 
-interface ApiAuth {
+type ApiAuth = {
   type: 'none' | 'basic' | 'bearer' | 'apiKey' | 'oauth2';
   config?: any;
-}
+};
 
-interface DataNode extends BaseFlowNode {
+type DataNode = BaseFlowNode & {
   type: 'data';
   operation: 'read' | 'write' | 'query';
   source: 'local' | 'ipfs' | 'arweave' | 'database';
   query?: any;
-}
+};
 
-interface LogicNode extends BaseFlowNode {
+type LogicNode = BaseFlowNode & {
   type: 'logic';
   logicType: 'if' | 'switch' | 'loop' | 'delay' | 'trigger';
   conditions?: LogicCondition[];
   delayMs?: number;
-}
+};
 
-interface LogicCondition {
+type LogicCondition = {
   left: string | Expression;
   operator: '==' | '!=' | '>' | '<' | '>=' | '<=';
   right: string | Expression;
-}
+};
 
-interface UiNode extends BaseFlowNode {
+type UiNode = BaseFlowNode & {
   type: 'ui';
   uiType: 'button' | 'form' | 'input' | 'display';
   elementId?: UUID;
   events: UiEvent[];
-}
+};
 
-interface UiEvent {
+type UiEvent = {
   type: string;
   action: UiAction;
-}
+};
 
-type UiAction = 
+type UiAction =
   | { type: 'navigate', target: string }
   | { type: 'triggerFlow', flowId: UUID }
   | { type: 'callContract', nodeId: UUID }
   | { type: 'setVariable', variableId: UUID, value: any }
   | { type: 'custom', code: string };
 
-interface FlowPort {
+type FlowPort = {
   id: UUID;
   type: 'input' | 'output';
   dataType: string;
@@ -598,15 +604,15 @@ interface FlowPort {
   defaultValue?: any;
   isArray: boolean;
   isOptional: boolean;
-}
+};
 
-interface FlowParam {
+type FlowParam = {
   name: string;
   type: string;
   defaultValue?: any;
-}
+};
 
-interface FlowConnection {
+type FlowConnection = {
   id: UUID;
   source: {
     nodeId: UUID;
@@ -621,34 +627,34 @@ interface FlowConnection {
     created: Timestamp;
     createdBy: UUID;
   };
-}
+};
 
-interface FlowConnectionStyle {
+type FlowConnectionStyle = {
   color: HexColor;
   width: number;
   dashArray: number[];
   animated: boolean;
-}
+};
 
-interface FlowVariable {
+type FlowVariable = {
   id: UUID;
   name: string;
   type: string;
   value: any;
   scope: 'flow' | 'global';
   isConstant: boolean;
-}
+};
 
 /***********************
  * COMPONENT SYSTEM
  ***********************/
-interface ComponentLibrary {
+type ComponentLibrary = {
   components: ComponentDefinition[];
   categories: ComponentCategory[];
   tags: string[];
-}
+};
 
-interface ComponentDefinition {
+type ComponentDefinition = {
   id: UUID;
   name: string;
   description: string;
@@ -664,13 +670,13 @@ interface ComponentDefinition {
   behaviors: ComponentBehavior[];
   examples: ComponentExample[];
   meta: ComponentMetadata;
-}
+};
 
-interface ComponentPropDefinitions {
+type ComponentPropDefinitions = {
   [key: string]: ComponentPropDefinition;
-}
+};
 
-interface ComponentPropDefinition {
+type ComponentPropDefinition = {
   type: PropType;
   defaultValue?: any;
   required?: boolean;
@@ -678,105 +684,105 @@ interface ComponentPropDefinition {
   options?: any[];
   control?: PropControl;
   validation?: PropValidation;
-}
+};
 
-type PropType = 
-  | 'string' | 'number' | 'boolean' 
-  | 'array' | 'object' | 'function' 
-  | 'color' | 'date' | 'asset' 
+type PropType =
+  | 'string' | 'number' | 'boolean'
+  | 'array' | 'object' | 'function'
+  | 'color' | 'date' | 'asset'
   | 'component' | 'enum';
 
-type PropControl = 
-  | 'text' | 'textarea' | 'number' 
-  | 'checkbox' | 'select' | 'radio' 
-  | 'color' | 'date' | 'json' 
-  | 'style' | 'code' | 'range' 
+type PropControl =
+  | 'text' | 'textarea' | 'number'
+  | 'checkbox' | 'select' | 'radio'
+  | 'color' | 'date' | 'json'
+  | 'style' | 'code' | 'range'
   | 'file' | 'component';
 
-interface PropValidation {
+type PropValidation = {
   min?: number;
   max?: number;
   pattern?: string;
   custom?: string;
-}
+};
 
-interface ComponentSlot {
+type ComponentSlot = {
   name: string;
   description?: string;
   allowedComponents?: string[];
   required?: boolean;
   defaultValue?: SlotDefaultValue;
-}
+};
 
-type SlotDefaultValue = 
+type SlotDefaultValue =
   | { type: 'text', content: string }
   | { type: 'component', componentId: UUID }
   | { type: 'elements', elementIds: UUID[] };
 
-interface ComponentStyleDefinitions {
+type ComponentStyleDefinitions = {
   default: ComponentStyleGroup;
   variants: ComponentVariantStyle[];
   states: ComponentStateStyle[];
-}
+};
 
-interface ComponentStyleGroup {
+type ComponentStyleGroup = {
   base: StyleProperties;
   responsive?: Record<string, Partial<StyleProperties>>;
-}
+};
 
-interface ComponentVariantStyle {
+type ComponentVariantStyle = {
   name: string;
   condition: string;
   styles: Partial<StyleProperties>;
-}
+};
 
-interface ComponentStateStyle {
+type ComponentStateStyle = {
   state: 'hover' | 'active' | 'focus' | 'disabled';
   styles: Partial<StyleProperties>;
-}
+};
 
-interface ComponentBehavior {
+type ComponentBehavior = {
   name: string;
   description?: string;
   events: ComponentEventDefinition[];
   actions: ComponentActionDefinition[];
-}
+};
 
-interface ComponentEventDefinition {
+type ComponentEventDefinition = {
   name: string;
   description?: string;
   payloadSchema?: any;
-}
+};
 
-interface ComponentActionDefinition {
+type ComponentActionDefinition = {
   name: string;
   description?: string;
   parameters?: ComponentParamDefinition[];
-}
+};
 
-interface ComponentParamDefinition {
+type ComponentParamDefinition = {
   name: string;
   type: string;
   required?: boolean;
-}
+};
 
-interface ComponentExample {
+type ComponentExample = {
   name: string;
   description?: string;
   props: Record<string, any>;
   slots?: Record<string, SlotExample>;
   styles?: Partial<StyleProperties>;
-}
+};
 
-interface SlotExample {
+type SlotExample = {
   type: 'text' | 'component' | 'elements';
   content: any;
-}
+};
 
 /***********************
  * DESIGN SYSTEM
  ***********************/
-interface DesignSystem {
+type DesignSystem = {
   id: UUID;
   name: string;
   description: string;
@@ -785,9 +791,9 @@ interface DesignSystem {
   components: DesignSystemComponents;
   themes: DesignSystemTheme[];
   meta: DesignSystemMetadata;
-}
+};
 
-interface DesignTokens {
+type DesignTokens = {
   colors: ColorPalette;
   typography: TypographyScale;
   spacing: SpacingScale;
@@ -797,9 +803,9 @@ interface DesignTokens {
   opacity: OpacityScale;
   zIndex: ZIndexScale;
   animations: AnimationPresets;
-}
+};
 
-interface ColorPalette {
+type ColorPalette = {
   primary: ColorGroup;
   secondary: ColorGroup;
   accent: ColorGroup;
@@ -809,9 +815,9 @@ interface ColorPalette {
   danger: ColorGroup;
   info: ColorGroup;
   [key: string]: ColorGroup;
-}
+};
 
-interface ColorGroup {
+type ColorGroup = {
   base: HexColor;
   50?: HexColor;
   100?: HexColor;
@@ -823,105 +829,104 @@ interface ColorGroup {
   700?: HexColor;
   800?: HexColor;
   900?: HexColor;
-}
+};
 
-interface TypographyScale {
+type TypographyScale = {
   fontFamilies: Record<string, string>;
   fontWeights: Record<string, number>;
   fontSizes: Record<string, string>;
   lineHeights: Record<string, number>;
   letterSpacing: Record<string, string>;
   textStyles: Record<string, TextStyle>;
-}
+};
 
-interface TextStyle {
+type TextStyle = {
   fontFamily: string;
   fontWeight: number;
   fontSize: string;
   lineHeight: number;
   letterSpacing: string;
   textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
-}
+};
 
-interface SpacingScale {
+type SpacingScale = {
   base: number;
   scale: 'linear' | 'exponential';
   factors: Record<string, number>;
-}
+};
 
-interface SizingScale {
+type SizingScale = {
   base: number;
   scale: 'linear' | 'exponential';
   factors: Record<string, number>;
-}
+};
 
-interface ShadowScale {
+type ShadowScale = {
   small: ShadowPreset;
   medium: ShadowPreset;
   large: ShadowPreset;
   xlarge: ShadowPreset;
   [key: string]: ShadowPreset;
-}
+};
 
-interface ShadowPreset {
+type ShadowPreset = {
   offsetX: number;
   offsetY: number;
   blur: number;
   spread: number;
   color: HexColor;
   inset?: boolean;
-}
+};
 
-interface BorderScale {
+type BorderScale = {
   width: Record<string, number>;
   radius: Record<string, number>;
   style: Record<string, 'solid' | 'dashed' | 'dotted'>;
-}
+};
 
-interface OpacityScale {
+type OpacityScale = {
   values: Record<string, number>;
-}
+};
 
-interface ZIndexScale {
+type ZIndexScale = {
   values: Record<string, number>;
-}
+};
 
-interface AnimationPresets {
+type AnimationPresets = {
   durations: Record<string, string>;
   easings: Record<string, string>;
   delays: Record<string, string>;
   keyframes: Record<string, KeyframeDefinition>;
-}
+};
 
-interface KeyframeDefinition {
+type KeyframeDefinition = {
   [key: string]: Record<string, any>;
-}
+};
 
-interface DesignSystemComponents {
+type DesignSystemComponents = {
   buttons: ComponentStylePreset[];
   inputs: ComponentStylePreset[];
   cards: ComponentStylePreset[];
   [key: string]: ComponentStylePreset[];
-}
+};
 
-interface ComponentStylePreset {
+type ComponentStylePreset = {
   name: string;
   base: StyleProperties;
   variants?: Record<string, Partial<StyleProperties>>;
   states?: Record<string, Partial<StyleProperties>>;
-}
+};
 
-interface DesignSystemTheme {
+type DesignSystemTheme = {
   name: string;
   base: 'light' | 'dark';
   tokens: Partial<DesignTokens>;
-}
+};
 
 /***********************
  * EDITOR STATE
  ***********************/
-interface EditorState {
-  currentProject: UUID;
+type EditorState = {
   currentView: 'design' | 'flow' | 'both';
   designView: DesignViewState;
   flowView: FlowViewState;
@@ -937,15 +942,15 @@ interface EditorState {
   collaboration: CollaborationState;
   plugins: PluginManager;
   ai: AIManager;
-}
+};
 
-interface AssetLibrary {
+type AssetLibrary = {
   assets: Asset[];
   categories: AssetCategory[];
   tags: string[];
-}
+};
 
-interface Asset {
+type Asset = {
   id: AssetID;
   name: string;
   type: 'image' | 'video' | 'audio' | 'font' | 'document' | '3d';
@@ -961,101 +966,101 @@ interface Asset {
     createdBy: UUID;
   };
   variants?: AssetVariant[];
-}
+};
 
-interface AssetVariant {
+type AssetVariant = {
   size: 'original' | 'thumb' | 'small' | 'medium' | 'large';
   url: string;
   dimensions?: {
     width: number;
     height: number;
   };
-}
+};
 
-interface VariableRegistry {
+type VariableRegistry = {
   variables: Variable[];
   scopes: VariableScope[];
   types: VariableTypeDefinition[];
-}
+};
 
-interface VariableScope {
+type VariableScope = {
   id: UUID;
   name: string;
   type: 'global' | 'page' | 'component' | 'flow';
   parentId?: UUID;
-}
+};
 
-interface VariableTypeDefinition {
+type VariableTypeDefinition = {
   name: string;
   baseType: string;
   validation?: any;
   editor?: any;
-}
+};
 
-interface DataSourceRegistry {
+type DataSourceRegistry = {
   sources: DataSource[];
   types: DataSourceType[];
-}
+};
 
-interface DataSource {
+type DataSource = {
   id: UUID;
   name: string;
   type: 'api' | 'database' | 'contract' | 'localStorage' | 'ipfs';
   config: any;
   schema?: any;
-}
+};
 
-interface ContentManager {
+type ContentManager = {
   models: ContentModel[];
   entries: ContentEntry[];
-}
+};
 
-interface ContentModel {
+type ContentModel = {
   id: UUID;
   name: string;
   fields: ContentField[];
-}
+};
 
-interface ContentField {
+type ContentField = {
   name: string;
   type: string;
   required: boolean;
   validation?: any;
-}
+};
 
-interface I18nManager {
+type I18nManager = {
   languages: I18nLanguage[];
   bundles: I18nBundle[];
-}
+};
 
-interface I18nLanguage {
+type I18nLanguage = {
   code: string;
   name: string;
   nativeName: string;
   isDefault: boolean;
-}
+};
 
-interface I18nBundle {
+type I18nBundle = {
   id: UUID;
   language: string;
   strings: Record<string, string>;
-}
+};
 
-interface HistoryStack {
+type HistoryStack = {
   undoStack: HistoryEntry[];
   redoStack: HistoryEntry[];
   current: HistoryEntry;
-}
+};
 
-interface HistoryEntry {
+type HistoryEntry = {
   id: UUID;
   type: 'design' | 'flow' | 'both';
   timestamp: Timestamp;
   description: string;
-  snapshot: ProjectSnapshot;
-}
+  snapshot: EditorSnapshot;
+};
 
-interface CollaborationState {
+type CollaborationState = {
   users: Collaborator[];
   session: {
     id: UUID;
@@ -1064,9 +1069,9 @@ interface CollaborationState {
   };
   comments: CommentThread[];
   changes: LiveChange[];
-}
+};
 
-interface Collaborator {
+type Collaborator = {
   userId: UUID;
   presence: {
     activeView: 'design' | 'flow';
@@ -1074,9 +1079,9 @@ interface Collaborator {
     cursor: Position;
   };
   permissions: string[];
-}
+};
 
-interface CommentThread {
+type CommentThread = {
   id: UUID;
   target: {
     type: 'element' | 'node' | 'canvas';
@@ -1085,22 +1090,22 @@ interface CommentThread {
   position: Position;
   comments: Comment[];
   resolved: boolean;
-}
+};
 
-interface Comment {
+type Comment = {
   id: UUID;
   author: UUID;
   content: string;
   timestamp: Timestamp;
   reactions: Reaction[];
-}
+};
 
-interface Reaction {
+type Reaction = {
   emoji: string;
   users: UUID[];
-}
+};
 
-interface LiveChange {
+type LiveChange = {
   type: 'create' | 'update' | 'delete';
   target: {
     type: 'element' | 'node' | 'connection';
@@ -1109,14 +1114,14 @@ interface LiveChange {
   data: any;
   author: UUID;
   timestamp: Timestamp;
-}
+};
 
-interface PluginManager {
+type PluginManager = {
   plugins: Plugin[];
   enabled: UUID[];
-}
+};
 
-interface Plugin {
+type Plugin = {
   id: UUID;
   name: string;
   description: string;
@@ -1126,61 +1131,75 @@ interface Plugin {
   entryPoint: string;
   permissions: string[];
   ui?: PluginUI;
-}
+};
 
-interface PluginUI {
+type PluginUI = {
   panels: PluginPanel[];
   tools: PluginTool[];
   inspectors: PluginInspector[];
-}
+};
 
-interface PluginPanel {
+type PluginPanel = {
   id: UUID;
   title: string;
   icon: AssetID;
   location: 'left' | 'right' | 'bottom';
   component: string;
-}
+};
 
-interface AIManager {
+type PluginTool = {
+  id: UUID;
+  name: string;
+  icon: string;
+  component: string;
+};
+
+type PluginInspector = {
+  id: UUID;
+  name: string;
+  component: string;
+  targetTypes: string[];
+};
+
+type AIManager = {
   enabled: boolean;
   providers: AIProvider[];
   history: AIInteraction[];
-}
+};
 
-interface AIProvider {
+type AIProvider = {
   id: UUID;
   type: 'openai' | 'anthropic' | 'local' | 'custom';
   name: string;
   config: any;
-}
+};
 
-interface AIInteraction {
+type AIInteraction = {
   id: UUID;
   prompt: string;
   response: string;
   timestamp: Timestamp;
   context: any;
-}
+};
 
 /***********************
  * DEPLOYMENT & BUILD
  ***********************/
-interface DeploymentManager {
+type DeploymentManager = {
   environments: DeploymentEnvironment[];
   history: DeploymentRecord[];
   artifacts: DeploymentArtifact[];
-}
+};
 
-interface DeploymentEnvironment {
+type DeploymentEnvironment = {
   id: UUID;
   name: string;
   type: 'development' | 'staging' | 'production';
   config: any;
   url?: string;
-}
+};
 
-interface DeploymentRecord {
+type DeploymentRecord = {
   id: UUID;
   environment: UUID;
   version: UUID;
@@ -1188,16 +1207,16 @@ interface DeploymentRecord {
   status: 'pending' | 'success' | 'failed' | 'in-progress';
   logs: DeploymentLog[];
   artifacts: UUID[];
-}
+};
 
-interface DeploymentLog {
+type DeploymentLog = {
   timestamp: Timestamp;
   level: 'info' | 'warning' | 'error' | 'success';
   message: string;
   details?: any;
-}
+};
 
-interface DeploymentArtifact {
+type DeploymentArtifact = {
   id: UUID;
   type: 'frontend' | 'backend' | 'contract' | 'assets';
   name: string;
@@ -1205,22 +1224,22 @@ interface DeploymentArtifact {
   url: string;
   hash: string;
   createdAt: Timestamp;
-}
+};
 
 /***********************
  * TEMPLATES
  ***********************/
-interface TemplateLibrary {
+type TemplateLibrary = {
   designTemplates: DesignTemplate[];
   flowTemplates: FlowTemplate[];
-  projectTemplates: ProjectTemplate[];
+  editorTemplates: EditorTemplate[];
   categories: TemplateCategory[];
-}
+};
 
-interface DesignTemplate {
+type DesignTemplate = {
   id: UUID;
   name: string;
-  description: string;
+  description?: string;
   category: string;
   tags: string[];
   thumbnail: AssetID;
@@ -1230,12 +1249,12 @@ interface DesignTemplate {
   designSystem?: UUID;
   createdAt: Timestamp;
   updatedAt: Timestamp;
-}
+};
 
-interface FlowTemplate {
+type FlowTemplate = {
   id: UUID;
   name: string;
-  description: string;
+  description?: string;
   category: string;
   tags: string[];
   thumbnail: AssetID;
@@ -1244,12 +1263,12 @@ interface FlowTemplate {
   variables: FlowVariable[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
-}
+};
 
-interface ProjectTemplate {
+type EditorTemplate = {
   id: UUID;
   name: string;
-  description: string;
+  description?: string;
   category: string;
   tags: string[];
   thumbnail: AssetID;
@@ -1259,19 +1278,19 @@ interface ProjectTemplate {
   variables: Variable[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
-}
+};
 
 /***********************
  * INTERACTION STATES
  ***********************/
-interface InteractionState {
+type InteractionState = {
   mode: 'select' | 'create' | 'drag' | 'resize' | 'connect';
   tool?: string;
   status: 'idle' | 'active' | 'complete';
   data?: any;
-}
+};
 
-interface DragState {
+type DragState = {
   type: 'element' | 'component' | 'asset';
   origin: Position;
   current: Position;
@@ -1283,9 +1302,9 @@ interface DragState {
     type: 'canvas' | 'element';
     id?: UUID;
   };
-}
+};
 
-interface ResizeState {
+type ResizeState = {
   elementId: UUID;
   handle: 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
   start: {
@@ -1303,9 +1322,9 @@ interface ResizeState {
     maxHeight?: number;
     aspectRatio?: number;
   };
-}
+};
 
-interface ConnectState {
+type ConnectState = {
   source: {
     type: 'port' | 'element';
     id: UUID;
@@ -1318,19 +1337,19 @@ interface ConnectState {
     position: Position;
   };
   valid: boolean;
-}
+};
 
 /***********************
  * VIEWPORT & RENDERING
  ***********************/
-interface ViewportState {
+type ViewportState = {
   position: Position;
   zoom: number;
   dimensions: Dimensions;
   visibleRect: Rect;
-}
+};
 
-interface RenderSettings {
+type RenderSettings = {
   quality: 'low' | 'medium' | 'high';
   showGrid: boolean;
   showMargins: boolean;
@@ -1338,21 +1357,21 @@ interface RenderSettings {
   showHiddenLayers: boolean;
   showAnnotations: boolean;
   performanceMode: boolean;
-}
+};
 
 /***********************
  * EDITOR UI STATE
  ***********************/
-interface UIState {
+type UIState = {
   panels: UIPanel[];
   tools: UITool[];
   inspectors: UIInspector[];
   modals: UIModal[];
   toasts: UIToast[];
   preferences: UIPreferences;
-}
+};
 
-interface UIPanel {
+type UIPanel = {
   id: string;
   title: string;
   icon: string;
@@ -1360,296 +1379,418 @@ interface UIPanel {
   isCollapsed: boolean;
   position: 'left' | 'right' | 'bottom';
   order: number;
-}
+};
 
-interface UITool {
+type UITool = {
   id: string;
   name: string;
   icon: string;
   shortcut?: string;
   isActive: boolean;
   group?: string;
-}
+};
 
-interface UIInspector {
+type UIInspector = {
   id: string;
   title: string;
   context: any;
   isVisible: boolean;
-}
+};
 
-interface UIModal {
+type UIModal = {
   id: string;
   title: string;
   content: any;
   options: any;
   isVisible: boolean;
-}
+};
 
-interface UIToast {
+type UIToast = {
   id: string;
   type: 'info' | 'success' | 'warning' | 'error';
   message: string;
   duration: number;
   isVisible: boolean;
-}
+};
 
-interface UIPreferences {
+type UIPreferences = {
   theme: 'light' | 'dark' | 'system';
   layout: 'default' | 'minimal' | 'custom';
   iconSize: 'small' | 'medium' | 'large';
   density: 'compact' | 'normal' | 'spacious';
   animations: boolean;
   transitions: boolean;
-}
+};
 
 /***********************
- * MISSING TYPE DEFINITIONS
+ * SUPPORTING TYPES
  ***********************/
+type KeyboardShortcut = {
+  action: string;
+  keyCombination: string;
+  description: string;
+};
 
-// Keyboard Shortcut
-interface KeyboardShortcut {
-    action: string;
-    keyCombination: string;
-    description: string;
-  }
-  
-  // Project Settings
-  interface ProjectSettings {
-    versionControl: {
-      enabled: boolean;
-      autoCommit: boolean;
-      branch: string;
-    };
-    build: {
-      outputDir: string;
-      cleanBeforeBuild: boolean;
-    };
-    deployment: {
-      defaultEnvironment: string;
-      autoDeploy: boolean;
-    };
-  }
-  
-  // Project Environment
-  interface ProjectEnvironment {
-    id: UUID;
-    name: string;
-    type: 'development' | 'staging' | 'production';
-    config: {
-      apiBaseUrl: string;
-      chainId: number;
-      contractAddresses: Record<string, string>;
-    };
-  }
-  
-  // Variable
-  interface Variable {
-    id: UUID;
-    name: string;
-    type: 'string' | 'number' | 'boolean' | 'object' | 'array' | 'function';
-    value: any;
-    scope: 'global' | 'page' | 'component';
-    isConstant: boolean;
-    description?: string;
-  }
-  
-  // Content Entry
-  interface ContentEntry {
-    id: UUID;
-    modelId: UUID;
-    fields: Record<string, any>;
-    createdAt: Timestamp;
-    updatedAt: Timestamp;
-  }
-  
-  // API Endpoint
-  interface ApiEndpoint {
-    id: UUID;
-    name: string;
-    path: string;
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-    headers: Record<string, string>;
-    queryParams: Record<string, string>;
-    body?: any;
-    responseSchema?: any;
-  }
-  
-  // Guide
-  interface Guide {
-    id: UUID;
-    type: 'horizontal' | 'vertical';
-    position: number;
-    color: string;
-    isLocked: boolean;
-  }
-  
-  // Asset Override
-  interface AssetOverride {
-    id: UUID;
-    assetId: AssetID;
-    elementId: UUID;
-    property: string;
-    value: any;
-  }
-  
-  // Layout Constraints
-  interface LayoutConstraints {
-    horizontal: 'scale' | 'left' | 'right' | 'leftAndRight' | 'center';
-    vertical: 'scale' | 'top' | 'bottom' | 'topAndBottom' | 'center';
-  }
-  
-  // Element Metadata
-  interface ElementMetadata {
-    created: Timestamp;
-    modified: Timestamp;
-    createdBy: UUID;
-    componentDefinitionId?: UUID;
-    templateId?: UUID;
-    notes?: string;
-    tags?: string[];
-  }
-  
-  // Flow Node Style
-  interface FlowNodeStyle {
-    backgroundColor: string;
-    borderColor: string;
-    textColor: string;
-    borderWidth: number;
-    borderRadius: number;
-  }
-  
-  // Flow Node Metadata
-  interface FlowNodeMetadata {
-    created: Timestamp;
-    modified: Timestamp;
-    createdBy: UUID;
-    templateId?: UUID;
-  }
-  
-  // Component Category
-  interface ComponentCategory {
-    id: UUID;
-    name: string;
-    icon: string;
-    order: number;
-  }
-  
-  // Component Metadata
-  interface ComponentMetadata {
-    created: Timestamp;
-    modified: Timestamp;
-    createdBy: UUID;
-    isPublic: boolean;
-    templateId?: UUID;
-  }
-  
-  // Style Properties
-  interface StyleProperties {
-    // Layout
-    display?: 'block' | 'flex' | 'grid' | 'inline' | 'none';
-    position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
-    flexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse';
-    justifyContent?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around';
-    alignItems?: 'flex-start' | 'flex-end' | 'center' | 'baseline' | 'stretch';
-    
-    // Box Model
-    width?: string | number;
-    height?: string | number;
-    minWidth?: string | number;
-    minHeight?: string | number;
-    maxWidth?: string | number;
-    maxHeight?: string | number;
-    margin?: string | number;
-    padding?: string | number;
-    
-    // Appearance
-    backgroundColor?: string;
-    color?: string;
-    border?: string;
-    borderRadius?: string | number;
-    boxShadow?: string;
-    opacity?: number;
-    
-    // Typography
-    fontFamily?: string;
-    fontSize?: string | number;
-    fontWeight?: number | 'normal' | 'bold' | 'lighter' | 'bolder';
-    lineHeight?: string | number;
-    textAlign?: 'left' | 'right' | 'center' | 'justify';
-    textDecoration?: string;
-    
-    // Transform
-    transform?: string;
-    transition?: string;
-    
-    // Other
-    cursor?: string;
-    overflow?: 'visible' | 'hidden' | 'scroll' | 'auto';
-    zIndex?: number;
-  }
-  
-  // Design System Metadata
-  interface DesignSystemMetadata {
-    created: Timestamp;
-    modified: Timestamp;
-    createdBy: UUID;
-    isPublic: boolean;
-    version: string;
-  }
-  
-  // Editor Settings
-  interface EditorSettings {
-    theme: 'light' | 'dark' | 'system';
-    defaultView: 'design' | 'flow' | 'split';
-    componentLibraryView: 'grid' | 'list';
-    autoSave: boolean;
-    autoSaveInterval: number;
-    keyboardShortcuts: KeyboardShortcut[];
-    experimentalFeatures: {
-      aiAssist: boolean;
-      realTimeCollaboration: boolean;
-      versionControlIntegration: boolean;
-      advancedAnimations: boolean;
-    };
-  }
-  
-  // Asset Category
-  interface AssetCategory {
-    id: UUID;
-    name: string;
-    icon: string;
-    order: number;
-  }
-  
-  // Data Source Type
-  interface DataSourceType {
-    name: string;
-    description: string;
-    schema: any;
-    icon: string;
-  }
-  
-  // Plugin Tool
-  interface PluginTool {
-    id: UUID;
-    name: string;
-    icon: string;
-    component: string;
-  }
-  
-  // Plugin Inspector
-  interface PluginInspector {
-    id: UUID;
-    name: string;
-    component: string;
-    targetTypes: string[];
-  }
-  
-  // Template Category
-  interface TemplateCategory {
-    id: UUID;
-    name: string;
-    icon: string;
-    order: number;
-  }
+type Variable = {
+  id: UUID;
+  name: string;
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array' | 'function';
+  value: any;
+  scope: 'global' | 'page' | 'component';
+  isConstant: boolean;
+  description?: string;
+};
+
+type ContentEntry = {
+  id: UUID;
+  modelId: UUID;
+  fields: Record<string, any>;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+};
+
+type ApiEndpoint = {
+  id: UUID;
+  name: string;
+  path: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  headers: Record<string, string>;
+  queryParams: Record<string, string>;
+  body?: any;
+  responseSchema?: any;
+};
+
+type Guide = {
+  id: UUID;
+  type: 'horizontal' | 'vertical';
+  position: number;
+  color: string;
+  isLocked: boolean;
+};
+
+type AssetOverride = {
+  id: UUID;
+  assetId: AssetID;
+  elementId: UUID;
+  property: string;
+  value: any;
+};
+
+type LayoutConstraints = {
+  horizontal: 'scale' | 'left' | 'right' | 'leftAndRight' | 'center';
+  vertical: 'scale' | 'top' | 'bottom' | 'topAndBottom' | 'center';
+};
+
+type ElementMetadata = {
+  created: Timestamp;
+  modified: Timestamp;
+  createdBy: UUID;
+  componentDefinitionId?: UUID;
+  templateId?: UUID;
+  notes?: string;
+  tags?: string[];
+};
+
+type FlowNodeStyle = {
+  backgroundColor: string;
+  borderColor: string;
+  textColor: string;
+  borderWidth: number;
+  borderRadius: number;
+};
+
+type FlowNodeMetadata = {
+  created: Timestamp;
+  modified: Timestamp;
+  createdBy: UUID;
+  templateId?: UUID;
+};
+
+type ComponentCategory = {
+  id: UUID;
+  name: string;
+  icon: string;
+  order: number;
+};
+
+type ComponentMetadata = {
+  created: Timestamp;
+  modified: Timestamp;
+  createdBy: UUID;
+  isPublic: boolean;
+  templateId?: UUID;
+};
+
+type StyleProperties = {
+  display?: 'block' | 'flex' | 'grid' | 'inline' | 'none';
+  position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
+  flexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse';
+  justifyContent?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around';
+  alignItems?: 'flex-start' | 'flex-end' | 'center' | 'baseline' | 'stretch';
+  width?: string | number;
+  height?: string | number;
+  minWidth?: string | number;
+  minHeight?: string | number;
+  maxWidth?: string | number;
+  maxHeight?: string | number;
+  margin?: string | number;
+  padding?: string | number;
+  backgroundColor?: string;
+  color?: string;
+  border?: string;
+  borderRadius?: string | number;
+  boxShadow?: string;
+  opacity?: number;
+  fontFamily?: string;
+  fontSize?: string | number;
+  fontWeight?: number | 'normal' | 'bold' | 'lighter' | 'bolder';
+  lineHeight?: string | number;
+  textAlign?: 'left' | 'right' | 'center' | 'justify';
+  textDecoration?: string;
+  transform?: string;
+  transition?: string;
+  cursor?: string;
+  overflow?: 'visible' | 'hidden' | 'scroll' | 'auto';
+  zIndex?: number;
+};
+
+type DesignSystemMetadata = {
+  created: Timestamp;
+  modified: Timestamp;
+  createdBy: UUID;
+  isPublic: boolean;
+  version: string;
+};
+
+type EditorSettings = {
+  theme: 'light' | 'dark' | 'system';
+  defaultView: 'design' | 'flow' | 'split';
+  componentLibraryView: 'grid' | 'list';
+  autoSave: boolean;
+  autoSaveInterval: number;
+  keyboardShortcuts: KeyboardShortcut[];
+  experimentalFeatures: {
+    aiAssist: boolean;
+    realTimeCollaboration: boolean;
+    versionControlIntegration: boolean;
+    advancedAnimations: boolean;
+  };
+  versionControl: {
+    enabled: boolean;
+    autoCommit: boolean;
+    branch: string;
+  };
+  build: {
+    mode: "development" | "production"
+    outputDir: string;
+    cleanBeforeBuild: boolean;
+  };
+  deployment: {
+    defaultEnvironment: string;
+    autoDeploy: boolean;
+  };
+};
+
+type AssetCategory = {
+  id: UUID;
+  name: string;
+  icon: string;
+  order: number;
+};
+
+type DataSourceType = {
+  name: string;
+  description: string;
+  schema: any;
+  icon: string;
+};
+
+type TemplateCategory = {
+  id: UUID;
+  name: string;
+  icon: string;
+  order: number;
+};
+
+export type {
+  UUID,
+  Timestamp,
+  HexColor,
+  URLString,
+  AssetID,
+  walletAddresses,
+  IPFSCid,
+  Position,
+  Dimensions,
+  Rect,
+  User,
+  UserPreferences,
+  UserPermissions,
+  UserActivity,
+  Editor,
+  EditorState,
+  EditorVersion,
+  EditorSnapshot,
+  EditorData,
+  EditorCollaborator,
+  DesignViewState,
+  CanvasBackground,
+  BlendMode,
+  GradientStop,
+  GridSettings,
+  Breakpoint,
+  Artboard,
+  DesignElement,
+  VisualElement,
+  ElementTransform,
+  ElementStyle,
+  Paint,
+  Border,
+  Shadow,
+  ElementEffect,
+  ElementFilter,
+  ClipSettings,
+  LayoutElement,
+  LayoutConfig,
+  Spacing,
+  ComponentInstance,
+  ComponentProps,
+  PropValue,
+  Expression,
+  ComponentVariant,
+  ComponentOverride,
+  SmartContractElement,
+  ContractMethod,
+  ContractEvent,
+  ContractParam,
+  CanvasGroup,
+  FlowViewState,
+  FlowNode,
+  BaseFlowNode,
+  ContractNode,
+  ContractMethodReference,
+  ContractEventReference,
+  FunctionNode,
+  EventNode,
+  VariableNode,
+  ApiNode,
+  ApiAuth,
+  DataNode,
+  LogicNode,
+  LogicCondition,
+  UiNode,
+  UiEvent,
+  UiAction,
+  FlowPort,
+  FlowParam,
+  FlowConnection,
+  FlowConnectionStyle,
+  FlowVariable,
+  ComponentLibrary,
+  ComponentDefinition,
+  ComponentPropDefinitions,
+  ComponentPropDefinition,
+  PropType,
+  PropControl,
+  PropValidation,
+  ComponentSlot,
+  SlotDefaultValue,
+  ComponentStyleDefinitions,
+  ComponentStylePreset,
+  ComponentVariantStyle,
+  ComponentStateStyle,
+  ComponentBehavior,
+  ComponentEventDefinition,
+  ComponentActionDefinition,
+  ComponentParamDefinition,
+  ComponentExample,
+  SlotExample,
+  DesignSystem,
+  DesignTokens,
+  ColorPalette,
+  ColorGroup,
+  TypographyScale,
+  TextStyle,
+  SpacingScale,
+  SizingScale,
+  ShadowScale,
+  ShadowPreset,
+  BorderScale,
+  OpacityScale,
+  ZIndexScale,
+  AnimationPresets,
+  KeyframeDefinition,
+  DesignSystemComponents,
+  DesignSystemTheme,
+  DesignSystemMetadata,
+  AssetLibrary,
+  Asset,
+  AssetVariant,
+  VariableRegistry,
+  VariableScope,
+  VariableTypeDefinition,
+  DataSourceRegistry,
+  DataSource,
+  ContentManager,
+  ContentModel,
+  ContentField,
+  I18nManager,
+  I18nLanguage,
+  I18nBundle,
+  HistoryStack,
+  HistoryEntry,
+  CollaborationState,
+  Collaborator,
+  CommentThread,
+  Reaction,
+  LiveChange,
+  PluginManager,
+  PluginUI,
+  PluginPanel,
+  PluginTool,
+  PluginInspector,
+  AIManager,
+  AIProvider,
+  AIInteraction,
+  DeploymentManager,
+  DeploymentEnvironment,
+  DeploymentRecord,
+  DeploymentLog,
+  DeploymentArtifact,
+  TemplateLibrary,
+  DesignTemplate,
+  FlowTemplate,
+  EditorTemplate,
+  TemplateCategory,
+  InteractionState,
+  DragState,
+  ResizeState,
+  ConnectState,
+  ViewportState,
+  RenderSettings,
+  UIState,
+  UIPanel,
+  UITool,
+  UIInspector,
+  UIModal,
+  UIToast,
+  UIPreferences,
+  KeyboardShortcut,
+  Variable,
+  ContentEntry,
+  ApiEndpoint,
+  Guide,
+  AssetOverride,
+  LayoutConstraints,
+  ElementMetadata,
+  FlowNodeStyle,
+  FlowNodeMetadata,
+  ComponentCategory,
+  ComponentMetadata,
+  StyleProperties,
+  EditorSettings,
+  AssetCategory,
+  DataSourceType,
+  CanvasState,
+  EditorEnvironment
+};

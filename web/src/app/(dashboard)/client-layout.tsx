@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Sidebar from './_components/Sidebar';
 import Navbar from './_components/Navbar';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { useTabs } from "@/components/useTabs";
 import { TransitionGroupTabs } from "@/components/transition-group";
 import AnimatedTabs from './_components/tab-nav';
@@ -21,27 +21,31 @@ function ClientLayout({
     children,
     workspaces
 }: {
-    children: React.ReactNode, 
-    session: Session | null, 
+    children: React.ReactNode,
+    session: Session | null,
     workspaces: any
 }) {
+    const params = useParams()
+    const {editorSlug} = params
     const pathname = usePathname()
     const isCreatePage = pathname === "/~/create/workspace" || pathname === "/~/create/project"
     const isChoosePage = pathname === "/~/choose-workspace"
-
+    const isEditorPage = pathname.includes(`/editors/${editorSlug}`)
+    
     // Debugging logs (remove in production)
     console.log('Rendering ClientLayout', {
         session,
         pathname,
         isCreatePage,
-        isChoosePage
+        isChoosePage,
+        isEditorPage
     })
 
     if (!session) {
         return (
             <div className='flex items-center justify-center h-screen w-screen z-[5000]'>
                 <Dialog open>
-                    <DialogContent className="sm:max-w-[500px] border-zinc-800 bg-zinc-900/90 backdrop-blur-sm">
+                    <DialogContent className="sm:max-w-[500px] bg-white/90 dark:border-zinc-800 dark:bg-zinc-900/90 backdrop-blur-sm">
                         <DialogHeader>
                             <DialogTitle className="text-xl text-zinc-100">Not Authenticated</DialogTitle>
                             <p className="text-sm text-zinc-400">
@@ -55,7 +59,7 @@ function ClientLayout({
         )
     }
 
-    if (isCreatePage) {
+    if (isCreatePage || isEditorPage) {
         return (
             <div className="flex min-h-screen w-screen bg-background overflow-hidden">
                 {children}
@@ -87,7 +91,7 @@ function ClientLayout({
                     </main>
                 </div>
             </div>
-            
+
             {/* Command center (assuming this should always be available) */}
             <CommandCenter />
         </div>

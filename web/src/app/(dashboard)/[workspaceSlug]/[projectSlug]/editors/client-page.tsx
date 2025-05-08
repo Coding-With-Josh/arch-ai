@@ -88,9 +88,10 @@ const ClientPage = ({
                         </div>
                     </Link>
                 ))}
+                <EditorDialog projectId={currentProject.id} />
             </div>
 
-            {currentProject._count.editors === 0 ? (
+            {/* {currentProject._count.editors === 0 ? (
                 <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-10">
                     <h2 className="text-lg font-semibold text-zinc-700 dark:text-zinc-300">No editors yet</h2>
                     <p className="text-sm text-zinc-500 dark:text-zinc-400">Launch an editor to get started.</p>
@@ -98,7 +99,7 @@ const ClientPage = ({
                 </div>
             ) : (
                 <EditorDialog projectId={currentProject.id} />
-            )}
+            )} */}
 
 
         </div>
