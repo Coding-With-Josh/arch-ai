@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { Image, Plus, PlusSquare, Text, Search, X } from 'lucide-react'
+import { Image, Plus, PlusSquare, Text, Search, X, Container, SquareStack, FormInput, Check } from 'lucide-react'
 import React, { useState, useMemo } from 'react'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -14,9 +14,9 @@ const componentCategories = [
   {
     name: "Layout",
     items: [
-      { name: "Container", icon: <PlusSquare className="h-6 w-6" /> },
+      { name: "Container", icon: <Container className="h-6 w-6" /> },
       { name: "Grid", icon: <PlusSquare className="h-6 w-6" /> },
-      { name: "Stack", icon: <PlusSquare className="h-6 w-6" /> },
+      { name: "Stack", icon: <SquareStack className="h-6 w-6" /> },
     ]
   },
   {
@@ -30,9 +30,9 @@ const componentCategories = [
   {
     name: "Inputs",
     items: [
-      { name: "Text Input", icon: <PlusSquare className="h-6 w-6" /> },
+      { name: "Text Input", icon: <FormInput className="h-6 w-6" /> },
       { name: "Checkbox", icon: <PlusSquare className="h-6 w-6" /> },
-      { name: "Select", icon: <PlusSquare className="h-6 w-6" /> },
+      { name: "Select", icon: <Check className="h-6 w-6" /> },
     ]
   }
 ]

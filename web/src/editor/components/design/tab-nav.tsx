@@ -39,7 +39,7 @@ const TabNav: React.FC = () => {
                     </TabsList>
                     <ScrollArea className="h-full lg:w-[23rem] xl:w-[23rem] border-r">
                         {tabs.map((tab) => (
-                            <TabsContent key={tab.value} value={tab.value} className="mt-2.5 p-3 text-sm">
+                            <TabsContent key={tab.value} value={tab.value} className="p-3 text-sm">
                                 <Sheet>
                                     {tab.content}
                                 </Sheet>
