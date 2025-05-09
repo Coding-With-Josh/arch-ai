@@ -2,7 +2,6 @@ import React from 'react'
 import ClientPage from './client-page'
 import { EditorProvider } from '@/editor/editor-provider'
 import { auth } from '@/app/api/auth/[...nextauth]/auth-options'
-import prisma from '@/lib/prisma'
 import type {
   Editor, UUID, AssetID,
   EditorState, DesignViewState, CanvasState, Breakpoint, Artboard, DesignElement,
@@ -14,9 +13,19 @@ import { SignInButton } from '@/components/navbar/sign-in-button'
 import { Button } from '@/components/ui/button'
 import { RefreshCcw } from 'lucide-react'
 import { revalidatePath } from 'next/cache'
+import prisma from '@/lib/prisma'
 
 const Page = async ({ params }: { params: { editorSlug: string; projectSlug: string, workspaceSlug } }) => {
   const session = await auth()
+  const editor = await prisma.editor.findUnique({
+    where: {
+      slug: params.editorSlug
+    }
+  })
+
+  if (!editor) {
+    throw new Error("yooo")
+  }
 
   // Define the design view state
   const designView: DesignViewState = {
@@ -256,11 +265,11 @@ const Page = async ({ params }: { params: { editorSlug: string; projectSlug: str
 
   // Build the initial editor object using the new types
   const initialEditor: Editor = {
-    id: "editor_12345" as UUID,
+    id: editor.id as UUID,
     meta: {
-      name: "My Awesome Editor",
+      name: editor?.name,
       slug: params.editorSlug,
-      description: "A powerful design and flow editor",
+      description: editor?.description ?? "",
       icon: "asset_icon_123" as AssetID,
       tags: ["design", "flow", "prototype"],
       isTemplate: false,
