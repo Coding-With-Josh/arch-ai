@@ -942,6 +942,8 @@ type EditorState = {
   collaboration: CollaborationState;
   plugins: PluginManager;
   ai: AIManager;
+  deployment : DeploymentManager,
+  ui: UIState
 };
 
 type AssetLibrary = {
@@ -1792,5 +1794,8 @@ export type {
   AssetCategory,
   DataSourceType,
   CanvasState,
-  EditorEnvironment
+  EditorEnvironment,
+  CanvasPattern,
+  CanvasGradient,
+  Plugin
 };

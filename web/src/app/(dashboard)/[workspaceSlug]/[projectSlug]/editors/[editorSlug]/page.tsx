@@ -247,7 +247,27 @@ const Page = async ({ params }: { params: { editorSlug: string; projectSlug: str
       changes: []
     },
     plugins: { plugins: [], enabled: [] },
-    ai: { enabled: false, providers: [], history: [] }
+    ai: { enabled: false, providers: [], history: [] },
+    deployment: {
+      environments: [],
+      history: [],
+      artifacts: []
+    },
+    ui: {
+      panels: [],
+      tools: [],
+      inspectors: [],
+      modals: [],
+      toasts: [],
+      preferences: {
+        theme: 'light',
+        layout: 'default',
+        iconSize: 'medium',
+        density: 'normal',
+        animations: true,
+        transitions: true
+      }
+    },
   }
 
   // Create a snapshot for the initial version

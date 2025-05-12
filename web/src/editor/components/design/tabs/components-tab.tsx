@@ -74,7 +74,7 @@ const ComponentsTab = () => {
       })).filter(category => category.items.length > 0);
     }, [searchQuery])
     return (
-    <DndProvider backend={HTML5Backend}>
+
       <div className="flex flex-col h-full">
         {/* Header */}
         <div className="px-3 pb-0">
@@ -149,7 +149,6 @@ const ComponentsTab = () => {
           )}
         </ScrollArea>
       </div>
-    </DndProvider>
   );
 };
 

@@ -1,6 +1,6 @@
 // editor/components/design/properties-sheet.tsx
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import { useDesignView } from '@/editor/editor-provider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -9,9 +9,33 @@ import { Slider } from '@/components/ui/slider';
 import { ColorPicker } from '@/components/ui/color-picker';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { VisualElement, LayoutElement, ComponentInstance, DesignElement } from '@/editor/types';
+import { Button } from '@/components/ui/button';
+import { Monitor, Smartphone, Tablet } from 'lucide-react';
 
 const PropertiesSheet = () => {
   const { selectedElements, elements, updateElement } = useDesignView();
+  const [activeTab, setActiveTab] = useState('design');
+  
+  const devicePresets = [
+    {
+      id: 'mobile',
+      name: 'Mobile',
+      icon: <Smartphone className="h-4 w-4" />,
+      dimensions: { width: 375, height: 812 }
+    },
+    {
+      id: 'tablet',
+      name: 'Tablet',
+      icon: <Tablet className="h-4 w-4" />,
+      dimensions: { width: 768, height: 1024 }
+    },
+    {
+      id: 'desktop',
+      name: 'Desktop',
+      icon: <Monitor className="h-4 w-4" />,
+      dimensions: { width: 1440, height: 1024 }
+    }
+  ];
   
   if (selectedElements.length !== 1) {
     return (
@@ -82,15 +106,34 @@ const PropertiesSheet = () => {
   };
 
   return (
-    <div className="w-[280px] border-l h-full overflow-y-auto">
-      <Tabs defaultValue="design" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="design">Design</TabsTrigger>
-          <TabsTrigger value="advanced">Advanced</TabsTrigger>
+    <div className="w-[280px] border-l h-full overflow-y-auto bg-background">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 rounded-none">
+          <TabsTrigger value="design" className="py-2 text-xs">Design</TabsTrigger>
+          <TabsTrigger value="advanced" className="py-2 text-xs">Advanced</TabsTrigger>
         </TabsList>
         
         <TabsContent value="design" className="p-4 space-y-4">
-          {/* Position */}
+          {/* Device Preset Selector */}
+          <div className="space-y-2">
+            <Label className="text-xs">Device Preset</Label>
+            <div className="grid grid-cols-3 gap-2">
+              {devicePresets.map(device => (
+                <Button
+                  key={device.id}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 p-0 flex flex-col items-center justify-center gap-1"
+                  onClick={() => handleDeviceChange(device.id)}
+                >
+                  {device.icon}
+                  <span className="text-xs">{device.name}</span>
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Position & Size Controls */}
           <div className="space-y-2">
             <Label className="text-xs">Position</Label>
             <div className="grid grid-cols-2 gap-2">
@@ -112,35 +155,6 @@ const PropertiesSheet = () => {
                   value={Math.round(element.position.y)} 
                   onChange={(e) => updateElement(element.id, {
                     position: { ...element.position, y: Number(e.target.value) }
-                  })}
-                  className="h-8 text-xs"
-                />
-              </div>
-            </div>
-          </div>
-          
-          {/* Size */}
-          <div className="space-y-2">
-            <Label className="text-xs">Size</Label>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <Label className="text-xs">Width</Label>
-                <Input 
-                  type="number" 
-                  value={Math.round(element.dimensions.width)} 
-                  onChange={(e) => updateElement(element.id, {
-                    dimensions: { ...element.dimensions, width: Number(e.target.value) }
-                  })}
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div>
-                <Label className="text-xs">Height</Label>
-                <Input 
-                  type="number" 
-                  value={Math.round(element.dimensions.height)} 
-                  onChange={(e) => updateElement(element.id, {
-                    dimensions: { ...element.dimensions, height: Number(e.target.value) }
                   })}
                   className="h-8 text-xs"
                 />
@@ -268,7 +282,7 @@ const PropertiesSheet = () => {
           )}
         </TabsContent>
         
-        <TabsContent value="advanced" className="p-4 space-y-4">
+<TabsContent value="advanced" className="p-4 space-y-4">
           {/* Only show transform for elements that have it */}
           {/* {hasTransform(element) && (
             <div className="space-y-2">
