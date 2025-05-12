@@ -5,9 +5,10 @@ import React, { useState } from 'react';
 import archLogo from "@/assets/images/brand/arch_logo-transparent-bg.png";
 import ViewSwitch from './view-switch';
 import { Button } from '@/components/ui/button';
+import { formatDistanceToNow } from 'date-fns';
 import { Editor, EditorState } from '@/editor/types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useEditor, useSettings } from '@/editor/editor-provider';
 
 const Header = ({ state, editor }: { editor: Editor, state: EditorState }) => {
@@ -66,7 +67,7 @@ const Header = ({ state, editor }: { editor: Editor, state: EditorState }) => {
             <div className="flex items-center justify-center gap-2">
               <span className="text-xs font-medium text-muted-foreground flex items-center justify-center gap-1">
                 <Clock className='h-3 w-3 mt-0'/> 
-                Last updated {new Date(editor.updatedAt).toLocaleTimeString()}
+                Last updated {formatDistanceToNow(editor.updatedAt)}
               </span>
             </div>
           </div>
@@ -80,7 +81,7 @@ const Header = ({ state, editor }: { editor: Editor, state: EditorState }) => {
         {/* Right Side - Actions */}
         <div className="flex text-xs items-center justify-center gap-2">
           {/* Theme Toggle */}
-          <Tooltip>
+          <TooltipProvider><Tooltip>
             <TooltipTrigger asChild>
               <Button 
                 variant="ghost" 
@@ -94,7 +95,7 @@ const Header = ({ state, editor }: { editor: Editor, state: EditorState }) => {
             <TooltipContent side="bottom">
               Toggle theme ({darkMode ? 'light' : 'dark'})
             </TooltipContent>
-          </Tooltip>
+          </Tooltip></TooltipProvider>
 
           {/* Preview/Run Button */}
           {state.currentView === "design" ? (
@@ -120,7 +121,7 @@ const Header = ({ state, editor }: { editor: Editor, state: EditorState }) => {
           )}
 
           {/* Collaboration */}
-          <Tooltip>
+          <TooltipProvider><Tooltip>
             <TooltipTrigger asChild>
               <Button 
                 variant="outline" 
@@ -136,7 +137,7 @@ const Header = ({ state, editor }: { editor: Editor, state: EditorState }) => {
                 `${collaborators} collaborators` : 
                 "Invite collaborators"}
             </TooltipContent>
-          </Tooltip>
+          </Tooltip></TooltipProvider>
 
           {/* Version Control */}
           <DropdownMenu>
@@ -186,7 +187,7 @@ const Header = ({ state, editor }: { editor: Editor, state: EditorState }) => {
           </DropdownMenu>
 
           {/* Settings */}
-          <Tooltip>
+          <TooltipProvider><Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                 <Settings className="h-4 w-4" />
@@ -195,7 +196,7 @@ const Header = ({ state, editor }: { editor: Editor, state: EditorState }) => {
             <TooltipContent side="bottom">
               Editor Settings
             </TooltipContent>
-          </Tooltip>
+          </Tooltip></TooltipProvider>
         </div>
       </div>
     </header>

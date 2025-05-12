@@ -115,7 +115,7 @@ const PropertiesSheet = () => {
         
         <TabsContent value="design" className="p-4 space-y-4">
           {/* Device Preset Selector */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label className="text-xs">Device Preset</Label>
             <div className="grid grid-cols-3 gap-2">
               {devicePresets.map(device => (
@@ -131,7 +131,7 @@ const PropertiesSheet = () => {
                 </Button>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* Position & Size Controls */}
           <div className="space-y-2">

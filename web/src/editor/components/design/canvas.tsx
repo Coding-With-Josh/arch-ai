@@ -470,7 +470,7 @@ const Canvas = () => {
         {['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'].map(handle => (
           <div
             key={handle}
-            className={`absolute bg-blue-500 border border-white rounded-full w-2 h-2 z-10 resize-handle resize-${handle}`}
+            className={`absolute bg-blue-500 border border-white w-2 h-2 z-10 resize-handle resize-${handle}`}
             data-resize-handle={handle}
             style={{
               cursor: `${handle}-resize`,
