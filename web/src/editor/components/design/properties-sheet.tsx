@@ -248,7 +248,7 @@ const PropertiesSheet = () => {
                   {openSections.background ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <div className="space-y-2 pt-2">
+                  {/* <div className="space-y-2 pt-2">
                     <ColorPicker
                       value={element.style.[0]?.type === 'solid' ?
                         (element.style.fills[0].color ?? '#ffffff') : '#ffffff'}
@@ -268,7 +268,7 @@ const PropertiesSheet = () => {
                         }}
                       />
                     </div>
-                  </div>
+                  </div> */}
                 </CollapsibleContent>
               </Collapsible>
 
