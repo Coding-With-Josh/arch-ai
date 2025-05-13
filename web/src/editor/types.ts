@@ -254,6 +254,10 @@ type Artboard = {
 /***********************
  * DESIGN ELEMENTS
  ***********************/
+
+/***********************
+ * DESIGN ELEMENTS - UPDATED
+ ***********************/
 type DesignElement =
   | VisualElement
   | LayoutElement
@@ -261,19 +265,102 @@ type DesignElement =
   | SmartContractElement
   | CanvasGroup;
 
+// ========================
+// STYLE SYSTEM
+// ========================
+type BaseStyle = {
+  opacity?: number;
+  blendMode?: BlendMode;
+  filters?: ElementFilter[];
+  clip?: ClipSettings;
+  overflow?: 'visible' | 'hidden' | 'scroll';
+};
+
+type PaintStyle = {
+  fills?: Paint[];
+  borders?: Border[];
+  shadows?: Shadow[];
+  effects?: ElementEffect[];
+  borderRadius?: number | [number, number, number, number];
+};
+
+type LayoutStyle = {
+  width?: number | string;
+  height?: number | string;
+  minWidth?: number | string;
+  maxWidth?: number | string;
+  minHeight?: number | string;
+  maxHeight?: number | string;
+  margin?: Spacing;
+  padding?: Spacing;
+  flexDirection?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
+  justifyContent?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around';
+  alignItems?: 'flex-start' | 'flex-end' | 'center' | 'baseline' | 'stretch';
+  gap?: number;
+};
+
+// Element-specific style types
+type TextElementStyle = BaseStyle & PaintStyle & TextStyle & {
+  fills: [Paint]; // Exactly one fill required
+  borders?: never; // Disallow borders
+};
+
+type ShapeElementStyle = BaseStyle & PaintStyle & {
+  cornerSmoothing?: number;
+};
+
+type LayoutElementStyle = BaseStyle & PaintStyle & LayoutStyle & {
+  gridColumns?: number;
+  gridRows?: number;
+};
+
+type ImageElementStyle = BaseStyle & {
+  objectFit?: 'contain' | 'cover' | 'fill' | 'none';
+};
+
+// ========================
+// ELEMENT DEFINITIONS
+// ========================
 type VisualElement = {
   id: UUID;
   type: 'rectangle' | 'ellipse' | 'text' | 'image' | 'vector' | 'icon';
   position: Position;
   dimensions: Dimensions;
   transform: ElementTransform;
-  style: ElementStyle;
   constraints: LayoutConstraints;
   parentId?: UUID;
   childrenIds: UUID[];
   meta: ElementMetadata;
+} & ({
+  type: 'text';
+  style: TextElementStyle;
+  content: string;
+} | {
+  type: 'rectangle' | 'ellipse' | 'vector' | 'icon';
+  style: ShapeElementStyle;
+} | {
+  type: 'image';
+  style: ImageElementStyle;
+  assetId: AssetID;
+});
+
+type LayoutElement = {
+  id: UUID;
+  type: 'frame' | 'section' | 'grid' | 'stack';
+  layoutMode: 'none' | 'horizontal' | 'vertical' | 'grid';
+  position: Position;
+  dimensions: Dimensions;
+  layoutConfig: LayoutConfig;
+  childrenIds: UUID[];
+  style: LayoutElementStyle; // Updated to use LayoutElementStyle
+  constraints: LayoutConstraints;
+  parentId?: UUID;
+  meta: ElementMetadata;
 };
 
+// ========================
+// EXISTING TYPES (UNCHANGED)
+// ========================
 type ElementTransform = {
   rotation: number;
   skew: {
@@ -281,18 +368,6 @@ type ElementTransform = {
     y: number;
   };
   origin: Position;
-};
-
-type ElementStyle = {
-  fills: Paint[];
-  borders: Border[];
-  shadows: Shadow[];
-  effects: ElementEffect[];
-  opacity: number;
-  blendMode: BlendMode;
-  filters: ElementFilter[];
-  clip: ClipSettings;
-  overflow: 'visible' | 'hidden' | 'scroll';
 };
 
 type Paint = {
@@ -335,20 +410,6 @@ type ClipSettings = {
   enabled: boolean;
   mode: 'rect' | 'circle' | 'path';
   path?: string;
-};
-
-type LayoutElement = {
-  id: UUID;
-  type: 'frame' | 'section' | 'grid' | 'stack';
-  layoutMode: 'none' | 'horizontal' | 'vertical' | 'grid';
-  position: Position;
-  dimensions: Dimensions;
-  layoutConfig: LayoutConfig;
-  childrenIds: UUID[];
-  style: ElementStyle;
-  constraints: LayoutConstraints;
-  parentId?: UUID;
-  meta: ElementMetadata;
 };
 
 type LayoutConfig = {
@@ -423,7 +484,7 @@ type SmartContractElement = {
   events: ContractEvent[];
   position: Position;
   dimensions: Dimensions;
-  style: ElementStyle;
+  style: TextElementStyle | ShapeElementStyle | ImageElementStyle | LayoutStyle;
   meta: ElementMetadata;
 };
 
@@ -1484,6 +1545,7 @@ type LayoutConstraints = {
 };
 
 type ElementMetadata = {
+  name: string,
   created: Timestamp;
   modified: Timestamp;
   createdBy: UUID;
@@ -1645,7 +1707,7 @@ export type {
   DesignElement,
   VisualElement,
   ElementTransform,
-  ElementStyle,
+  
   Paint,
   Border,
   Shadow,

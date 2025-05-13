@@ -13,9 +13,9 @@ const DesignView = () => {
           <Canvas/>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
+        {/* <ResizablePanel defaultSize={20} minSize={15} maxSize={30}> */}
           <PropertiesSheet/>
-        </ResizablePanel>
+        {/* </ResizablePanel> */}
       </ResizablePanelGroup>
     </div>
   );

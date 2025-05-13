@@ -27,7 +27,7 @@ const Canvas = () => {
   const selectedElementsRef = useRef<UUID[]>([]);
   const resizeHandle = useRef<string | null>(null);
   const [zoom, setZoom] = useState(1);
-  const [showGrid, setShowGrid] = useState(true);
+  const [showGrid, setShowGrid] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
 
   const devicePresets = [

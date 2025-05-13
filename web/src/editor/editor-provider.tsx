@@ -79,7 +79,7 @@ const initialState: EditorState = {
   designView: {
     canvas: {
       type: '2d',
-      dimensions: { width: 1440, height: 1024 },
+      dimensions: { width: 900, height: 700 },
       background: { type: 'color', color: '#ffffff', opacity: 1, blendMode: 'normal' },
       grid: {
         enabled: true,
