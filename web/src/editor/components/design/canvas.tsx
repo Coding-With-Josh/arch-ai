@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Grid, Maximize, Minimize, Monitor, Moon, Smartphone, Sun, Tablet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
-import { ElementFactory } from './ElementFactory';
+import { ElementFactory } from '../../elements/element-factory';
 
 interface DevicePreset {
   id: string;
