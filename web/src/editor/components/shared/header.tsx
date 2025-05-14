@@ -10,6 +10,7 @@ import { Editor, EditorState } from '@/editor/types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useEditor, useSettings } from '@/editor/editor-provider';
+import { ModeToggle } from '@/components/ui/mode-toggle';
 
 const Header = ({ state, editor }: { editor: Editor, state: EditorState }) => {
   const { updateSettings } = useSettings();
@@ -83,14 +84,15 @@ const Header = ({ state, editor }: { editor: Editor, state: EditorState }) => {
           {/* Theme Toggle */}
           <TooltipProvider><Tooltip>
             <TooltipTrigger asChild>
-              <Button 
+              {/* <Button 
                 variant="ghost" 
                 size="sm" 
                 className="h-8 w-8 p-0"
                 onClick={toggleTheme}
               >
                 {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </Button>
+              </Button> */}
+              <ModeToggle/>
             </TooltipTrigger>
             <TooltipContent side="bottom">
               Toggle theme ({darkMode ? 'light' : 'dark'})

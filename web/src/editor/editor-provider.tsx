@@ -107,6 +107,7 @@ const initialState: EditorState = {
     assetOverrides: []
   },
   flowView: {
+    elementBindings: [],
     nodes: [],
     connections: [],
     variables: [],
@@ -182,6 +183,7 @@ const initialState: EditorState = {
           assetOverrides: []
         },
         flow: {
+          elementBindings: [],
           nodes: [],
           connections: [],
           variables: [],

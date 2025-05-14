@@ -9,6 +9,39 @@ type AssetID = `asset_${UUID}`;
 type walletAddresses = `0x${string}`;
 type IPFSCid = `Qm${string}` | `bafy${string}`;
 
+type JSX = {
+  IntrinsicElements: {
+    [key: string]: any;
+  };
+};
+
+type ContractMethod = {
+  name: string;
+  inputs: ContractParam[];
+  outputs: ContractParam[];
+  stateMutability: 'pure' | 'view' | 'nonpayable' | 'payable';
+};
+
+type ContractEvent = {
+  name: string;
+  inputs: ContractParam[];
+  anonymous: boolean;
+};
+
+type ContractParam = {
+  name: string;
+  type: string;
+  indexed?: boolean;
+};
+
+type Expression = {
+  type: 'expression';
+  language: 'javascript' | 'rust' | 'jsonata';
+  code: string;
+  dependencies: string[];
+};
+
+
 type Position = {
   x: number;
   y: number;
@@ -252,226 +285,164 @@ type Artboard = {
 };
 
 /***********************
- * DESIGN ELEMENTS
+ * REACT-BASED ELEMENT SYSTEM
  ***********************/
-
-/***********************
- * DESIGN ELEMENTS - UPDATED
- ***********************/
-type DesignElement =
-  | VisualElement
-  | LayoutElement
-  | ComponentInstance
-  | SmartContractElement
-  | CanvasGroup;
-
-// ========================
-// STYLE SYSTEM
-// ========================
-type BaseStyle = {
-  opacity?: number;
-  blendMode?: BlendMode;
-  filters?: ElementFilter[];
-  clip?: ClipSettings;
-  overflow?: 'visible' | 'hidden' | 'scroll';
+type ReactStyle = React.CSSProperties & {
+  hover?: React.CSSProperties;
+  active?: React.CSSProperties;
+  focus?: React.CSSProperties;
+  variants?: Record<string, React.CSSProperties>;
 };
 
-type PaintStyle = {
-  fills?: Paint[];
-  borders?: Border[];
-  shadows?: Shadow[];
-  effects?: ElementEffect[];
-  borderRadius?: number | [number, number, number, number];
+type ElementEventHandlers = {
+  onClick?: ElementAction;
+  onHover?: ElementAction;
+  onFocus?: ElementAction;
+  onBlur?: ElementAction;
+  onChange?: ElementAction;
+  onDrag?: ElementAction;
+  onDrop?: ElementAction;
+  customEvents?: Record<string, ElementAction>;
 };
 
-type LayoutStyle = {
-  width?: number | string;
-  height?: number | string;
-  minWidth?: number | string;
-  maxWidth?: number | string;
-  minHeight?: number | string;
-  maxHeight?: number | string;
-  margin?: Spacing;
-  padding?: Spacing;
-  flexDirection?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
-  justifyContent?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around';
-  alignItems?: 'flex-start' | 'flex-end' | 'center' | 'baseline' | 'stretch';
-  gap?: number;
-};
-
-// Element-specific style types
-type TextElementStyle = BaseStyle & PaintStyle & TextStyle & {
-  fills: [Paint]; // Exactly one fill required
-  borders?: never; // Disallow borders
-};
-
-type ShapeElementStyle = BaseStyle & PaintStyle & {
-  cornerSmoothing?: number;
-};
-
-type LayoutElementStyle = BaseStyle & PaintStyle & LayoutStyle & {
-  gridColumns?: number;
-  gridRows?: number;
-};
-
-type ImageElementStyle = BaseStyle & {
-  objectFit?: 'contain' | 'cover' | 'fill' | 'none';
-};
-
-// ========================
-// ELEMENT DEFINITIONS
-// ========================
-type VisualElement = {
-  id: UUID;
-  type: 'rectangle' | 'ellipse' | 'text' | 'image' | 'vector' | 'icon';
-  position: Position;
-  dimensions: Dimensions;
-  transform: ElementTransform;
-  constraints: LayoutConstraints;
-  parentId?: UUID;
-  childrenIds: UUID[];
-  meta: ElementMetadata;
-} & ({
-  type: 'text';
-  style: TextElementStyle;
-  content: string;
-} | {
-  type: 'rectangle' | 'ellipse' | 'vector' | 'icon';
-  style: ShapeElementStyle;
-} | {
-  type: 'image';
-  style: ImageElementStyle;
-  assetId: AssetID;
-});
-
-type LayoutElement = {
-  id: UUID;
-  type: 'frame' | 'section' | 'grid' | 'stack';
-  layoutMode: 'none' | 'horizontal' | 'vertical' | 'grid';
-  position: Position;
-  dimensions: Dimensions;
-  layoutConfig: LayoutConfig;
-  childrenIds: UUID[];
-  style: LayoutElementStyle; // Updated to use LayoutElementStyle
-  constraints: LayoutConstraints;
-  parentId?: UUID;
-  meta: ElementMetadata;
-};
-
-// ========================
-// EXISTING TYPES (UNCHANGED)
-// ========================
-type ElementTransform = {
-  rotation: number;
-  skew: {
-    x: number;
-    y: number;
-  };
-  origin: Position;
-};
-
-type Paint = {
-  type: 'solid' | 'gradient' | 'image' | 'noise';
-  color?: HexColor;
-  gradient?: CanvasGradient;
-  image?: AssetID;
-  opacity: number;
-  blendMode: BlendMode;
-};
-
-type Border = {
-  position: 'inside' | 'center' | 'outside';
-  thickness: number;
-  color: HexColor;
-  style: 'solid' | 'dashed' | 'dotted';
-  dashPattern?: [number, number];
-};
-
-type Shadow = {
-  type: 'drop-shadow' | 'inner-shadow';
-  color: HexColor;
-  blur: number;
-  spread: number;
-  offset: Position;
-};
-
-type ElementEffect = {
-  type: 'blur' | 'glow' | 'background-blur';
-  radius: number;
-  color?: HexColor;
-};
-
-type ElementFilter = {
-  type: 'brightness' | 'contrast' | 'saturate' | 'hue-rotate';
-  value: number;
-};
-
-type ClipSettings = {
-  enabled: boolean;
-  mode: 'rect' | 'circle' | 'path';
-  path?: string;
-};
-
-type LayoutConfig = {
-  padding: Spacing;
-  gap: number;
-  itemSpacing?: number;
-  gridColumns?: number;
-  gridRows?: number;
-  alignment?: 'start' | 'center' | 'end' | 'space-between';
-  wrap?: boolean;
-};
-
-type Spacing = {
-  top: number;
-  right: number;
-  bottom: number;
-  left: number;
-};
-
-type ComponentInstance = {
-  id: UUID;
-  type: 'component';
-  componentId: UUID;
-  position: Position;
-  dimensions: Dimensions;
-  props: ComponentProps;
-  variants: ComponentVariant[];
-  overrides: ComponentOverride[];
-  childrenIds: UUID[];
-  parentId?: UUID;
-  constraints: LayoutConstraints;
-  meta: ElementMetadata;
-};
+type ElementAction = 
+  | { type: 'navigate', target: string }
+  | { type: 'callContract', contractId: UUID, method: string, args: any[] }
+  | { type: 'setVariable', variableId: UUID, value: any }
+  | { type: 'triggerFlow', flowId: UUID, payload?: any }
+  | { type: 'openUrl', url: string, target?: '_blank' | '_self' }
+  | { type: 'custom', handler: string }
+  | { type: 'emitEvent', eventName: string, payload?: any };
 
 type ComponentProps = {
-  [key: string]: PropValue;
-};
+  [key: string]: any;
+  style?: ReactStyle;
+  className?: string;
+  children?: any;
+} & ElementEventHandlers;
 
-type PropValue =
-  | string
-  | number
-  | boolean
-  | PropValue[]
-  | { [key: string]: PropValue }
-  | Expression;
-
-type Expression = {
-  type: 'expression';
-  language: 'javascript' | 'rust' | 'jsonata';
-  code: string;
-  dependencies: string[];
-};
-
-type ComponentVariant = {
-  name: string;
-  condition: string;
+type DesignElement = {
+  id: UUID;
+  componentType: string;
+  position: { x: number; y: number };  // Make optional if needed
+  dimensions?: { width: number; height: number };  // Make optional if needed
   props: ComponentProps;
+  children?: DesignElement[];
+  layout?: {
+    position: 'relative' | 'absolute' | 'fixed' | 'sticky';
+    constraints: LayoutConstraints;
+    gridArea?: string;
+  };
+  dataBindings?: {
+    [propName: string]: DataBinding;
+  };
+  eventBindings?: {
+    [eventName: string]: EventBinding;
+  };
+  meta: ElementMetadata & {
+    componentSource?: 'core' | 'custom' | 'plugin';
+    importPath?: string;
+  };
 };
 
-type ComponentOverride = {
-  targetId: UUID;
-  props: ComponentProps;
+type DataBinding = {
+  sourceType: 'variable' | 'contractState' | 'content' | 'api';
+  sourceId: UUID;
+  transform?: {
+    type: 'map' | 'filter' | 'reduce';
+    function: string;
+  };
+};
+
+type EventBinding = {
+  handlerType: 'flow' | 'contract' | 'variable';
+  handlerId: UUID;
+  transform?: {
+    inputMapping: Record<string, string>;
+  };
+};
+
+type CoreComponentTypes = {
+  Box: {
+    props: ComponentProps & {
+      as?: keyof JSX["IntrinsicElements"];
+    };
+  };
+  Flex: {
+    props: ComponentProps & {
+      direction?: 'row' | 'column';
+      align?: string;
+      justify?: string;
+      wrap?: boolean;
+    };
+  };
+  Grid: {
+    props: ComponentProps & {
+      columns?: number | string;
+      rows?: number | string;
+      gap?: number | string;
+    };
+  };
+  Text: {
+    props: ComponentProps & {
+      content?: string;
+      variant?: string;
+      truncate?: boolean;
+    };
+  };
+  Button: {
+    props: ComponentProps & {
+      variant?: 'primary' | 'secondary' | 'ghost';
+      size?: 'sm' | 'md' | 'lg';
+      loading?: boolean;
+      disabled?: boolean;
+    };
+  };
+  Input: {
+    props: ComponentProps & {
+      type?: string;
+      placeholder?: string;
+      value?: string;
+    };
+  };
+  WalletConnect: {
+    props: ComponentProps & {
+      chainId?: number;
+      variant?: 'button' | 'dropdown';
+    };
+  };
+  ContractInteraction: {
+    props: ComponentProps & {
+      contractId: UUID;
+      method: string;
+      args?: any[];
+      buttonText?: string;
+    };
+  };
+  NFTDisplay: {
+    props: ComponentProps & {
+      contractId: UUID;
+      tokenId: string | number;
+      variant?: 'card' | 'full';
+    };
+  };
+  DataTable: {
+    props: ComponentProps & {
+      dataSource: UUID;
+      columns: Array<{
+        field: string;
+        header: string;
+        render?: string;
+      }>;
+    };
+  };
+  Image: {
+    props: ComponentProps & {
+      src: string | AssetID;
+      alt?: string;
+      objectFit?: 'cover' | 'contain';
+    };
+  };
 };
 
 type SmartContractElement = {
@@ -482,41 +453,35 @@ type SmartContractElement = {
   abi: any;
   methods: ContractMethod[];
   events: ContractEvent[];
-  position: Position;
-  dimensions: Dimensions;
-  style: TextElementStyle | ShapeElementStyle | ImageElementStyle | LayoutStyle;
-  meta: ElementMetadata;
+  reactComponent: {
+    name: string;
+    props: {
+      contractId: UUID;
+      networkId?: number;
+      readOnly?: boolean;
+      style?: ReactStyle;
+    };
+  };
+  uiHooks: {
+    useContractRead: {
+      method: string;
+      args?: any[];
+      watch?: boolean;
+    };
+    useContractWrite: {
+      method: string;
+      buttonText?: string;
+      successMessage?: string;
+    };
+  };
 };
 
-type ContractMethod = {
-  name: string;
-  inputs: ContractParam[];
-  outputs: ContractParam[];
-  stateMutability: 'pure' | 'view' | 'nonpayable' | 'payable';
-};
-
-type ContractEvent = {
-  name: string;
-  inputs: ContractParam[];
-  anonymous: boolean;
-};
-
-type ContractParam = {
-  name: string;
-  type: string;
-  indexed?: boolean;
-};
-
-type CanvasGroup = {
-  id: UUID;
-  type: 'group';
-  name: string;
-  position: Position;
-  dimensions: Dimensions;
-  childrenIds: UUID[];
-  isLocked: boolean;
-  isHidden: boolean;
-  meta: ElementMetadata;
+type FlowNodeBinding = {
+  elementId: UUID;
+  nodeId: UUID;
+  inputMappings: Record<string, string>;
+  outputMappings: Record<string, string>;
+  triggerEvents: string[];
 };
 
 /***********************
@@ -538,6 +503,7 @@ type FlowViewState = {
     snapToGrid: boolean;
     gridSize: number;
   };
+  elementBindings: FlowNodeBinding[];
 };
 
 type FlowNode =
@@ -852,6 +818,14 @@ type DesignSystem = {
   components: DesignSystemComponents;
   themes: DesignSystemTheme[];
   meta: DesignSystemMetadata;
+  reactTheme: {
+    colors: Record<string, string>;
+    typography: Record<string, ReactStyle>;
+    components: {
+      [key: string]: ReactStyle;
+    };
+    variants: Record<string, ReactStyle>;
+  };
 };
 
 type DesignTokens = {
@@ -1003,8 +977,8 @@ type EditorState = {
   collaboration: CollaborationState;
   plugins: PluginManager;
   ai: AIManager;
-  deployment : DeploymentManager,
-  ui: UIState
+  deployment: DeploymentManager;
+  ui: UIState;
 };
 
 type AssetLibrary = {
@@ -1545,7 +1519,7 @@ type LayoutConstraints = {
 };
 
 type ElementMetadata = {
-  name: string,
+  name: string;
   created: Timestamp;
   modified: Timestamp;
   createdBy: UUID;
@@ -1645,7 +1619,7 @@ type EditorSettings = {
     branch: string;
   };
   build: {
-    mode: "development" | "production"
+    mode: "development" | "production";
     outputDir: string;
     cleanBeforeBuild: boolean;
   };
@@ -1676,6 +1650,9 @@ type TemplateCategory = {
   order: number;
 };
 
+/***********************
+ * EXPORT ALL TYPES
+ ***********************/
 export type {
   UUID,
   Timestamp,
@@ -1697,37 +1674,27 @@ export type {
   EditorSnapshot,
   EditorData,
   EditorCollaborator,
+  EditorEnvironment,
   DesignViewState,
+  CanvasState,
   CanvasBackground,
   BlendMode,
+  CanvasGradient,
   GradientStop,
+  CanvasPattern,
   GridSettings,
   Breakpoint,
   Artboard,
-  DesignElement,
-  VisualElement,
-  ElementTransform,
-  
-  Paint,
-  Border,
-  Shadow,
-  ElementEffect,
-  ElementFilter,
-  ClipSettings,
-  LayoutElement,
-  LayoutConfig,
-  Spacing,
-  ComponentInstance,
+  ReactStyle,
+  ElementEventHandlers,
+  ElementAction,
   ComponentProps,
-  PropValue,
-  Expression,
-  ComponentVariant,
-  ComponentOverride,
+  DesignElement,
+  DataBinding,
+  EventBinding,
+  CoreComponentTypes,
   SmartContractElement,
-  ContractMethod,
-  ContractEvent,
-  ContractParam,
-  CanvasGroup,
+  FlowNodeBinding,
   FlowViewState,
   FlowNode,
   BaseFlowNode,
@@ -1760,7 +1727,7 @@ export type {
   ComponentSlot,
   SlotDefaultValue,
   ComponentStyleDefinitions,
-  ComponentStylePreset,
+  ComponentStyleGroup,
   ComponentVariantStyle,
   ComponentStateStyle,
   ComponentBehavior,
@@ -1785,8 +1752,8 @@ export type {
   AnimationPresets,
   KeyframeDefinition,
   DesignSystemComponents,
+  ComponentStylePreset,
   DesignSystemTheme,
-  DesignSystemMetadata,
   AssetLibrary,
   Asset,
   AssetVariant,
@@ -1806,9 +1773,11 @@ export type {
   CollaborationState,
   Collaborator,
   CommentThread,
+  Comment,
   Reaction,
   LiveChange,
   PluginManager,
+  Plugin,
   PluginUI,
   PluginPanel,
   PluginTool,
@@ -1852,12 +1821,12 @@ export type {
   ComponentCategory,
   ComponentMetadata,
   StyleProperties,
+  DesignSystemMetadata,
   EditorSettings,
   AssetCategory,
   DataSourceType,
-  CanvasState,
-  EditorEnvironment,
-  CanvasPattern,
-  CanvasGradient,
-  Plugin
+  ContractMethod,
+  ContractEvent,
+  ContractParam,
+  Expression
 };
