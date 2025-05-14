@@ -57,26 +57,27 @@ const ComponentItem = ({ item }: { item: { name: string; icon: React.ReactNode; 
   }));
 
   return (
-    <TooltipProvider><Tooltip>
-      <TooltipTrigger asChild>
-        <div
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
           ref={(node: HTMLDivElement | null) => { drag(node); }}
           className={cn(
-            "flex flex-col items-center p-2 rounded-md border hover:bg-accent cursor-grab active:cursor-grabbing transition-all",
-            "hover:shadow-sm hover:border-primary/50",
-            isDragging && "opacity-60 shadow-lg"
-          )}
-        >
-          <div className="p-1.5 rounded-md bg-secondary/50 mb-1.5">
-            {item.icon}
+              "flex flex-col items-center p-2 rounded-md border hover:bg-accent cursor-grab active:cursor-grabbing transition-all",
+              "hover:shadow-sm hover:border-primary/50",
+              isDragging && "opacity-60 shadow-lg"
+            )}
+          >
+            <div className="p-1.5 rounded-md bg-secondary/50 mb-1.5">
+              {item.icon}
+            </div>
+            <span className="text-xs text-center font-medium">{item.name}</span>
           </div>
-          <span className="text-xs text-center font-medium">{item.name}</span>
-        </div>
-      </TooltipTrigger>
-      <TooltipContent side="right" className="text-xs">
-        Drag to canvas
-      </TooltipContent>
-    </Tooltip>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="text-xs">
+          Drag {item.name} to canvas
+        </TooltipContent>
+      </Tooltip>
     </TooltipProvider>
   );
 };

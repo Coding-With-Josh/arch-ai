@@ -99,7 +99,7 @@ const PropertiesSheet = () => {
   const dimensions = element.dimensions || { width: 100, height: 100 };
 
   return (
-    <ResizablePanel defaultSize={20} minSize={15} maxSize={30}
+    <ResizablePanel defaultSize={28} minSize={20} maxSize={30}
       className="border-l bg-background flex flex-col"
     >
       <div className="flex flex-col h-full">

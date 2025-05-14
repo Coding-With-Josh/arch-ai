@@ -1,13 +1,40 @@
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDesignView } from '@/editor/editor-provider';
-import { DesignElement, UUID, Position as CanvasPosition, Dimensions } from '@/editor/types';
+import { 
+  DesignElement, 
+  UUID, 
+  Position, 
+  Dimensions, 
+  CanvasState,
+  ViewportState,
+  GridSettings,
+  StyleProperties
+} from '@/editor/types';
 import { useDrop } from 'react-dnd';
 import { throttle } from 'lodash';
 import { Button } from '@/components/ui/button';
-import { Grid, Maximize, Minimize, Monitor, Moon, Phone, Sun, Tablet } from 'lucide-react';
+import { Grid, Maximize, Minimize, Monitor, Moon, Smartphone, Sun, Tablet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
+import { ElementFactory } from './ElementFactory';
+
+interface DevicePreset {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  dimensions: Dimensions;
+  frameClass: string;
+  notchClass?: string;
+  frameColor: string;
+  screenClass: string;
+  scale: number;
+  macbookStyle?: boolean;
+  macbookNotchClass?: string;
+  macbookBaseClass?: string;
+  keyboardClass?: string;
+  footClass?: string;
+}
 
 const Canvas = () => {
   const { theme, setTheme } = useTheme();
@@ -24,7 +51,7 @@ const Canvas = () => {
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
-  const dragStartPos = useRef<CanvasPosition>({ x: 0, y: 0 });
+  const dragStartPos = useRef<Position>({ x: 0, y: 0 });
   const selectedElementsRef = useRef<UUID[]>([]);
   const resizeHandle = useRef<string | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -33,73 +60,69 @@ const Canvas = () => {
   const [activeDevice, setActiveDevice] = useState('macbook');
   const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
 
-  // Premium device presets with ultra-realistic MacBook Pro frame
-  const devicePresets = [
+  const devicePresets: DevicePreset[] = [
     {
       id: 'iphone',
       name: 'iPhone 15 Pro',
-      icon: <Phone className="h-4 w-4" />,
+      icon: <Smartphone className="h-4 w-4" />,
       dimensions: { width: 393, height: 800 },
-      frameClass: 'rounded-[3rem] border-[1rem] border-gray-900',
-      notchClass: 'w-[30%] h-6 bg-gray-900 rounded-b-xl mx-auto',
-      frameOffset: { x: 0, y: 0 },
-      frameColor: 'bg-gray-900',
-      screenClass: 'rounded-[2rem]'
+      frameClass: 'rounded-[3rem] border-[1rem] border-zinc-900',
+      notchClass: 'w-[30%] h-6 bg-zinc-900 rounded-b-xl mx-auto',
+      frameColor: 'bg-zinc-900',
+      screenClass: 'rounded-[2rem]',
+      scale: 0.7
     },
     {
       id: 'ipad',
       name: 'iPad Pro',
       icon: <Tablet className="h-4 w-4" />,
-      dimensions: { width: 1024, height: 1366 },
-      frameClass: 'rounded-[1rem] border-[1.5rem] border-gray-800',
-      notchClass: 'w-[20%] h-6 bg-gray-800 rounded-b-lg mx-auto',
-      frameOffset: { x: 0, y: 0 },
-      frameColor: 'bg-gray-800',
-      screenClass: 'rounded-[0.5rem]'
+      dimensions: { width: 600, height: 800 },
+      frameClass: 'rounded-[1rem] border-[1.5rem] border-zinc-800 scale-70',
+      notchClass: 'w-[20%] h-6 bg-zinc-800 rounded-b-lg mx-auto',
+      frameColor: 'bg-zinc-800',
+      screenClass: 'rounded-[0.5rem]',
+      scale: 0.6
     },
     {
       id: 'macbook',
       name: 'MacBook Pro 16"',
       icon: <Monitor className="h-4 w-4" />,
       dimensions: { width: 1728, height: 1117 },
-      frameClass: 'rounded-xl border-[0.5rem] border-gray-800',
-      frameOffset: { x: 0, y: 0 },
-      frameColor: 'bg-gray-800',
+      frameClass: 'rounded-xl border-[0.5rem] border-zinc-800',
+      frameColor: 'bg-zinc-800',
       macbookStyle: true,
-      macbookNotchClass: 'w-[20%] h-8 bg-gray-800 rounded-b-lg mx-auto',
-      macbookBaseClass: 'w-[110%] h-24 bg-gradient-to-b from-gray-800 to-gray-900 rounded-b-3xl -ml-[5%]',
+      macbookNotchClass: 'w-[20%] h-8 bg-zinc-800 rounded-b-lg mx-auto',
+      macbookBaseClass: 'w-[110%] h-24 bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-b-3xl -ml-[5%]',
       screenClass: 'rounded-lg',
-      keyboardClass: 'w-[105%] h-16 bg-gradient-to-b from-gray-900 to-gray-950 rounded-b-2xl -ml-[2.5%]',
-      footClass: 'w-[30%] h-2 bg-gray-950 rounded-b-lg mx-auto mt-1'
+      keyboardClass: 'w-[105%] h-16 bg-gradient-to-b from-zinc-900 to-zinc-950 rounded-b-2xl -ml-[2.5%]',
+      footClass: 'w-[30%] h-2 bg-zinc-950 rounded-b-lg mx-auto mt-1',
+      scale: 0.5
     }
   ];
 
   const activePreset = devicePresets.find(d => d.id === activeDevice) || devicePresets[2];
 
-  // Create default container matching device dimensions
   useEffect(() => {
     if (elements.length === 0) {
       const defaultContainer: DesignElement = {
         id: 'default-container' as UUID,
-        type: 'container',
+        componentType: 'container',
         position: { x: 0, y: 0 },
-        dimensions: {
-          width: activePreset.dimensions.width,
-          height: activePreset.dimensions.height
-        },
-        style: {
-          backgroundColor: theme === 'dark' ? 'rgba(30, 30, 30, 0.5)' : 'rgba(250, 250, 250, 0.7)',
-          border: theme === 'dark' ? '1px dashed rgba(255, 255, 255, 0.1)' : '1px dashed rgba(0, 0, 0, 0.1)',
-          backdropFilter: 'blur(4px)',
-          WebkitBackdropFilter: 'blur(4px)'
+        dimensions: activePreset.dimensions,
+        props: {
+          style: {
+            backgroundColor: theme === 'dark' ? 'rgba(30, 30, 30, 0.5)' : 'rgba(250, 250, 250, 0.7)',
+            border: theme === 'dark' ? '1px dashed rgba(255, 255, 255, 0.1)' : '1px dashed rgba(0, 0, 0, 0.1)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)'
+          } as StyleProperties
         },
         meta: {
           name: "Main Container",
           created: Date.now(),
           modified: Date.now(),
-          createdBy: 'system',
-          isDefaultContainer: true,
-          locked: true
+          createdBy: 'system' as UUID,
+          componentSource: 'core'
         }
       };
       addElement(defaultContainer);
@@ -110,15 +133,12 @@ const Canvas = () => {
     const device = devicePresets.find(d => d.id === deviceId);
     if (device) {
       setActiveDevice(deviceId);
-
-      // Update default container dimensions
-      const defaultContainer = elements.find(el => el.meta?.isDefaultContainer);
+      const defaultContainer = elements.find(el => el.id === 'default-container');
       if (defaultContainer) {
         updateElement(defaultContainer.id, {
           dimensions: device.dimensions
         });
       }
-
       updateDesignView({
         canvas: {
           ...canvas,
@@ -184,32 +204,33 @@ const Canvas = () => {
     drop: (item: { type: string; name: string }, monitor) => {
       const offset = monitor.getClientOffset();
       if (!offset || !canvasRef.current) return;
-
+  
       const canvasRect = canvasRef.current.getBoundingClientRect();
       const position = {
         x: (offset.x - canvasRect.left - viewport.position.x) / viewport.zoom,
         y: (offset.y - canvasRect.top - viewport.position.y) / viewport.zoom
       };
-
+  
       const newElement: DesignElement = {
         id: crypto.randomUUID() as UUID,
+        componentType: item.type,
         position,
         dimensions: { width: 100, height: 40 },
         props: {
-
           style: {
             backgroundColor: theme === 'dark' ? 'rgba(82, 82, 91, 0.5)' : 'rgba(212, 212, 216, 0.5)',
             border: theme === 'dark' ? '1px solid rgba(63, 63, 70, 0.8)' : '1px solid rgba(228, 228, 231, 0.8)'
-          },
+          } as StyleProperties,
         },
         meta: {
           name: item.name,
           created: Date.now(),
           modified: Date.now(),
-          createdBy: 'user'
+          createdBy: 'user' as UUID,
+          componentSource: 'core'
         }
       };
-
+  
       addElement(newElement);
       selectElements([newElement.id]);
     },
@@ -218,8 +239,6 @@ const Canvas = () => {
     })
   }), [viewport, addElement, selectElements, theme]);
 
-
-  // Handle element dragging
   const handleMouseDown = useCallback((e: React.MouseEvent, elementId: UUID) => {
     if (e.button !== 0) return;
 
@@ -248,7 +267,6 @@ const Canvas = () => {
     selectedElementsRef.current = [...selectedElements];
   }, [selectedElements, selectElements]);
 
-  // Handle canvas panning
   const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.button !== 0 || (e.target as HTMLElement) !== canvasRef.current) return;
     isDragging.current = true;
@@ -257,7 +275,6 @@ const Canvas = () => {
     selectElements([]);
   }, [selectElements]);
 
-  // Handle mouse move for dragging and resizing
   const handleMouseMove = useCallback(throttle((e: MouseEvent) => {
     if (!isDragging.current || !canvasRef.current) return;
 
@@ -292,7 +309,7 @@ const Canvas = () => {
     } else if (selectedElementsRef.current.length > 0) {
       selectedElementsRef.current.forEach(id => {
         const element = elements.find(el => el.id === id);
-        if (element && !element.meta?.locked) {
+        if (element) {
           updateElement(id, {
             position: {
               x: element.position.x + deltaX,
@@ -316,14 +333,12 @@ const Canvas = () => {
     dragStartPos.current = { x: e.clientX, y: e.clientY };
   }, 16), [elements, selectedElements, updateElement, updateDesignView, viewport, isDraggingCanvas]);
 
-  // Handle mouse up
   const handleMouseUp = useCallback(() => {
     isDragging.current = false;
     setIsDraggingCanvas(false);
     resizeHandle.current = null;
   }, []);
 
-  // Add event listeners
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
@@ -334,7 +349,6 @@ const Canvas = () => {
     };
   }, [handleMouseMove, handleMouseUp]);
 
-  // Render grid with premium styling
   const renderGrid = () => {
     if (!canvas.grid.enabled) return null;
 
@@ -373,49 +387,6 @@ const Canvas = () => {
     );
   };
 
-  // Render element with premium styling
-  const renderElement = (element: DesignElement) => {
-    const isSelected = selectedElements.includes(element.id);
-    const isDefaultContainer = element.meta?.isDefaultContainer;
-
-    const baseStyle: React.CSSProperties = {
-      position: 'absolute',
-      left: `${element.position.x}px`,
-      top: `${element.position.y}px`,
-      width: `${element.dimensions.width}px`,
-      height: `${element.dimensions.height}px`,
-      zIndex: isDefaultContainer ? 0 : (isSelected ? 1000 : 1),
-      cursor: isDefaultContainer ? 'default' : (isSelected ? 'move' : 'default'),
-      pointerEvents: isDefaultContainer ? 'none' : 'auto',
-      transition: 'box-shadow 0.2s ease, transform 0.2s ease',
-      ...element.style
-    };
-
-    return (
-      <div
-        key={element.id}
-        className={cn(
-          "element",
-          isDefaultContainer ? "default-container" : "",
-          isSelected ? "ring-2 ring-blue-500 ring-offset-2" : ""
-        )}
-        style={baseStyle}
-        onMouseDown={isDefaultContainer ? undefined : (e) => handleMouseDown(e, element.id)}
-        data-element-id={element.id}
-      >
-        {isSelected && !isDefaultContainer && renderSelectionHandles(element)}
-        {isDefaultContainer && (
-          <div className="absolute inset-0 flex items-center justify-center text-sm font-medium" style={{
-            color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'
-          }}>
-            {activePreset.name} ({Math.round(element.dimensions.width)}×{Math.round(element.dimensions.height)})
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Premium resize handles
   const renderSelectionHandles = (element: DesignElement) => {
     const handleSize = 8;
     const handleOffset = handleSize / 2;
@@ -444,17 +415,66 @@ const Canvas = () => {
     );
   };
 
+  const renderElement = (element: DesignElement) => {
+    const isSelected = selectedElements.includes(element.id);
+    const isDefaultContainer = element.id === 'default-container';
+
+    const baseStyle: React.CSSProperties = {
+      position: 'absolute',
+      left: `${element.position.x}px`,
+      top: `${element.position.y}px`,
+      width: `${element.dimensions?.width}px`,
+      height: `${element.dimensions?.height}px`,
+      zIndex: isDefaultContainer ? 0 : (isSelected ? 1000 : 1),
+      cursor: isDefaultContainer ? 'default' : (isSelected ? 'move' : 'default'),
+      pointerEvents: isDefaultContainer ? 'none' : 'auto',
+      transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+      ...element.props?.style
+    };
+
+    return (
+      <div
+        key={element.id}
+        className={cn(
+          "element",
+          isDefaultContainer ? "default-container" : "",
+          isSelected ? "ring-2 ring-blue-500 ring-offset-2" : ""
+        )}
+        style={baseStyle}
+        onMouseDown={isDefaultContainer ? undefined : (e) => handleMouseDown(e, element.id)}
+        data-element-id={element.id}
+      >
+        <div style={{
+          width: '100%',
+          height: '100%',
+          pointerEvents: isDefaultContainer ? 'none' : 'auto'
+        }}>
+          <ElementFactory element={element} />
+        </div>
+
+        {isSelected && !isDefaultContainer && renderSelectionHandles(element)}
+        {isDefaultContainer && (
+          <div className="absolute inset-0 flex items-center justify-center text-sm font-medium" style={{
+            color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)',
+            pointerEvents: 'none',
+            zIndex: 10
+          }}>
+            {activePreset.name} ({Math.round(element.dimensions?.width || 0)}×{Math.round(element.dimensions?.height || 0)})
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className={cn(
       "relative w-full h-full overflow-hidden transition-colors duration-300",
       fullscreen ? "fixed inset-0 z-[100]" : "",
-      theme === 'dark' ? "bg-gray-950" : "bg-gray-100"
+      theme === 'dark' ? "bg-zinc-950" : "bg-zinc-100"
     )}>
-      {/* Glass morphism background */}
       <div className="absolute inset-0 opacity-[3%] pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-zinc-500/10 to-zinc-200/10 pointer-events-none" />
 
-      {/* Premium control bar */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-2 bg-background/90 backdrop-blur-lg rounded-full border shadow-lg px-4 py-2">
         <div className="flex items-center gap-1">
           {devicePresets.map(device => (
@@ -546,7 +566,6 @@ const Canvas = () => {
         </Button>
       </div>
 
-      {/* Canvas Content */}
       <div
         ref={canvasRef}
         className={cn(
@@ -555,30 +574,26 @@ const Canvas = () => {
         )}
         onMouseDown={handleCanvasMouseDown}
       >
-        {/* Ultra-realistic MacBook Pro frame */}
-        {activePreset.macbookStyle && (
+        {activePreset.macbookStyle ? (
           <div className="relative mt-9" style={{
             transform: `scale(${Math.min(1, 1200 / activePreset.dimensions.width)})`
           }}>
-            {/* Screen frame with three dots */}
             <div className={cn(
               "relative mx-auto",
               activePreset.frameClass,
               activePreset.frameColor
             )}>
-              {/* Three dots (red, yellow, green) */}
-              <div className="absolute -top-5 left-4 flex items-center space-x-2">
+              <div className="absolute top-4 z-[5000] left-4 flex items-center space-x-2">
                 <div className="h-3 w-3 rounded-full bg-[#FF5F56]"></div>
                 <div className="h-3 w-3 rounded-full bg-[#FFBD2E]"></div>
                 <div className="h-3 w-3 rounded-full bg-[#27C93F]"></div>
               </div>
 
-              {/* Screen content */}
               <div
                 className={cn(
                   "relative overflow-hidden mx-auto",
                   activePreset.screenClass,
-                  theme === 'dark' ? "bg-gray-900" : "bg-gray-50"
+                  theme === 'dark' ? "bg-zinc-900" : "bg-zinc-50"
                 )}
                 style={{
                   width: `${activePreset.dimensions.width}px`,
@@ -599,33 +614,16 @@ const Canvas = () => {
               </div>
             </div>
 
-            {/* Keyboard area */}
             <div className={cn(
               "relative mx-auto mt-0",
               activePreset.keyboardClass
             )}>
-              {/* Keyboard details */}
-              <div className="w-full h-8 bg-gradient-to-b from-gray-800 to-gray-900 rounded-t-lg"></div>
-              <div className="w-[80%] h-1 bg-gray-700 rounded-full mx-auto mt-2"></div>
-              <div className="w-[60%] h-1 bg-gray-700 rounded-full mx-auto mt-1"></div>
-            </div>
-
-            {/* Base */}
-            <div className={cn(
-              "relative mx-auto",
-              activePreset.macbookBaseClass
-            )}>
-              <div className={cn(
-                "mx-auto",
-                activePreset.footClass
-              )} />
+              <div className="w-full h-8 bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-t-lg"></div>
+              <div className="w-[80%] h-1 bg-zinc-700 rounded-full mx-auto mt-2"></div>
+              <div className="w-[60%] h-1 bg-zinc-700 rounded-full mx-auto mt-1"></div>
             </div>
           </div>
-        )}
-
-
-        {/* Mobile/tablet frame */}
-        {!activePreset.macbookStyle && (
+        ) : (
           <div className="relative" style={{
             transform: `scale(${Math.min(1, 1000 / activePreset.dimensions.width)})`
           }}>
@@ -634,18 +632,16 @@ const Canvas = () => {
               activePreset.frameClass,
               activePreset.frameColor
             )}>
-              {/* Notch */}
               <div className={cn(
                 "absolute -top-6 left-0 right-0 flex justify-center",
                 activePreset.notchClass
               )} />
 
-              {/* Screen content */}
               <div
                 className={cn(
                   "relative overflow-hidden mx-auto",
                   activePreset.screenClass,
-                  theme === 'dark' ? "bg-gray-900" : "bg-gray-50"
+                  theme === 'dark' ? "bg-zinc-900" : "bg-zinc-50"
                 )}
                 style={{
                   width: `${activePreset.dimensions.width}px`,

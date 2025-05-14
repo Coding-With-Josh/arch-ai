@@ -307,9 +307,9 @@ type ElementEventHandlers = {
 
 type ElementAction = 
   | { type: 'navigate', target: string }
-  | { type: 'callContract', contractId: UUID, method: string, args: any[] }
-  | { type: 'setVariable', variableId: UUID, value: any }
-  | { type: 'triggerFlow', flowId: UUID, payload?: any }
+  | { type: 'callContract', contractId: string, method: string, args: any[] }
+  | { type: 'setVariable', variableId: string, value: any }
+  | { type: 'triggerFlow', flowId: string, payload?: any }
   | { type: 'openUrl', url: string, target?: '_blank' | '_self' }
   | { type: 'custom', handler: string }
   | { type: 'emitEvent', eventName: string, payload?: any };

@@ -1,8 +1,8 @@
 "use client"
 
-import { StyleProperties } from '@/editor/types';
+import { DesignElement, ReactStyle } from '@/editor/types';
 
-export function applyStyles(styles: Partial<StyleProperties>) {
+export function applyStyles(styles: Partial<ReactStyle>) {
   return {
     // Layout
     display: styles.display,
@@ -61,20 +61,20 @@ export function applyStyles(styles: Partial<StyleProperties>) {
 }
 
 export function resolveStyles(
-    styles: ElementStyles,
+    styles: DesignElement["props"]["style"],
     variant?: string,
     state?: string
-  ): StyleProperties {
-    let result = { ...styles.base };
+  ): ReactStyle {
+    let result = { ...styles?.base };
   
     // Apply variant styles if specified
-    if (variant && styles.variants?.[variant]) {
+    if (variant && styles?.variants?.[variant]) {
       result = { ...result, ...styles.variants[variant] };
     }
   
     // Apply state styles if specified
-    if (state && styles.states?.[state]) {
-      result = { ...result, ...styles.states[state] };
+    if (state && styles?.state?.[state]) {
+      result = { ...result, ...styles.state[state] };
     }
   
     return result;
