@@ -6,9 +6,6 @@ import {
   UUID, 
   Position, 
   Dimensions, 
-  CanvasState,
-  ViewportState,
-  GridSettings,
   StyleProperties
 } from '@/editor/types';
 import { useDrop } from 'react-dnd';
@@ -102,6 +99,7 @@ const Canvas = () => {
 
   const activePreset = devicePresets.find(d => d.id === activeDevice) || devicePresets[2];
 
+  // Initialize default container
   useEffect(() => {
     if (elements.length === 0) {
       const defaultContainer: DesignElement = {
@@ -127,7 +125,7 @@ const Canvas = () => {
       };
       addElement(defaultContainer);
     }
-  }, [elements.length, activePreset.dimensions, addElement, theme]);
+  }, [activePreset.dimensions, addElement, elements.length, theme]);
 
   const handleDeviceChange = (deviceId: string) => {
     const device = devicePresets.find(d => d.id === deviceId);
@@ -199,18 +197,19 @@ const Canvas = () => {
     });
   };
 
+  // Drop handler
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'COMPONENT',
     drop: (item: { type: string; name: string }, monitor) => {
       const offset = monitor.getClientOffset();
       if (!offset || !canvasRef.current) return;
-  
+
       const canvasRect = canvasRef.current.getBoundingClientRect();
       const position = {
         x: (offset.x - canvasRect.left - viewport.position.x) / viewport.zoom,
         y: (offset.y - canvasRect.top - viewport.position.y) / viewport.zoom
       };
-  
+
       const newElement: DesignElement = {
         id: crypto.randomUUID() as UUID,
         componentType: item.type,
@@ -230,13 +229,14 @@ const Canvas = () => {
           componentSource: 'core'
         }
       };
-  
+
       addElement(newElement);
       selectElements([newElement.id]);
     },
     collect: (monitor) => ({
-      isOver: monitor.isOver()
-    })
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
   }), [viewport, addElement, selectElements, theme]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent, elementId: UUID) => {
@@ -472,9 +472,95 @@ const Canvas = () => {
       fullscreen ? "fixed inset-0 z-[100]" : "",
       theme === 'dark' ? "bg-zinc-950" : "bg-zinc-100"
     )}>
-      <div className="absolute inset-0 opacity-[3%] pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-br from-zinc-500/10 to-zinc-200/10 pointer-events-none" />
+      {/* Drop target layer */}
+      <div 
+                          ref={(node: HTMLDivElement | null) => { drop(node); }}
 
+        className="absolute inset-0"
+        style={{
+          pointerEvents: isDraggingCanvas ? 'none' : 'auto'
+        }}
+      >
+        {/* Main canvas content */}
+        <div
+          ref={canvasRef}
+          className={cn(
+            "relative w-full h-full flex items-center justify-center p-8 transition-all duration-300",
+            isDraggingCanvas ? "cursor-grabbing" : "cursor-default"
+          )}
+          onMouseDown={handleCanvasMouseDown}
+        >
+          {activePreset.macbookStyle ? (
+            <div className="relative mt-9" style={{ transform: `scale(${Math.min(1, 1200 / activePreset.dimensions.width)})` }}>
+              <div className={cn("relative mx-auto", activePreset.frameClass, activePreset.frameColor)}>
+                <div className="absolute top-4 z-[5000] left-4 flex items-center space-x-2">
+                  <div className="h-3 w-3 rounded-full bg-[#FF5F56]"></div>
+                  <div className="h-3 w-3 rounded-full bg-[#FFBD2E]"></div>
+                  <div className="h-3 w-3 rounded-full bg-[#27C93F]"></div>
+                </div>
+
+                <div
+                  className={cn(
+                    "relative overflow-hidden mx-auto",
+                    activePreset.screenClass,
+                    theme === 'dark' ? "bg-zinc-900" : "bg-zinc-50"
+                  )}
+                  style={{
+                    width: `${activePreset.dimensions.width}px`,
+                    height: `${activePreset.dimensions.height}px`,
+                  }}
+                >
+                  {renderGrid()}
+                  <div
+                    className="absolute"
+                    style={{
+                      transform: `translate(${viewport.position.x}px, ${viewport.position.y}px) scale(${viewport.zoom})`,
+                      transformOrigin: '0 0'
+                    }}
+                  >
+                    {elements.map(renderElement)}
+                  </div>
+                </div>
+              </div>
+              <div className={cn("relative mx-auto mt-0", activePreset.keyboardClass)}>
+                <div className="w-full h-8 bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-t-lg"></div>
+                <div className="w-[80%] h-1 bg-zinc-700 rounded-full mx-auto mt-2"></div>
+                <div className="w-[60%] h-1 bg-zinc-700 rounded-full mx-auto mt-1"></div>
+              </div>
+            </div>
+          ) : (
+            <div className="relative" style={{ transform: `scale(${Math.min(1, 1000 / activePreset.dimensions.width)})` }}>
+              <div className={cn("relative mx-auto", activePreset.frameClass, activePreset.frameColor)}>
+                <div className={cn("absolute -top-6 left-0 right-0 flex justify-center", activePreset.notchClass)} />
+                <div
+                  className={cn(
+                    "relative overflow-hidden mx-auto",
+                    activePreset.screenClass,
+                    theme === 'dark' ? "bg-zinc-900" : "bg-zinc-50"
+                  )}
+                  style={{
+                    width: `${activePreset.dimensions.width}px`,
+                    height: `${activePreset.dimensions.height}px`,
+                  }}
+                >
+                  {renderGrid()}
+                  <div
+                    className="absolute"
+                    style={{
+                      transform: `translate(${viewport.position.x}px, ${viewport.position.y}px) scale(${viewport.zoom})`,
+                      transformOrigin: '0 0'
+                    }}
+                  >
+                    {elements.map(renderElement)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Control bar */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-2 bg-background/90 backdrop-blur-lg rounded-full border shadow-lg px-4 py-2">
         <div className="flex items-center gap-1">
           {devicePresets.map(device => (
@@ -564,105 +650,6 @@ const Canvas = () => {
         >
           {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </Button>
-      </div>
-
-      <div
-        ref={canvasRef}
-        className={cn(
-          "relative w-full h-full flex items-center justify-center p-8 transition-all duration-300",
-          isDraggingCanvas ? "cursor-grabbing" : "cursor-default"
-        )}
-        onMouseDown={handleCanvasMouseDown}
-      >
-        {activePreset.macbookStyle ? (
-          <div className="relative mt-9" style={{
-            transform: `scale(${Math.min(1, 1200 / activePreset.dimensions.width)})`
-          }}>
-            <div className={cn(
-              "relative mx-auto",
-              activePreset.frameClass,
-              activePreset.frameColor
-            )}>
-              <div className="absolute top-4 z-[5000] left-4 flex items-center space-x-2">
-                <div className="h-3 w-3 rounded-full bg-[#FF5F56]"></div>
-                <div className="h-3 w-3 rounded-full bg-[#FFBD2E]"></div>
-                <div className="h-3 w-3 rounded-full bg-[#27C93F]"></div>
-              </div>
-
-              <div
-                className={cn(
-                  "relative overflow-hidden mx-auto",
-                  activePreset.screenClass,
-                  theme === 'dark' ? "bg-zinc-900" : "bg-zinc-50"
-                )}
-                style={{
-                  width: `${activePreset.dimensions.width}px`,
-                  height: `${activePreset.dimensions.height}px`,
-                }}
-              >
-                {renderGrid()}
-                <div
-                  ref={(node: HTMLDivElement | null) => { drop(node); }}
-                  className="absolute"
-                  style={{
-                    transform: `translate(${viewport.position.x}px, ${viewport.position.y}px) scale(${viewport.zoom})`,
-                    transformOrigin: '0 0'
-                  }}
-                >
-                  {elements.map(renderElement)}
-                </div>
-              </div>
-            </div>
-
-            <div className={cn(
-              "relative mx-auto mt-0",
-              activePreset.keyboardClass
-            )}>
-              <div className="w-full h-8 bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-t-lg"></div>
-              <div className="w-[80%] h-1 bg-zinc-700 rounded-full mx-auto mt-2"></div>
-              <div className="w-[60%] h-1 bg-zinc-700 rounded-full mx-auto mt-1"></div>
-            </div>
-          </div>
-        ) : (
-          <div className="relative" style={{
-            transform: `scale(${Math.min(1, 1000 / activePreset.dimensions.width)})`
-          }}>
-            <div className={cn(
-              "relative mx-auto",
-              activePreset.frameClass,
-              activePreset.frameColor
-            )}>
-              <div className={cn(
-                "absolute -top-6 left-0 right-0 flex justify-center",
-                activePreset.notchClass
-              )} />
-
-              <div
-                className={cn(
-                  "relative overflow-hidden mx-auto",
-                  activePreset.screenClass,
-                  theme === 'dark' ? "bg-zinc-900" : "bg-zinc-50"
-                )}
-                style={{
-                  width: `${activePreset.dimensions.width}px`,
-                  height: `${activePreset.dimensions.height}px`,
-                }}
-              >
-                {renderGrid()}
-                <div
-                  ref={(node: HTMLDivElement | null) => { drop(node); }}
-                  className="absolute"
-                  style={{
-                    transform: `translate(${viewport.position.x}px, ${viewport.position.y}px) scale(${viewport.zoom})`,
-                    transformOrigin: '0 0'
-                  }}
-                >
-                  {elements.map(renderElement)}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
