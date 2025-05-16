@@ -33,7 +33,7 @@ export const createWorkspace = async (input: CreateWorkspaceInput) => {
       },
     });
 
-    revalidatePath(`/dashboard/workspace/${workspace.slug}`);
+    revalidatePath(`${workspace.slug}`);
     return workspace;
   } catch (error) {
     console.error('Error creating workspace:', error);

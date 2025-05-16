@@ -27,7 +27,7 @@ export const ClientPage = ({
     const [success, setSuccess] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
-    const workspaceSlug = params.workspaceSlug as string;   
+    const { workspaceSlug } = useParams()
 
     const form = useForm<z.infer<typeof projectFormSchema>>({
         resolver: zodResolver(projectFormSchema),
@@ -50,7 +50,7 @@ export const ClientPage = ({
                 .toLowerCase()
                 .replace(/[\s\W-]+/g, "-"),
                 description: data.description,
-                workspaceSlug: workspaceSlug,
+                workspaceSlug: workspaceSlug as string,
                 projectType: data.projectType,
                 startDate: data.startDate?.toISOString(),
                 endDate: data.endDate?.toISOString(),
