@@ -128,6 +128,7 @@ const Canvas = () => {
             WebkitBackdropFilter: 'blur(4px)',
             width: "100%",
             height: "100%",
+            zIndex: 5000,
           } as StyleProperties
         },
         meta: {
