@@ -1,13 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDesignView } from '@/editor/editor-provider';
-import { 
-  DesignElement, 
-  UUID, 
-  Position, 
-  Dimensions, 
-  StyleProperties
-} from '@/editor/types';
+import { DesignElement, UUID, Position, Dimensions, StyleProperties } from '@/editor/types';
 import { useDrop } from 'react-dnd';
 import { throttle } from 'lodash';
 import { Button } from '@/components/ui/button';
@@ -15,6 +9,7 @@ import { Grid, Maximize, Minimize, Monitor, Moon, Smartphone, Sun, Tablet } from
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import { ElementFactory } from '../../elements/element-factory';
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu';
 
 interface DevicePreset {
   id: string;
@@ -43,7 +38,7 @@ const Canvas = () => {
     addElement,
     updateElement,
     selectElements,
-    updateDesignView
+    updateDesignView,
   } = useDesignView();
 
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -51,11 +46,29 @@ const Canvas = () => {
   const dragStartPos = useRef<Position>({ x: 0, y: 0 });
   const selectedElementsRef = useRef<UUID[]>([]);
   const resizeHandle = useRef<string | null>(null);
+  const elementRefs = useRef<Record<UUID, React.RefObject<HTMLElement>>>({});
   const [zoom, setZoom] = useState(1);
   const [showGrid, setShowGrid] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
   const [activeDevice, setActiveDevice] = useState('macbook');
   const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState<Position | null>(null);
+
+  const getElementRef = useCallback((id: UUID) => {
+    if (!elementRefs.current[id]) {
+      elementRefs.current[id] = React.createRef();
+    }
+    return elementRefs.current[id];
+  }, []);
+
+  useEffect(() => {
+    const currentIds = new Set(elements.map(el => el.id));
+    Object.keys(elementRefs.current).forEach(id => {
+      if (!currentIds.has(id as UUID)) {
+        delete elementRefs.current[id as UUID];
+      }
+    });
+  }, [elements]);
 
   const devicePresets: DevicePreset[] = [
     {
@@ -112,7 +125,9 @@ const Canvas = () => {
             backgroundColor: theme === 'dark' ? 'rgba(30, 30, 30, 0.5)' : 'rgba(250, 250, 250, 0.7)',
             border: theme === 'dark' ? '1px dashed rgba(255, 255, 255, 0.1)' : '1px dashed rgba(0, 0, 0, 0.1)',
             backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)'
+            WebkitBackdropFilter: 'blur(4px)',
+            width: "100%",
+            height: "100%",
           } as StyleProperties
         },
         meta: {
@@ -160,44 +175,11 @@ const Canvas = () => {
     });
   };
 
-  const toggleFullscreen = () => {
-    setFullscreen(!fullscreen);
-  };
+  const toggleFullscreen = () => setFullscreen(!fullscreen);
+  const zoomIn = () => setZoom(prev => Math.min(3, prev + 0.1));
+  const zoomOut = () => setZoom(prev => Math.max(0.2, prev - 0.1));
+  const resetZoom = () => setZoom(1);
 
-  const zoomIn = () => {
-    const newZoom = Math.min(3, zoom + 0.1);
-    setZoom(newZoom);
-    updateDesignView({
-      viewport: {
-        ...viewport,
-        zoom: newZoom
-      }
-    });
-  };
-
-  const zoomOut = () => {
-    const newZoom = Math.max(0.2, zoom - 0.1);
-    setZoom(newZoom);
-    updateDesignView({
-      viewport: {
-        ...viewport,
-        zoom: newZoom
-      }
-    });
-  };
-
-  const resetZoom = () => {
-    setZoom(1);
-    updateDesignView({
-      viewport: {
-        ...viewport,
-        zoom: 1,
-        position: { x: 0, y: 0 }
-      }
-    });
-  };
-
-  // Drop handler
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'COMPONENT',
     drop: (item: { type: string; name: string }, monitor) => {
@@ -275,6 +257,17 @@ const Canvas = () => {
     selectElements([]);
   }, [selectElements]);
 
+  const handleContextMenu = (e: React.MouseEvent, elementId: UUID | null = null) => {
+    e.preventDefault();
+    if (elementId) {
+      if (!selectedElements.includes(elementId)) {
+        selectElements([elementId]);
+      }
+    } else {
+      setContextMenuPosition({ x: e.clientX, y: e.clientY });
+    }
+  };
+
   const handleMouseMove = useCallback(throttle((e: MouseEvent) => {
     if (!isDragging.current || !canvasRef.current) return;
 
@@ -289,21 +282,44 @@ const Canvas = () => {
       const newPosition = { ...element.position };
 
       switch (resizeHandle.current) {
-        case 'n': newDimensions.height -= deltaY; newPosition.y += deltaY; break;
-        case 'ne': newDimensions.width += deltaX; newDimensions.height -= deltaY; newPosition.y += deltaY; break;
-        case 'e': newDimensions.width += deltaX; break;
-        case 'se': newDimensions.width += deltaX; newDimensions.height += deltaY; break;
-        case 's': newDimensions.height += deltaY; break;
-        case 'sw': newDimensions.width -= deltaX; newDimensions.height += deltaY; newPosition.x += deltaX; break;
-        case 'w': newDimensions.width -= deltaX; newPosition.x += deltaX; break;
-        case 'nw': newDimensions.width -= deltaX; newDimensions.height -= deltaY; newPosition.x += deltaX; newPosition.y += deltaY; break;
+        case 'n': 
+          newDimensions.height = Math.max(10, newDimensions.height - deltaY); 
+          newPosition.y += deltaY; 
+          break;
+        case 'ne': 
+          newDimensions.width = Math.max(10, newDimensions.width + deltaX); 
+          newDimensions.height = Math.max(10, newDimensions.height - deltaY); 
+          newPosition.y += deltaY; 
+          break;
+        case 'e': 
+          newDimensions.width = Math.max(10, newDimensions.width + deltaX); 
+          break;
+        case 'se': 
+          newDimensions.width = Math.max(10, newDimensions.width + deltaX); 
+          newDimensions.height = Math.max(10, newDimensions.height + deltaY); 
+          break;
+        case 's': 
+          newDimensions.height = Math.max(10, newDimensions.height + deltaY); 
+          break;
+        case 'sw': 
+          newDimensions.width = Math.max(10, newDimensions.width - deltaX); 
+          newDimensions.height = Math.max(10, newDimensions.height + deltaY); 
+          newPosition.x += deltaX; 
+          break;
+        case 'w': 
+          newDimensions.width = Math.max(10, newDimensions.width - deltaX); 
+          newPosition.x += deltaX; 
+          break;
+        case 'nw': 
+          newDimensions.width = Math.max(10, newDimensions.width - deltaX); 
+          newDimensions.height = Math.max(10, newDimensions.height - deltaY); 
+          newPosition.x += deltaX; 
+          newPosition.y += deltaY; 
+          break;
       }
 
       updateElement(element.id, {
-        dimensions: {
-          width: Math.max(10, newDimensions.width),
-          height: Math.max(10, newDimensions.height)
-        },
+        dimensions: newDimensions,
         position: newPosition
       });
     } else if (selectedElementsRef.current.length > 0) {
@@ -342,7 +358,6 @@ const Canvas = () => {
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
-
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
@@ -415,54 +430,81 @@ const Canvas = () => {
     );
   };
 
+  const updateElementStyle = (elementId: UUID, styleUpdates: Partial<StyleProperties>) => {
+    const element = elements.find(el => el.id === elementId);
+    if (element) {
+      updateElement(elementId, {
+        props: {
+          ...element.props,
+          style: {
+            ...element.props?.style,
+            ...styleUpdates
+          }
+        }
+      });
+    }
+  };
+
   const renderElement = (element: DesignElement) => {
     const isSelected = selectedElements.includes(element.id);
     const isDefaultContainer = element.id === 'default-container';
-
-    const baseStyle: React.CSSProperties = {
+    const isResizable = ['box', 'container', 'grid', 'stack', 'section', 'carousel', 'modal', 'tabs'].includes(element.componentType);
+  
+    const elementStyles: React.CSSProperties = {
       position: 'absolute',
       left: `${element.position.x}px`,
       top: `${element.position.y}px`,
       width: `${element.dimensions?.width}px`,
       height: `${element.dimensions?.height}px`,
       zIndex: isDefaultContainer ? 0 : (isSelected ? 1000 : 1),
-      cursor: isDefaultContainer ? 'default' : (isSelected ? 'move' : 'default'),
-      pointerEvents: isDefaultContainer ? 'none' : 'auto',
-      transition: 'box-shadow 0.2s ease, transform 0.2s ease',
       ...element.props?.style
     };
-
+  
     return (
-      <div
-        key={element.id}
-        className={cn(
-          "element",
-          isDefaultContainer ? "default-container" : "",
-          isSelected ? "ring-2 ring-blue-500 ring-offset-2" : ""
+      <React.Fragment key={element.id}>
+        <ElementFactory 
+          element={element} 
+          style={elementStyles}
+          className={cn(
+            isSelected && "ring-2 ring-blue-500 ring-offset-2",
+            element.props?.className
+          )}
+          onMouseDown={(e) => handleMouseDown(e, element.id)}
+          onContextMenu={(e) => handleContextMenu(e, element.id)}
+          ref={isResizable ? getElementRef(element.id) : undefined}
+        />
+  
+        {isSelected && !isDefaultContainer && (
+          <div 
+            className="absolute pointer-events-none"
+            style={{
+              left: `${element.position.x}px`,
+              top: `${element.position.y}px`,
+              width: `${element.dimensions?.width}px`,
+              height: `${element.dimensions?.height}px`,
+              zIndex: isSelected ? 1000 : 1,
+            }}
+          >
+            {renderSelectionHandles(element)}
+          </div>
         )}
-        style={baseStyle}
-        onMouseDown={isDefaultContainer ? undefined : (e) => handleMouseDown(e, element.id)}
-        data-element-id={element.id}
-      >
-        <div style={{
-          width: '100%',
-          height: '100%',
-          pointerEvents: isDefaultContainer ? 'none' : 'auto'
-        }}>
-          <ElementFactory element={element} />
-        </div>
-
-        {isSelected && !isDefaultContainer && renderSelectionHandles(element)}
+        
         {isDefaultContainer && (
-          <div className="absolute inset-0 flex items-center justify-center text-sm font-medium" style={{
-            color: theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)',
-            pointerEvents: 'none',
-            zIndex: 10
-          }}>
+          <div 
+            className="absolute flex items-center justify-center text-sm font-medium pointer-events-none"
+            style={{
+              left: `${element.position.x}px`,
+              top: `${element.position.y}px`,
+              width: `${element.dimensions?.width}px`,
+              height: `${element.dimensions?.height}px`,
+              color: theme === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
+              zIndex: 10
+            }}
+          >
             {activePreset.name} ({Math.round(element.dimensions?.width || 0)}×{Math.round(element.dimensions?.height || 0)})
           </div>
         )}
-      </div>
+      </React.Fragment>
     );
   };
 
@@ -473,13 +515,13 @@ const Canvas = () => {
       theme === 'dark' ? "bg-zinc-950" : "bg-zinc-100"
     )}>
       {/* Drop target layer */}
-      <div 
-                          ref={(node: HTMLDivElement | null) => { drop(node); }}
-
+      <div
+        ref={(node: HTMLDivElement | null) => { drop(node); }}
         className="absolute inset-0"
         style={{
           pointerEvents: isDraggingCanvas ? 'none' : 'auto'
         }}
+        onContextMenu={handleContextMenu}
       >
         {/* Main canvas content */}
         <div
@@ -559,6 +601,58 @@ const Canvas = () => {
           )}
         </div>
       </div>
+
+      {/* Canvas Context Menu */}
+      {contextMenuPosition && (
+        <div 
+          className="fixed bg-background border rounded-md shadow-lg z-50"
+          style={{
+            left: `${contextMenuPosition.x}px`,
+            top: `${contextMenuPosition.y}px`
+          }}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <div className="p-1">
+            <button 
+              className="w-full text-left px-4 py-2 text-sm hover:bg-accent rounded-sm"
+              onClick={() => {
+                const defaultContainer = elements.find(el => el.id === 'default-container');
+                if (defaultContainer) {
+                  updateElementStyle(defaultContainer.id, { 
+                    backgroundColor: theme === 'dark' ? 'rgba(30, 30, 30, 0.5)' : 'rgba(250, 250, 250, 0.7)'
+                  });
+                }
+                setContextMenuPosition(null);
+              }}
+            >
+              Reset Background
+            </button>
+            <button 
+              className="w-full text-left px-4 py-2 text-sm hover:bg-accent rounded-sm"
+              onClick={() => {
+                const defaultContainer = elements.find(el => el.id === 'default-container');
+                if (defaultContainer) {
+                  updateElementStyle(defaultContainer.id, { 
+                    backgroundColor: theme === 'dark' ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)'
+                  });
+                }
+                setContextMenuPosition(null);
+              }}
+            >
+              Solid Background
+            </button>
+            <button 
+              className="w-full text-left px-4 py-2 text-sm hover:bg-accent rounded-sm"
+              onClick={() => {
+                setContextMenuPosition(null);
+                resetZoom();
+              }}
+            >
+              Reset View
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Control bar */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-2 bg-background/90 backdrop-blur-lg rounded-full border shadow-lg px-4 py-2">

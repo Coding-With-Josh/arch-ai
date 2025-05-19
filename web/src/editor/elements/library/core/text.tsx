@@ -8,7 +8,7 @@ interface TextProps extends ComponentProps {
 }
 
 export const Text = React.forwardRef<HTMLParagraphElement, TextProps>(
-  ({ content, variant, truncate, style, className, children, ...props }, ref) => {
+  ({ content, variant, truncate, style, className, ...props }, ref) => {
     const textStyle = {
       ...style,
       overflow: truncate ? 'hidden' : undefined,
@@ -23,7 +23,7 @@ export const Text = React.forwardRef<HTMLParagraphElement, TextProps>(
         className={`${variant ? `text-${variant}` : ''} ${className || ''}`}
         {...props}
       >
-        {content || children}
+        {content}
       </p>
     );
   }

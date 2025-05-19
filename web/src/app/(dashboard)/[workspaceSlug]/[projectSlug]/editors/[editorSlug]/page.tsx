@@ -84,44 +84,41 @@ const Page = async ({ params }: { params: { editorSlug: string; projectSlug: str
       currentArtboardId: "artboard_1" as UUID
     },
     elements: [
-      {
-        id: "element_1" as UUID,
-        type: 'rectangle',
-        position: { x: 50, y: 100 },
-        dimensions: { width: 200, height: 100 },
-        transform: {
-          rotation: 0,
-          skew: { x: 0, y: 0 },
-          origin: { x: 0.5, y: 0.5 }
-        },
-        style: {
-          fills: [{
-            type: 'solid',
-            color: "#4f46e5" as any,
-            opacity: 1,
-            blendMode: "normal"
-          }],
-          borders: [],
-          shadows: [],
-          effects: [],
-          opacity: 1,
-          blendMode: "normal",
-          filters: [],
-          clip: { enabled: false, mode: 'rect' },
-          overflow: 'visible'
-        },
-        constraints: {
-          horizontal: 'scale',
-          vertical: 'scale'
-        },
-        childrenIds: [],
-        meta: {
-          created: Date.now(),
-          modified: Date.now(),
-          createdBy: "user_1" as UUID,
-          tags: ["button"]
-        }
-      }
+      // {
+      //   id: "element_1" as UUID,
+      //   position: { x: 50, y: 100 },
+      //   dimensions: { width: 200, height: 100 },
+      //   props: {
+      //     style: {
+      //       fills: [{
+      //         type: 'solid',
+      //         color: "#4f46e5" as any,
+      //         opacity: 1,
+      //         blendMode: "normal"
+      //       }],
+      //       borders: [],
+      //       shadows: [],
+      //       effects: [],
+      //       opacity: 1,
+      //       blendMode: "normal",
+      //       filters: [],
+      //       // clip: { enabled: false, mode: 'rect' },
+      //       overflow: 'visible'
+      //     },
+      //   },
+      //   constraints: {
+      //     horizontal: 'scale',
+      //     vertical: 'scale'
+      //   },
+      //   childrenIds: [],
+      //   meta: {
+      //     name: "rectangle",
+      //     created: Date.now(),
+      //     modified: Date.now(),
+      //     createdBy: "user_1" as UUID,
+      //     tags: ["button"]
+      //   }
+      // }
     ],
     selectedElements: [],
     hoveredElement: undefined,
@@ -144,6 +141,7 @@ const Page = async ({ params }: { params: { editorSlug: string; projectSlug: str
 
   // Define the flow view state
   const flowView: FlowViewState = {
+    elementBindings: [],
     nodes: [
       {
         id: "node_1" as UUID,

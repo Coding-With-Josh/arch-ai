@@ -9,7 +9,7 @@ import { ColorPicker } from '@/components/ui/color-picker';
 import { ResizablePanel } from '@/components/ui/resizable';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight, Pencil, Database, Copy, Delete, LayoutGrid, Box, Type, Image, Code, Zap, EyeOff, Lock, Unlock, AlignLeft, AlignCenter, AlignRight, AlignVerticalJustifyCenter, AlignHorizontalJustifyCenter, AlignHorizontalJustifyStart, AlignHorizontalJustifyEnd, AlignVerticalJustifyStart, AlignVerticalJustifyEnd } from 'lucide-react';
+import { ChevronDown, ChevronRight, Pencil, Database, Grid, Copy, Delete, LayoutGrid, Box, Type, Image, Code, Zap, EyeOff, Lock, Unlock, AlignLeft, AlignCenter, AlignRight, AlignVerticalJustifyCenter, AlignHorizontalJustifyCenter, AlignHorizontalJustifyStart, AlignHorizontalJustifyEnd, AlignVerticalJustifyStart, AlignVerticalJustifyEnd } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Separator } from '@/components/ui/separator';
@@ -90,6 +90,7 @@ const PropertiesSheet = () => {
       case 'text': return <Type className="h-4 w-4" />;
       case 'image': return <Image className="h-4 w-4" />;
       case 'button': return <Zap className="h-4 w-4" />;
+      case 'grid': return <Grid className="h-4 w-4" />;
       default: return <Box className="h-4 w-4" />;
     }
   };
