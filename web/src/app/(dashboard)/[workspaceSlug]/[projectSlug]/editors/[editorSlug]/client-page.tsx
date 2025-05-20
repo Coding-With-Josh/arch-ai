@@ -57,7 +57,7 @@ const ClientPage = ({ params }: ClientPageProps) => {
       <Header state={state} editor={currentEditor} />
       
       {state.currentView === "flow" ? (
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1">
           <FlowView />
         </div>
       ) : state.currentView === "design" ? (

@@ -8,6 +8,8 @@ type URLString = `http://${string}` | `https://${string}`;
 type AssetID = `asset_${UUID}`;
 type walletAddresses = `0x${string}`;
 type IPFSCid = `Qm${string}` | `bafy${string}`;
+type ChainId = string | number;
+type NetworkName = 'ethereum' | 'polygon' | 'arbitrum' | 'optimism' | 'solana' | string;
 
 type JSX = {
   IntrinsicElements: {
@@ -507,14 +509,19 @@ type FlowViewState = {
 };
 
 type FlowNode =
-  | ContractNode
-  | FunctionNode
-  | EventNode
-  | VariableNode
-  | ApiNode
-  | DataNode
-  | LogicNode
-  | UiNode;
+  | (ContractNode & { data?: FlowNodeData })
+  | (FunctionNode & { data?: FlowNodeData })
+  | (EventNode & { data?: FlowNodeData })
+  | (VariableNode & { data?: FlowNodeData })
+  | (ApiNode & { data?: FlowNodeData })
+  | (DataNode & { data?: FlowNodeData })
+  | (LogicNode & { data?: FlowNodeData })
+  | (UiNode & { data?: FlowNodeData });
+
+  type FlowNodeData = {
+    [key: string]: any;
+  }
+
 
 type BaseFlowNode = {
   id: UUID;
@@ -569,15 +576,31 @@ type VariableNode = BaseFlowNode & {
   scope: 'global' | 'local';
 };
 
-type ApiNode = BaseFlowNode & {
+interface ApiNode extends BaseFlowNode {
   type: 'api';
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  url: string;
+  method: 'GET' | 'POST';
+  chain: 'ethereum' | 'solana' | 'sui';
+  
+  // Chain-specific endpoints
+  endpoint: {
+    ethereum?: {
+      rpcUrl: string;
+      chainId: number;
+    };
+    solana?: {
+      rpcUrl: string;
+      commitment: 'processed' | 'confirmed' | 'finalized';
+    };
+    sui?: {
+      rpcUrl: string;
+      version: string;
+    };
+  };
+  
+  // Common fields
   headers: Record<string, string>;
   queryParams: Record<string, string>;
-  body?: any;
-  auth?: ApiAuth;
-};
+}
 
 type ApiAuth = {
   type: 'none' | 'basic' | 'bearer' | 'apiKey' | 'oauth2';
@@ -591,12 +614,20 @@ type DataNode = BaseFlowNode & {
   query?: any;
 };
 
-type LogicNode = BaseFlowNode & {
+interface LogicNode extends BaseFlowNode {
   type: 'logic';
-  logicType: 'if' | 'switch' | 'loop' | 'delay' | 'trigger';
-  conditions?: LogicCondition[];
-  delayMs?: number;
-};
+  logicType: 'if' | 'switch' | 'loop';
+  
+  // Chain-specific conditions
+  conditions?: (LogicCondition & {
+    chain?: 'ethereum' | 'solana' | 'sui';
+    chainOperator?: {
+      ethereum?: 'gas' | 'nonce';
+      solana?: 'slot' | 'priorityFee';
+      sui?: 'version' | 'objectExists';
+    };
+  })[];
+}
 
 type LogicCondition = {
   left: string | Expression;
@@ -639,23 +670,25 @@ type FlowParam = {
   defaultValue?: any;
 };
 
-type FlowConnection = {
+interface FlowConnection {
   id: UUID;
   source: {
     nodeId: UUID;
     portId: UUID;
+    chain?: 'ethereum' | 'solana' | 'sui'; // Added chain context
   };
   target: {
     nodeId: UUID;
     portId: UUID;
+    chain?: 'ethereum' | 'solana' | 'sui'; // Added chain context
   };
-  style: FlowConnectionStyle;
-  metadata: {
-    created: Timestamp;
-    createdBy: UUID;
+  
+  // Cross-chain bridging support
+  bridge?: {
+    protocol: 'wormhole' | 'layerzero' | 'native';
+    bridgeFee?: number;
   };
-};
-
+}
 type FlowConnectionStyle = {
   color: HexColor;
   width: number;
@@ -670,6 +703,28 @@ type FlowVariable = {
   value: any;
   scope: 'flow' | 'global';
   isConstant: boolean;
+  chainValue?: {
+    ethereum?: {
+      hexValue?: string;
+      weiValue?: string;
+    };
+    solana?: {
+      lamports?: string;
+      base64Data?: string;
+    };
+    sui?: {
+      objectId?: string;
+      moveValue?: string;
+    };
+  };
+  
+  // New chain-specific fields
+  chainType?: 'ethereum' | 'solana' | 'sui';
+  chainFormat?: {
+    ethereum?: 'hex' | 'wei';
+    solana?: 'lamports' | 'base64';
+    sui?: 'myst' | 'object';
+  };
 };
 
 /***********************
@@ -1828,5 +1883,7 @@ export type {
   ContractMethod,
   ContractEvent,
   ContractParam,
-  Expression
+  Expression,
+  ChainId,
+  NetworkName
 };
