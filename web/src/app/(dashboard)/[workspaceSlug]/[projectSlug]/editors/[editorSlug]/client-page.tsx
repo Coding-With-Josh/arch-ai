@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useAppKitConnection } from '@reown/appkit-adapter-solana/react';
 import { DndProvider } from 'react-dnd';
+import { ReactFlowProvider } from '@xyflow/react';
 
 interface ClientPageProps {
   params: {
@@ -53,6 +54,7 @@ const ClientPage = ({ params }: ClientPageProps) => {
 
   return (
     <DndProvider backend={HTML5Backend}>
+          <ReactFlowProvider>
     <div className="h-screen w-screen overflow-hidden top-0 left-0 bottom-0 right-0 flex flex-col">
       <Header state={state} editor={currentEditor} />
       
@@ -70,6 +72,7 @@ const ClientPage = ({ params }: ClientPageProps) => {
         </div>
       )}
     </div>
+    </ReactFlowProvider>
     </DndProvider>
   );
 };

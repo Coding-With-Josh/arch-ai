@@ -164,7 +164,7 @@ const PropertiesSheet = () => {
     <ResizablePanel defaultSize={28} minSize={20} maxSize={30}
       className="border-l bg-background flex flex-col overflow-hidden"
     >
-      <div className="flex flex-col h-full">
+      <ScrollArea className="flex flex-col h-full">
         {/* Header */}
         <div className="border-b p-4">
           <div className="flex items-center justify-between">
@@ -1155,7 +1155,7 @@ const PropertiesSheet = () => {
             </TabsContent>
           </Tabs>
         </div>
-      </div>
+      </ScrollArea>
     </ResizablePanel>
   );
 };

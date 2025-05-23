@@ -1859,6 +1859,7 @@ export function useDesignView() {
     deleteElement: (id: UUID) => dispatch({ type: 'DELETE_ELEMENT', payload: id }),
     selectElements: (ids: UUID[]) => dispatch({ type: 'SELECT_ELEMENTS', payload: ids }),
     
+    
     // Canvas actions
     addArtboard: (artboard: Artboard) => dispatch({ type: 'ADD_ARBOARD', payload: artboard }),
     updateArtboard: (id: UUID, updates: Partial<Artboard>) => 

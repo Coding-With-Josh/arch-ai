@@ -39,6 +39,7 @@ const Canvas = () => {
     updateElement,
     selectElements,
     updateDesignView,
+    deleteElement,
   } = useDesignView();
 
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -46,7 +47,7 @@ const Canvas = () => {
   const dragStartPos = useRef<Position>({ x: 0, y: 0 });
   const selectedElementsRef = useRef<UUID[]>([]);
   const resizeHandle = useRef<string | null>(null);
-  const elementRefs = useRef<Record<UUID, React.RefObject<HTMLElement>>>({});
+  const elementRefs = useRef<Record<UUID, React.RefObject<HTMLDivElement | null>>>({});
   const [zoom, setZoom] = useState(1);
   const [showGrid, setShowGrid] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
@@ -56,10 +57,23 @@ const Canvas = () => {
 
   const getElementRef = useCallback((id: UUID) => {
     if (!elementRefs.current[id]) {
-      elementRefs.current[id] = React.createRef();
+      elementRefs.current[id] = React.createRef<HTMLDivElement>();
     }
     return elementRefs.current[id];
   }, []);
+
+  useEffect(() => {
+    return () => {
+        // Cleanup any duplicate default containers when component unmounts
+        const defaultContainers = elements.filter(el => el.id === "default-container");
+        if (defaultContainers.length > 1) {
+            const containersToRemove = defaultContainers.slice(1);
+            containersToRemove.forEach(container => {
+                deleteElement(container.id);
+            });
+        }
+    };
+}, [elements, deleteElement]);
 
   useEffect(() => {
     const currentIds = new Set(elements.map(el => el.id));
@@ -111,38 +125,7 @@ const Canvas = () => {
   ];
 
   const activePreset = devicePresets.find(d => d.id === activeDevice) || devicePresets[2];
-
-  // Initialize default container
-  useEffect(() => {
-    if (elements.length === 0) {
-      const defaultContainer: DesignElement = {
-        id: 'default-container' as UUID,
-        componentType: 'container',
-        position: { x: 0, y: 0 },
-        dimensions: activePreset.dimensions,
-        props: {
-          style: {
-            backgroundColor: theme === 'dark' ? 'rgba(30, 30, 30, 0.5)' : 'rgba(250, 250, 250, 0.7)',
-            border: theme === 'dark' ? '1px dashed rgba(255, 255, 255, 0.1)' : '1px dashed rgba(0, 0, 0, 0.1)',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
-            width: "100%",
-            height: "100%",
-            zIndex: 5000,
-          } as StyleProperties
-        },
-        meta: {
-          name: "Main Container",
-          created: Date.now(),
-          modified: Date.now(),
-          createdBy: 'system' as UUID,
-          componentSource: 'core'
-        }
-      };
-      addElement(defaultContainer);
-    }
-  }, [activePreset.dimensions, addElement, elements.length, theme]);
-
+  
   const handleDeviceChange = (deviceId: string) => {
     const device = devicePresets.find(d => d.id === deviceId);
     if (device) {
@@ -160,7 +143,66 @@ const Canvas = () => {
         }
       });
     }
-  };
+  }
+  // Initialize default container
+// In your Canvas component
+// useEffect(() => {
+//   // Check if we already have exactly one default container
+//   const defaultContainers = elements.filter(el => el.id === "default-container");
+  
+//   if (elements.length === 0 && defaultContainers.length === 0) {
+//       const defaultContainer: DesignElement = {
+//           id: "default-container" as UUID,
+//           componentType: 'container',
+//           position: { x: 0, y: 0 },
+//           dimensions: activePreset.dimensions,
+//           props: {
+//               style: {
+//                   backgroundColor: theme === 'dark' ? 'rgba(30, 30, 30, 0.5)' : 'rgba(250, 250, 250, 0.7)',
+//                   border: theme === 'dark' ? '1px dashed rgba(255, 255, 255, 0.1)' : '1px dashed rgba(0, 0, 0, 0.1)',
+//                   backdropFilter: 'blur(4px)',
+//                   WebkitBackdropFilter: 'blur(4px)',
+//                   width: "100%",
+//                   height: "100%",
+//                   zIndex: 5000,
+//               } as StyleProperties
+//           },
+//           meta: {
+//               name: "Main Container",
+//               created: Date.now(),
+//               modified: Date.now(),
+//               createdBy: 'system' as UUID,
+//               componentSource: 'core'
+//           }
+//       };
+//       addElement(defaultContainer);
+//   } else if (defaultContainers.length > 1) {
+//       // Clean up duplicates if they exist
+//       const containersToRemove = defaultContainers.slice(1);
+//       containersToRemove.forEach(container => {
+//           // You'll need a removeElement function in your useDesignView hook
+//           deleteElement(container.id);
+//       });
+//   }
+// }, [activePreset.dimensions, addElement, elements, theme, deleteElement]);
+//   const handleDeviceChange = (deviceId: string) => {
+//     const device = devicePresets.find(d => d.id === deviceId);
+//     if (device) {
+//       setActiveDevice(deviceId);
+//       const defaultContainer = elements.find(el => el.id === 'default-container');
+//       if (defaultContainer) {
+//         updateElement(defaultContainer.id, {
+//           dimensions: device.dimensions
+//         });
+//       }
+//       updateDesignView({
+//         canvas: {
+//           ...canvas,
+//           dimensions: device.dimensions
+//         }
+//       });
+//     }
+//   };
 
   const toggleGrid = () => {
     const newShowGrid = !showGrid;
@@ -175,6 +217,7 @@ const Canvas = () => {
       }
     });
   };
+
 
   const toggleFullscreen = () => setFullscreen(!fullscreen);
   const zoomIn = () => setZoom(prev => Math.min(3, prev + 0.1));
@@ -279,41 +322,41 @@ const Canvas = () => {
       const element = elements.find(el => el.id === selectedElements[0]);
       if (!element) return;
 
-      const newDimensions = { ...element.dimensions };
+      const newDimensions: Dimensions = { width: element.dimensions?.width ?? 0, height: element.dimensions?.height ?? 0 };
       const newPosition = { ...element.position };
 
       switch (resizeHandle.current) {
         case 'n': 
-          newDimensions.height = Math.max(10, newDimensions.height - deltaY); 
+          newDimensions.height = Math.max(10, (newDimensions.height ?? 0) - deltaY); 
           newPosition.y += deltaY; 
           break;
         case 'ne': 
-          newDimensions.width = Math.max(10, newDimensions.width + deltaX); 
-          newDimensions.height = Math.max(10, newDimensions.height - deltaY); 
+          newDimensions.width = Math.max(10, newDimensions.width ?? 0 + deltaX); 
+          newDimensions.height = Math.max(10, newDimensions.height ?? 0 - deltaY); 
           newPosition.y += deltaY; 
           break;
         case 'e': 
-          newDimensions.width = Math.max(10, newDimensions.width + deltaX); 
+          newDimensions.width = Math.max(10, newDimensions.width ?? 0 + deltaX); 
           break;
         case 'se': 
-          newDimensions.width = Math.max(10, newDimensions.width + deltaX); 
-          newDimensions.height = Math.max(10, newDimensions.height + deltaY); 
+          newDimensions.width = Math.max(10, newDimensions.width ?? 0 + deltaX); 
+          newDimensions.height = Math.max(10, newDimensions.height ?? 0 + deltaY); 
           break;
         case 's': 
-          newDimensions.height = Math.max(10, newDimensions.height + deltaY); 
+          newDimensions.height = Math.max(10, newDimensions.height ?? 0 + deltaY); 
           break;
         case 'sw': 
-          newDimensions.width = Math.max(10, newDimensions.width - deltaX); 
-          newDimensions.height = Math.max(10, newDimensions.height + deltaY); 
+          newDimensions.width = Math.max(10, newDimensions.width ?? 0 - deltaX); 
+          newDimensions.height = Math.max(10, newDimensions.height ?? 0 + deltaY); 
           newPosition.x += deltaX; 
           break;
         case 'w': 
-          newDimensions.width = Math.max(10, newDimensions.width - deltaX); 
+          newDimensions.width = Math.max(10, newDimensions.width ?? 0 - deltaX); 
           newPosition.x += deltaX; 
           break;
         case 'nw': 
-          newDimensions.width = Math.max(10, newDimensions.width - deltaX); 
-          newDimensions.height = Math.max(10, newDimensions.height - deltaY); 
+          newDimensions.width = Math.max(10, newDimensions.width ?? 0 - deltaX); 
+          newDimensions.height = Math.max(10, newDimensions.height ?? 0 - deltaY); 
           newPosition.x += deltaX; 
           newPosition.y += deltaY; 
           break;
@@ -447,67 +490,75 @@ const Canvas = () => {
   };
 
   const renderElement = (element: DesignElement) => {
-    const isSelected = selectedElements.includes(element.id);
-    const isDefaultContainer = element.id === 'default-container';
+    // Skip duplicate default containers
+    if (element.id === "default-container") {
+      const allDefaults = elements.filter(el => el.id === "default-container");
+      if (allDefaults.length > 1 && allDefaults[0].id !== element.id) {
+          return null;
+      }
+  }
+
+  const isSelected = selectedElements.includes(element.id);
+    const isDefaultContainer = element.id === "default-container";
     const isResizable = ['box', 'container', 'grid', 'stack', 'section', 'carousel', 'modal', 'tabs'].includes(element.componentType);
   
     const elementStyles: React.CSSProperties = {
-      position: 'absolute',
-      left: `${element.position.x}px`,
-      top: `${element.position.y}px`,
-      width: `${element.dimensions?.width}px`,
-      height: `${element.dimensions?.height}px`,
-      zIndex: isDefaultContainer ? 0 : (isSelected ? 1000 : 1),
-      ...element.props?.style
+        position: 'absolute',
+        left: `${element.position.x}px`,
+        top: `${element.position.y}px`,
+        width: `${element.dimensions?.width}px`,
+        height: `${element.dimensions?.height}px`,
+        zIndex: isDefaultContainer ? 0 : (isSelected ? 1000 : 1),
+        ...element.props?.style
     };
   
     return (
-      <React.Fragment key={element.id}>
-        <ElementFactory 
+      <div key={element.id}> {/* Key moved here to the actual rendered div */}
+      <ElementFactory 
           element={element} 
           style={elementStyles}
           className={cn(
-            isSelected && "ring-2 ring-blue-500 ring-offset-2",
-            element.props?.className
+              isSelected && "ring-2 ring-blue-500 ring-offset-2",
+              element.props?.className
           )}
           onMouseDown={(e) => handleMouseDown(e, element.id)}
           onContextMenu={(e) => handleContextMenu(e, element.id)}
           ref={isResizable ? getElementRef(element.id) : undefined}
-        />
-  
-        {isSelected && !isDefaultContainer && (
+      />
+
+      {isSelected && !isDefaultContainer && (
           <div 
-            className="absolute pointer-events-none"
-            style={{
-              left: `${element.position.x}px`,
-              top: `${element.position.y}px`,
-              width: `${element.dimensions?.width}px`,
-              height: `${element.dimensions?.height}px`,
-              zIndex: isSelected ? 1000 : 1,
-            }}
+              className="absolute pointer-events-none"
+              style={{
+                  left: `${element.position.x}px`,
+                  top: `${element.position.y}px`,
+                  width: `${element.dimensions?.width}px`,
+                  height: `${element.dimensions?.height}px`,
+                  zIndex: isSelected ? 1000 : 1,
+              }}
           >
-            {renderSelectionHandles(element)}
+              {renderSelectionHandles(element)}
           </div>
-        )}
-        
-        {isDefaultContainer && (
+      )}
+      
+      {isDefaultContainer && (
           <div 
-            className="absolute flex items-center justify-center text-sm font-medium pointer-events-none"
-            style={{
-              left: `${element.position.x}px`,
-              top: `${element.position.y}px`,
-              width: `${element.dimensions?.width}px`,
-              height: `${element.dimensions?.height}px`,
-              color: theme === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
-              zIndex: 10
-            }}
+              className="absolute flex items-center justify-center text-sm font-medium pointer-events-none"
+              style={{
+                  left: `${element.position.x}px`,
+                  top: `${element.position.y}px`,
+                  width: `${element.dimensions?.width}px`,
+                  height: `${element.dimensions?.height}px`,
+                  color: theme === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
+                  zIndex: 10
+              }}
           >
-            {activePreset.name} ({Math.round(element.dimensions?.width || 0)}×{Math.round(element.dimensions?.height || 0)})
+              {activePreset.name} ({Math.round(element.dimensions?.width || 0)}×{Math.round(element.dimensions?.height || 0)})
           </div>
-        )}
-      </React.Fragment>
-    );
-  };
+      )}
+  </div>
+);
+};
 
   return (
     <div className={cn(

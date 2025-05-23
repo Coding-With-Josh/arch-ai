@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 import { BaseFlowNode, walletAddresses, ContractMethodReference, ContractEventReference, FunctionNode, EventNode, VariableNode, ApiNode, DataNode, LogicNode, UiNode, FlowPort, FlowConnection, FlowNodeMetadata, FlowVariable, Timestamp, ChainId, NetworkName } from "../types";
 
-interface EnhancedContractNode extends BaseFlowNode {
+export interface EnhancedContractNode extends BaseFlowNode {
     type: 'contract';
     chain: 'ethereum' | 'solana' | 'sui';
     address: walletAddresses;
@@ -33,18 +33,18 @@ interface EnhancedContractNode extends BaseFlowNode {
     events: ContractEventReference[];
   }
 
-interface EnhancedContractMethodReference extends ContractMethodReference {
+export interface EnhancedContractMethodReference extends ContractMethodReference {
     payable?: boolean;
     stateMutability?: 'pure' | 'view' | 'nonpayable' | 'payable';
     gasEstimate?: number;
 }
 
-interface EnhancedContractEventReference extends ContractEventReference {
+export interface EnhancedContractEventReference extends ContractEventReference {
     anonymous?: boolean;
     indexedParameters?: number;
 }
 
-interface WalletNode extends BaseFlowNode {
+export interface WalletNode extends BaseFlowNode {
     type: 'wallet';
     chain: 'ethereum' | 'solana' | 'sui';
     address: walletAddresses;
@@ -66,7 +66,7 @@ interface WalletNode extends BaseFlowNode {
     };
   }
 
-  interface TokenNode extends BaseFlowNode {
+  export interface TokenNode extends BaseFlowNode {
     type: 'token';
     chain: 'ethereum' | 'solana' | 'sui';
     standard: 'ERC20' | 'SPL' | 'SUI';
@@ -93,7 +93,7 @@ interface WalletNode extends BaseFlowNode {
     };
   }
 
-interface NFTNode extends BaseFlowNode {
+export interface NFTNode extends BaseFlowNode {
     type: 'nft';
     standard: 'ERC721' | 'ERC1155' | 'SPL' | 'SUI';
     chain: 'ethereum' | 'solana' | 'sui';
@@ -183,7 +183,7 @@ interface NFTNode extends BaseFlowNode {
     };
   }
 
-interface DeFiNode extends BaseFlowNode {
+export interface DeFiNode extends BaseFlowNode {
     type: 'defi';
     protocol: 'Uniswap' | 'Aave' | 'Compound' | string;
     action: 'swap' | 'lend' | 'borrow' | 'stake' | 'yield';
@@ -208,12 +208,12 @@ type IntegrationService =
     | 'Stripe'
     | 'Twilio';
 
-interface IntegrationAuth {
+export interface IntegrationAuth {
     type: 'apiKey' | 'oauth' | 'jwt' | 'wallet';
     credentials: Record<string, string>;
 }
 
-interface IntegrationNode extends BaseFlowNode {
+export interface IntegrationNode extends BaseFlowNode {
     type: 'integration';
     service: IntegrationService;
     config: Record<string, any>;
@@ -227,7 +227,7 @@ interface IntegrationNode extends BaseFlowNode {
 /***********************
  * AI CAPABILITIES
  ***********************/
-interface AINode extends BaseFlowNode {
+export interface AINode extends BaseFlowNode {
     type: 'ai';
     aiType: 'llm' | 'embedding' | 'image' | 'audio';
     model: string;
@@ -265,7 +265,7 @@ type NodeByType<T extends NodeType> = Extract<EnhancedFlowNode, { type: T }>;
 /***********************
  * ERROR HANDLING & RESILIENCE
  ***********************/
-interface EnhancedApiNode extends ApiNode {
+export interface EnhancedApiNode extends ApiNode {
     retryPolicy?: {
         maxAttempts: number;
         delay: number;
@@ -279,7 +279,7 @@ interface EnhancedApiNode extends ApiNode {
     };
 }
 
-interface EnhancedLogicNode extends LogicNode {
+export interface EnhancedLogicNode extends LogicNode {
     errorHandling?: {
         type: 'retry' | 'continue' | 'fail' | 'custom';
         fallbackValue?: any;
@@ -287,7 +287,7 @@ interface EnhancedLogicNode extends LogicNode {
     };
 }
 
-interface EnhancedFlowPort extends FlowPort {
+export interface EnhancedFlowPort extends FlowPort {
     validation?: {
         required?: boolean;
         min?: number;
@@ -306,7 +306,7 @@ type FlowConnectionMap = Record<UUID, FlowConnection>;
 /***********************
  * ENHANCED METADATA
  ***********************/
-interface EnhancedFlowNodeMetadata extends FlowNodeMetadata {
+export interface EnhancedFlowNodeMetadata extends FlowNodeMetadata {
     tags?: string[];
     version?: string;
     createdBy: string;
@@ -314,7 +314,7 @@ interface EnhancedFlowNodeMetadata extends FlowNodeMetadata {
     dependencies?: UUID[];
 }
 
-interface EnhancedFlowVariable extends FlowVariable {
+export interface EnhancedFlowVariable extends FlowVariable {
     visibility: 'public' | 'private' | 'protected';
     encrypted?: boolean;
     auditTrail?: {

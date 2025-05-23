@@ -82,22 +82,14 @@ const Header = ({ state, editor }: { editor: Editor, state: EditorState }) => {
         {/* Right Side - Actions */}
         <div className="flex text-xs items-center justify-center gap-2">
           {/* Theme Toggle */}
-          <TooltipProvider><Tooltip>
+          {/* <TooltipProvider><Tooltip>
             <TooltipTrigger asChild>
-              {/* <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-8 w-8 p-0"
-                onClick={toggleTheme}
-              >
-                {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </Button> */}
               <ModeToggle/>
             </TooltipTrigger>
             <TooltipContent side="bottom">
               Toggle theme ({darkMode ? 'light' : 'dark'})
             </TooltipContent>
-          </Tooltip></TooltipProvider>
+          </Tooltip></TooltipProvider> */}
 
           {/* Preview/Run Button */}
           {state.currentView === "design" ? (

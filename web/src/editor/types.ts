@@ -1,3 +1,5 @@
+import { Node } from "@xyflow/react";
+
 /***********************
  * CORE PRIMITIVES
  ***********************/
@@ -508,6 +510,21 @@ type FlowViewState = {
   elementBindings: FlowNodeBinding[];
 };
 
+
+export interface NodeParam {
+  name: string;
+  helperText?: string;
+  required?: boolean;
+  hideHandle?: boolean;
+  [key: string]: any;
+}
+
+export interface ParamProps {
+  param: NodeParam;
+  value: string;
+  updateNodeParamValue: (newValue: string) => void;
+}
+
 type FlowNode =
   | (ContractNode & { data?: FlowNodeData })
   | (FunctionNode & { data?: FlowNodeData })
@@ -520,10 +537,13 @@ type FlowNode =
 
   type FlowNodeData = {
     [key: string]: any;
+    // type: TaskType;
+    inputs: Record<string, string>;
+
   }
 
 
-type BaseFlowNode = {
+type BaseFlowNode = Node & {
   id: UUID;
   type: string;
   position: Position;
@@ -534,6 +554,7 @@ type BaseFlowNode = {
   ports: FlowPort[];
   metadata: FlowNodeMetadata;
 };
+
 
 type ContractNode = BaseFlowNode & {
   type: 'contract';
@@ -655,14 +676,14 @@ type UiAction =
   | { type: 'custom', code: string };
 
 type FlowPort = {
-  id: UUID;
-  type: 'input' | 'output';
-  dataType: string;
-  name: string;
-  defaultValue?: any;
-  isArray: boolean;
-  isOptional: boolean;
-};
+    id: string;
+    type: 'input' | 'output';
+    dataType: string;
+    name: string;
+    defaultValue?: any;
+    isArray?: boolean; // Make optional
+    isOptional?: boolean; // Make optional
+  }
 
 type FlowParam = {
   name: string;
@@ -1885,5 +1906,6 @@ export type {
   ContractParam,
   Expression,
   ChainId,
-  NetworkName
+  NetworkName,
+  // NodeType
 };

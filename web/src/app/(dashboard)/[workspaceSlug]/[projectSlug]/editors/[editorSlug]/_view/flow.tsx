@@ -1,49 +1,175 @@
-import React from 'react'
-import { Background, BackgroundVariant, Controls, ReactFlow, ReactFlowProvider, useEdgesState, useNodesState } from '@xyflow/react'
+"use client";
 
-const FlowView = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState([
-    {
-      id: '1',
-      type: 'input',
-      data: { label: 'Node 1' },
-      position: { x: 0, y: 0 },
+import { useCallback, useState, useRef, ComponentType } from 'react';
+import { useDrop } from 'react-dnd';
+import { 
+  Background, 
+  BackgroundVariant, 
+  ReactFlow, 
+  ReactFlowProvider, 
+  useNodesState, 
+  useEdgesState,
+  useReactFlow,
+  Panel,
+  NodeTypes,
+  Node,
+  NodeProps
+} from '@xyflow/react';
+import { NodeLibrary } from '@/editor/flow/components/NodeLibrary';
+import { EnhancedFlowNode, NodeType } from '@/editor/flow/flowTypes';
+import { NodeFactory } from '@/editor/flow/lib/nodeFactory';
+import '@xyflow/react/dist/style.css';
+import { useTheme } from 'next-themes';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { Cross, DotIcon, Minus, Plus, Maximize } from 'lucide-react';
+import { ModeToggle } from '@/components/ui/mode-toggle';
+import FlowTabNav from '@/editor/flow/components/flow-tab-nav';
+import { FlowProvider, useFlow } from '@/editor/flow/flow-provider';
+import NodeComponent from '@/editor/flow/components/nodes/node';
+
+const nodeTypes: NodeTypes = {
+  contract: NodeComponent as unknown as ComponentType<NodeProps>,
+  wallet: NodeComponent as unknown as ComponentType<NodeProps>,
+  token: NodeComponent as unknown as ComponentType<NodeProps>,
+  nft: NodeComponent as unknown as ComponentType<NodeProps>,
+  logic: NodeComponent as unknown as ComponentType<NodeProps>,
+  api: NodeComponent as unknown as ComponentType<NodeProps>,
+  data: NodeComponent as unknown as ComponentType<NodeProps>,
+  ui: NodeComponent as unknown as ComponentType<NodeProps>,
+  function: NodeComponent as unknown as ComponentType<NodeProps>,
+  event: NodeComponent as unknown as ComponentType<NodeProps>,
+  variable: NodeComponent as unknown as ComponentType<NodeProps>,
+};
+
+const FlowInner = () => {
+  const { theme } = useTheme();
+  const { addNode, setNodes, setEdges } = useFlow();
+  const [nodes, setFlowNodes, onNodesChange] = useNodesState([]);
+  const [edges, setFlowEdges, onEdgesChange] = useEdgesState([]);
+  const { zoomIn, zoomOut, getZoom, screenToFlowPosition } = useReactFlow();
+  const [bgStyle, setBgStyle] = useState(BackgroundVariant.Dots);
+  const dropRef = useRef<HTMLDivElement>(null);
+
+  const [, drop] = useDrop<{ type: NodeType }, void>({  
+    accept: 'NODE_TEMPLATE',
+    drop: (item, monitor) => {
+      const offset = monitor.getClientOffset();
+      if (!offset || !dropRef.current) return;
+
+      const position = screenToFlowPosition({
+        x: offset.x,
+        y: offset.y
+      });
+
+      const newNode = NodeFactory.createNode(item.type, position);
+      addNode(newNode as Omit<Node<EnhancedFlowNode>, "id">);
     },
-    {
-      id: '2',
-      data: { label: 'Node 2' },
-      position: { x: 100, y: 100 },
-    },
-    {
-      id: '3',
-      data: { label: 'Node 3' },
-      position: { x: 200, y: 200 },
-    }
-  ])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  }, [addNode, screenToFlowPosition]);
+
+  drop(dropRef);
+
+  const handleNodesChange = useCallback((changes) => {
+    onNodesChange(changes);
+    setNodes(nodes);
+  }, [nodes, onNodesChange, setNodes]);
+
+  const handleEdgesChange = useCallback((changes) => {
+    onEdgesChange(changes);
+    setEdges(edges);
+  }, [edges, onEdgesChange, setEdges]);
+
+  const bgPresets = [
+    { id: BackgroundVariant.Dots, name: 'Dots', icon: <DotIcon className="h-4 w-4" /> },
+    { id: BackgroundVariant.Lines, name: 'Lines', icon: <Cross className="h-4 w-4" /> },
+  ];
+
+  const zoom = getZoom();
+
   return (
-      <ReactFlowProvider>
-    <div className="flex h-full w-full">
+    <div className="flex h-full">
+      <FlowTabNav/>
+      <div
+        ref={dropRef}
+        className="flex-1"
+      >
         <ReactFlow
-          edges={edges}
           nodes={nodes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
+          edges={edges}
+          onNodesChange={handleNodesChange}
+          onEdgesChange={handleEdgesChange}
+          nodeTypes={nodeTypes}
+          fitView
         >
-          <Controls
-            position='bottom-left'
-            orientation='horizontal'
-          />
+          <Panel position="top-center" className="flex gap-2">
+            <div className="flex items-center gap-1 bg-background/90 backdrop-blur-lg rounded-full border shadow-lg px-4 py-2">
+              {bgPresets.map(bg => (
+                <Button
+                  key={bg.id}
+                  className={cn(
+                    "rounded-full p-2 h-8 w-8",
+                    bgStyle === bg.id ? "bg-accent" : "bg-transparent hover:bg-accent/50"
+                  )}
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setBgStyle(bg.id)}
+                  title={bg.name}
+                >
+                  {bg.icon}
+                </Button>
+              ))}
+              <div className="h-6 w-px bg-border mx-1" />
+              <Button
+                className="rounded-full p-2 h-8 w-8"
+                size="sm"
+                variant="ghost"
+                onClick={() => zoomIn()}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+              <span className="text-xs w-10 text-center font-medium">
+                {Math.round(zoom * 100)}%
+              </span>
+              <Button
+                className="rounded-full p-2 h-8 w-8"
+                size="sm"
+                variant="ghost"
+                onClick={() => zoomOut()}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <Button
+                className="rounded-full p-2 h-8 w-8"
+                size="sm"
+                variant="ghost"
+                onClick={() => zoomIn()}
+              >
+                <Maximize className="h-4 w-4" />
+              </Button>
+              <div className="h-6 w-px bg-border mx-1" />
+              <ModeToggle/>
+            </div>
+          </Panel>
           <Background
-            variant={BackgroundVariant.Dots}
+            variant={bgStyle}
             gap={12}
             size={1}
+            color={theme === "dark" ? "#27272a" : "#a1a1aa"}
           />
-
         </ReactFlow>
+      </div>
     </div>
-      </ReactFlowProvider> 
-  )
-}
+  );
+};
 
-export default FlowView
+const Flow = () => {
+  return (
+    <ReactFlowProvider>
+      <FlowProvider>
+        <FlowInner />
+      </FlowProvider>
+    </ReactFlowProvider>
+  );
+};
+
+export default Flow;
