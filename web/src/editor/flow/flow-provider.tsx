@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useReducer, useMemo } from 'react';
-import { Node, Edge, XYPosition, Position } from '@xyflow/react';
+import { Node, Edge, Position } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 import { FlowConnection, FlowVariable, FlowNodeBinding, EditorState } from '../types';
 import { EnhancedFlowNode } from './flowTypes';
@@ -42,197 +42,35 @@ type FlowContextType = {
 
 const FlowContext = createContext<FlowContextType | undefined>(undefined);
 
-const {state} = useEditor()
+const DEFAULT_FLOW_VIEW = {
+  nodes: [],
+  connections: [],
+  variables: [],
+  selected: {
+    nodeIds: [],
+    connectionIds: []
+  },
+  viewport: {
+    zoom: 1,
+    offset: { x: 0, y: 0 }
+  },
+  settings: {
+    snapToGrid: true,
+    gridSize: 20
+  },
+  elementBindings: []
+};
 
-function createInitialEditorState(): EditorState {
+function createFlowEditorState(existingState: EditorState): EditorState {
   return {
+    ...existingState,
     currentView: 'flow',
-    designView: {
-      ...state.designView,
-    //   canvas: {
-    //     type: '2d',
-    //     dimensions: { width: 1920, height: 1080 },
-    //     background: {
-    //       type: 'color',
-    //       color: '#ffffff',
-    //       opacity: 1,
-    //       blendMode: 'normal'
-    //     },
-    //     grid: {
-    //       enabled: true,
-    //       size: 20,
-    //       subdivisions: 5,
-    //       color: '#e5e7eb',
-    //       opacity: 0.5,
-    //       snapping: { enabled: true, strength: 0.5 }
-    //     },
-    //     breakpoints: [],
-    //     currentBreakpointId: '',
-    //     artboards: [],
-    //     currentArtboardId: ''
-    //   },
-    //   elements: [],
-    //   selectedElements: [],
-    //   interactionState: {
-    //     mode: 'select',
-    //     status: 'idle'
-    //   },
-    //   viewport: {
-    //     position: { x: 0, y: 0 },
-    //     zoom: 1,
-    //     dimensions: { width: 0, height: 0 },
-    //     visibleRect: {
-    //       position: { x: 0, y: 0 },
-    //       dimensions: { width: 0, height: 0 }
-    //     }
-    //   },
-    //   guides: [],
-    //   assetOverrides: []
-    },
     flowView: {
-      nodes: [],
-      connections: [],
-      variables: [],
-      selected: {
-        nodeIds: [],
-        connectionIds: []
-      },
-      viewport: {
-        zoom: 1,
-        offset: { x: 0, y: 0 }
-      },
-      settings: {
-        snapToGrid: true,
-        gridSize: 20
-      },
-      elementBindings: []
-    },
-    componentLibrary: {
-      components: [],
-      categories: [],
-      tags: []
-    },
-    designSystems: [],
-    assets: {
-      assets: [],
-      categories: [],
-      tags: []
-    },
-    variables: {
-      variables: [],
-      scopes: [],
-      types: []
-    },
-    dataSources: {
-      sources: [],
-      types: []
-    },
-    content: {
-      models: [],
-      entries: []
-    },
-    i18n: {
-      languages: [],
-      bundles: []
-    },
-    history: {
-      undoStack: [],
-      redoStack: [],
-      current: {
-        id: uuidv4(),
-        type: 'flow',
-        timestamp: Date.now(),
-        description: 'Initial state',
-        snapshot: {
-          design: createInitialEditorState().designView,
-          flow: createInitialEditorState().flowView,
-          data: {
-            variables: [],
-            dataSources: [],
-            content: [],
-            i18n: [],
-            apiEndpoints: []
-          }
-        }
-      }
-    },
-    settings: {
-      theme: 'system',
-      defaultView: 'flow',
-      componentLibraryView: 'grid',
-      autoSave: true,
-      autoSaveInterval: 5000,
-      keyboardShortcuts: [],
-      experimentalFeatures: {
-        aiAssist: false,
-        realTimeCollaboration: false,
-        versionControlIntegration: false,
-        advancedAnimations: false
-      },
-      versionControl: {
-        enabled: false,
-        autoCommit: false,
-        branch: 'main'
-      },
-      build: {
-        mode: "development",
-        outputDir: "dist",
-        cleanBeforeBuild: true
-      },
-      deployment: {
-        defaultEnvironment: "development",
-        autoDeploy: false
-      }
-    },
-    collaboration: {
-      users: [],
-      session: {
-        id: uuidv4(),
-        started: Date.now(),
-        active: false
-      },
-      comments: [],
-      changes: []
-    },
-    plugins: {
-      plugins: [],
-      enabled: []
-    },
-    ai: {
-      enabled: false,
-      providers: [],
-      history: []
-    },
-    deployment: {
-      environments: [],
-      history: [],
-      artifacts: []
-    },
-    ui: {
-      panels: [],
-      tools: [],
-      inspectors: [],
-      modals: [],
-      toasts: [],
-      preferences: {
-        theme: 'system',
-        layout: 'default',
-        iconSize: 'medium',
-        density: 'normal',
-        animations: true,
-        transitions: true
-      }
+      ...DEFAULT_FLOW_VIEW,
+      ...existingState.flowView
     }
   };
 }
-
-const initialState: FlowState = {
-  nodes: [],
-  edges: [],
-  variables: [],
-  bindings: [],
-  editorState: createInitialEditorState()
-};
 
 function flowReducer(state: FlowState, action: FlowAction): FlowState {
   switch (action.type) {
@@ -240,7 +78,13 @@ function flowReducer(state: FlowState, action: FlowAction): FlowState {
       return {
         ...state,
         nodes: [...state.nodes, action.node],
-        editorState: updateFlowViewNodes(state.editorState, [...state.nodes, action.node])
+        editorState: {
+          ...state.editorState,
+          flowView: {
+            ...state.editorState.flowView,
+            nodes: [...state.editorState.flowView.nodes, convertToFlowNode(action.node)]
+          }
+        }
       };
     case 'UPDATE_NODE':
       return {
@@ -248,12 +92,15 @@ function flowReducer(state: FlowState, action: FlowAction): FlowState {
         nodes: state.nodes.map(node => 
           node.id === action.id ? { ...node, ...action.updates } : node
         ),
-        editorState: updateFlowViewNodes(
-          state.editorState,
-          state.nodes.map(node => 
-            node.id === action.id ? { ...node, ...action.updates } : node
-          )
-        )
+        editorState: {
+          ...state.editorState,
+          flowView: {
+            ...state.editorState.flowView,
+            nodes: state.editorState.flowView.nodes.map(node => 
+              node.id === action.id ? { ...node, ...convertToFlowNodeUpdates(action.updates) } : node
+            )
+          }
+        }
       };
     case 'REMOVE_NODE':
       return {
@@ -262,13 +109,28 @@ function flowReducer(state: FlowState, action: FlowAction): FlowState {
         edges: state.edges.filter(
           edge => edge.source !== action.id && edge.target !== action.id
         ),
-        editorState: updateFlowViewAfterNodeRemoval(state.editorState, action.id)
+        editorState: {
+          ...state.editorState,
+          flowView: {
+            ...state.editorState.flowView,
+            nodes: state.editorState.flowView.nodes.filter(node => node.id !== action.id),
+            connections: state.editorState.flowView.connections.filter(
+              conn => conn.source.nodeId !== action.id && conn.target.nodeId !== action.id
+            )
+          }
+        }
       };
     case 'ADD_EDGE':
       return {
         ...state,
         edges: [...state.edges, action.edge],
-        editorState: updateFlowViewEdges(state.editorState, [...state.edges, action.edge])
+        editorState: {
+          ...state.editorState,
+          flowView: {
+            ...state.editorState.flowView,
+            connections: [...state.editorState.flowView.connections, convertToFlowConnection(action.edge)]
+          }
+        }
       };
     case 'UPDATE_EDGE':
       return {
@@ -276,33 +138,51 @@ function flowReducer(state: FlowState, action: FlowAction): FlowState {
         edges: state.edges.map(edge =>
           edge.id === action.id ? { ...edge, ...action.updates } : edge
         ),
-        editorState: updateFlowViewEdges(
-          state.editorState,
-          state.edges.map(edge =>
-            edge.id === action.id ? { ...edge, ...action.updates } : edge
-          )
-        )
+        editorState: {
+          ...state.editorState,
+          flowView: {
+            ...state.editorState.flowView,
+            connections: state.editorState.flowView.connections.map(conn =>
+              conn.id === action.id ? { ...conn, ...convertToFlowConnectionUpdates(action.updates) } : conn
+            )
+          }
+        }
       };
     case 'REMOVE_EDGE':
       return {
         ...state,
         edges: state.edges.filter(edge => edge.id !== action.id),
-        editorState: updateFlowViewEdges(
-          state.editorState,
-          state.edges.filter(edge => edge.id !== action.id)
-        )
+        editorState: {
+          ...state.editorState,
+          flowView: {
+            ...state.editorState.flowView,
+            connections: state.editorState.flowView.connections.filter(conn => conn.id !== action.id)
+          }
+        }
       };
     case 'SET_NODES':
       return {
         ...state,
         nodes: action.nodes,
-        editorState: updateFlowViewNodes(state.editorState, action.nodes)
+        editorState: {
+          ...state.editorState,
+          flowView: {
+            ...state.editorState.flowView,
+            nodes: action.nodes.map(convertToFlowNode)
+          }
+        }
       };
     case 'SET_EDGES':
       return {
         ...state,
         edges: action.edges,
-        editorState: updateFlowViewEdges(state.editorState, action.edges)
+        editorState: {
+          ...state.editorState,
+          flowView: {
+            ...state.editorState.flowView,
+            connections: action.edges.map(convertToFlowConnection)
+          }
+        }
       };
     case 'LOAD_STATE':
       return action.state;
@@ -311,69 +191,69 @@ function flowReducer(state: FlowState, action: FlowAction): FlowState {
   }
 }
 
-function updateFlowViewNodes(editorState: EditorState, nodes: Node<EnhancedFlowNode>[]): EditorState {
+function convertToFlowNode(node: Node<EnhancedFlowNode>) {
   return {
-    ...editorState,
-    flowView: {
-      ...editorState.flowView,
-      nodes: nodes.map(node => ({
-        ...node.data,
-        id: node.id,
-        position: node.position,
-        dimensions: node.data.dimensions,
-        metadata: {
-          ...(node.data.metadata || { created: Date.now(), createdBy: 'unknown' }),
-          modified: node.data.metadata?.updated ?? Date.now()
-        },
-        ports: node.data.ports || [],
-        // Handle position types properly
-        sourcePosition: node.data.sourcePosition as Position | undefined,
-        targetPosition: node.data.targetPosition as Position | undefined,
-        type: node.data.type || 'function',
-        language: node.data.language || 'javascript',
-        code: node.data.code || '',
-        inputs: node.data.inputs || [],
-        outputs: node.data.outputs || []
-      }))
+    ...node.data,
+    id: node.id,
+    position: node.position,
+    dimensions: node.data.dimensions,
+    metadata: {
+      ...(node.data.metadata || { created: Date.now(), createdBy: 'unknown' }),
+      modified: Date.now()
+    },
+    ports: node.data.ports || [],
+    sourcePosition: node.data.sourcePosition as Position | undefined,
+    targetPosition: node.data.targetPosition as Position | undefined,
+    type: node.data.type || 'function',
+    language: node.data.language || 'javascript',
+    code: node.data.code || '',
+    inputs: node.data.inputs || [],
+    outputs: node.data.outputs || []
+  };
+}
+
+function convertToFlowNodeUpdates(updates: Partial<Node<EnhancedFlowNode>>) {
+  return {
+    ...updates.data,
+    position: updates.position,
+    dimensions: updates.data?.dimensions
+  };
+}
+
+function convertToFlowConnection(edge: Edge<FlowConnection & Record<string, unknown>>) {
+  return {
+    ...edge.data,
+    id: edge.id,
+    source: {
+      nodeId: edge.source,
+      portId: edge.sourceHandle || ''
+    },
+    target: {
+      nodeId: edge.target,
+      portId: edge.targetHandle || ''
     }
   };
 }
 
-function updateFlowViewEdges(editorState: EditorState, edges: Edge<FlowConnection & Record<string, unknown>>[]): EditorState {
+function convertToFlowConnectionUpdates(updates: Partial<Edge<FlowConnection & Record<string, unknown>>>) {
   return {
-    ...editorState,
-    flowView: {
-      ...editorState.flowView,
-      connections: edges.map(edge => ({
-        ...edge.data,
-        id: edge.id,
-        source: {
-          nodeId: edge.source,
-          portId: edge.sourceHandle || ''
-        },
-        target: {
-          nodeId: edge.target,
-          portId: edge.targetHandle || ''
-        }
-      }))
-    }
-  };
-}
-
-function updateFlowViewAfterNodeRemoval(editorState: EditorState, nodeId: string): EditorState {
-  return {
-    ...editorState,
-    flowView: {
-      ...editorState.flowView,
-      nodes: editorState.flowView.nodes.filter(node => node.id !== nodeId),
-      connections: editorState.flowView.connections.filter(
-        conn => conn.source.nodeId !== nodeId && conn.target.nodeId !== nodeId
-      )
-    }
+    ...updates.data,
+    source: updates.source ? { nodeId: updates.source, portId: updates.sourceHandle || '' } : undefined,
+    target: updates.target ? { nodeId: updates.target, portId: updates.targetHandle || '' } : undefined
   };
 }
 
 export const FlowProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { state: editorState } = useEditor();
+  
+  const initialState: FlowState = useMemo(() => ({
+    nodes: [],
+    edges: [],
+    variables: [],
+    bindings: [],
+    editorState: createFlowEditorState(editorState)
+  }), [editorState]);
+
   const [state, dispatch] = useReducer(flowReducer, initialState);
 
   const getNode = (id: string) => state.nodes.find(node => node.id === id);

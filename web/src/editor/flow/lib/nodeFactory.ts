@@ -36,7 +36,7 @@ export class NodeFactory {
 
     // Add type-specific defaults
     const typeDefaults = this.getTypeDefaults(type);
-    
+
     return {
       ...baseNode,
       ...typeDefaults,
@@ -60,10 +60,13 @@ export class NodeFactory {
             address: '',
             abi: [],
             methods: [],
+            inputs: {
+
+            },
             events: []
           }
         };
-      
+
       case 'wallet':
         return {
           dimensions: { width: 180, height: 80 },
@@ -71,10 +74,26 @@ export class NodeFactory {
             walletType: 'EOA',
             address: '',
             type: 'wallet',
+            inputs: [
+              {
+                name: "Wallet Type",
+                type: "STRING",
+                helperText: "Solana, Sui, Multichain, etc.",
+                required: true,
+                hideHandle: true
+              },
+              {
+                name: "Sender Address",
+                type: "STRING",
+                helperText: "0x1234567890abcdef...",
+                required: true,
+                hideHandle: true
+              }
+            ],
             chain: 'ethereum'
           }
         };
-      
+
       case 'token':
         return {
           dimensions: { width: 200, height: 100 },
@@ -87,7 +106,7 @@ export class NodeFactory {
             chain: 'ethereum'
           }
         };
-      
+
       case 'nft':
         return {
           dimensions: { width: 220, height: 140 },
@@ -99,17 +118,17 @@ export class NodeFactory {
             chain: 'ethereum'
           }
         };
-      
+
       case 'logic':
         return {
           dimensions: { width: 180, height: 100 },
           data: {
             logicType: 'if',
-            type: 'logic',  
+            type: 'logic',
             conditions: []
           }
         };
-      
+
       case 'api':
         return {
           dimensions: { width: 220, height: 120 },
@@ -121,7 +140,7 @@ export class NodeFactory {
             params: {}
           }
         };
-      
+
       case 'data':
         return {
           dimensions: { width: 200, height: 100 },
@@ -132,7 +151,7 @@ export class NodeFactory {
             query: ''
           }
         };
-      
+
       case 'ui':
         return {
           dimensions: { width: 160, height: 80 },
@@ -143,7 +162,7 @@ export class NodeFactory {
             type: 'ui',
           }
         };
-      
+
       case 'function':
         return {
           dimensions: { width: 240, height: 150 },
@@ -155,7 +174,7 @@ export class NodeFactory {
             type: 'function',
           }
         };
-      
+
       case 'event':
         return {
           dimensions: { width: 180, height: 90 },
@@ -165,7 +184,7 @@ export class NodeFactory {
             type: 'event',
           }
         };
-      
+
       case 'variable':
         return {
           dimensions: { width: 160, height: 70 },
@@ -176,7 +195,7 @@ export class NodeFactory {
             type: 'variable',
           }
         };
-      
+
       default:
         return {};
     }

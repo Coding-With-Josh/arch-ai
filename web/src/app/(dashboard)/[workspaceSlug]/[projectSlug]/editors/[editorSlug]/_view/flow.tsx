@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useRef, ComponentType } from 'react';
+import { useCallback, useState, useRef, useEffect } from 'react';
 import { useDrop } from 'react-dnd';
 import { 
   Background, 
@@ -12,8 +12,7 @@ import {
   useReactFlow,
   Panel,
   NodeTypes,
-  Node,
-  NodeProps
+  MiniMap
 } from '@xyflow/react';
 import { NodeLibrary } from '@/editor/flow/components/NodeLibrary';
 import { EnhancedFlowNode, NodeType } from '@/editor/flow/flowTypes';
@@ -29,31 +28,37 @@ import { FlowProvider, useFlow } from '@/editor/flow/flow-provider';
 import NodeComponent from '@/editor/flow/components/nodes/node';
 
 const nodeTypes: NodeTypes = {
-  contract: NodeComponent as unknown as ComponentType<NodeProps>,
-  wallet: NodeComponent as unknown as ComponentType<NodeProps>,
-  token: NodeComponent as unknown as ComponentType<NodeProps>,
-  nft: NodeComponent as unknown as ComponentType<NodeProps>,
-  logic: NodeComponent as unknown as ComponentType<NodeProps>,
-  api: NodeComponent as unknown as ComponentType<NodeProps>,
-  data: NodeComponent as unknown as ComponentType<NodeProps>,
-  ui: NodeComponent as unknown as ComponentType<NodeProps>,
-  function: NodeComponent as unknown as ComponentType<NodeProps>,
-  event: NodeComponent as unknown as ComponentType<NodeProps>,
-  variable: NodeComponent as unknown as ComponentType<NodeProps>,
+  contract: NodeComponent,
+  wallet: NodeComponent,
+  token: NodeComponent,
+  nft: NodeComponent,
+  logic: NodeComponent,
+  api: NodeComponent,
+  data: NodeComponent,
+  ui: NodeComponent,
+  function: NodeComponent,
+  event: NodeComponent,
+  variable: NodeComponent,
 };
 
 const FlowInner = () => {
   const { theme } = useTheme();
-  const { addNode, setNodes, setEdges } = useFlow();
+  const { state: flowState, addNode, setNodes, setEdges } = useFlow();
   const [nodes, setFlowNodes, onNodesChange] = useNodesState([]);
   const [edges, setFlowEdges, onEdgesChange] = useEdgesState([]);
   const { zoomIn, zoomOut, getZoom, screenToFlowPosition } = useReactFlow();
   const [bgStyle, setBgStyle] = useState(BackgroundVariant.Dots);
   const dropRef = useRef<HTMLDivElement>(null);
 
-  const [, drop] = useDrop<{ type: NodeType }, void>({  
+  // Sync flow state with ReactFlow state
+  useEffect(() => {
+    setFlowNodes(flowState.nodes);
+    setFlowEdges(flowState.edges);
+  }, [flowState.nodes, flowState.edges, setFlowNodes, setFlowEdges]);
+
+  const [, drop] = useDrop({
     accept: 'NODE_TEMPLATE',
-    drop: (item, monitor) => {
+    drop: (item: { type: string }, monitor) => {
       const offset = monitor.getClientOffset();
       if (!offset || !dropRef.current) return;
 
@@ -62,10 +67,38 @@ const FlowInner = () => {
         y: offset.y
       });
 
-      const newNode = NodeFactory.createNode(item.type, position);
-      addNode(newNode as Omit<Node<EnhancedFlowNode>, "id">);
+      const newNode = NodeFactory.createNode(item.type as NodeType, position);
+      addNode({
+        type: newNode.data.type,
+        position: newNode.position,
+        data: {
+          ...newNode,
+          data: {
+            inputs: [
+              {
+                name: "Wallet Type",
+                type: "STRING",
+                helperText: "Solana, Sui, Multichain, etc.",
+                required: true,
+                hideHandle: true
+              },
+              {
+                name: "Sender Address",
+                type: "STRING",
+                helperText: "0x1234567890abcdef...",
+                required: true,
+                hideHandle: true
+              }
+            ]
+          }
+        }
+      });
     },
-  }, [addNode, screenToFlowPosition]);
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+  }, [screenToFlowPosition, addNode]);
 
   drop(dropRef);
 
@@ -155,6 +188,10 @@ const FlowInner = () => {
             gap={12}
             size={1}
             color={theme === "dark" ? "#27272a" : "#a1a1aa"}
+          />
+          <MiniMap
+            bgColor={theme === "dark" ? "black" : "white"}
+            color={theme === "dark" ? "white" : "black"}
           />
         </ReactFlow>
       </div>

@@ -1,7 +1,7 @@
 import { XYPosition, Node, Position } from "@xyflow/react";
 
 type UUID = string;
-type walletAddresses = `0x${string}`;
+export type walletAddresses = `0x${string}`;
 
 export interface NodePosition {
     x: number;

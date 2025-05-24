@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useReactFlow } from "@xyflow/react";
+import { Handle, Position, useReactFlow } from "@xyflow/react";
 import React from "react";
 
 const NodeCard = ({
@@ -33,12 +33,20 @@ const NodeCard = ({
     return (
         <div
             className={cn(
-                "rounded-xl cursor-pointer dark:bg-zinc-900 bg-zinc-100/40 border border-muted w-[420px] text-xs gap-1 flex flex-col",
+                "rounded-xl cursor-pointer dark:bg-zinc-900 bg-zinc-50 border border-muted w-[420px] text-xs gap-1 flex flex-col",
                 isSelected && "border-primary"
             )}
             onDoubleClick={onDoubleClick}
         >
             {children}
+            <Handle
+                id="target"
+                type="target"
+                position={Position.Bottom}
+                className={cn(
+                    "!bg-muted-foreground !border-2 !border-background !-left-2 !w-4 !h-4"
+                )}
+            />
         </div>
     );
 };
