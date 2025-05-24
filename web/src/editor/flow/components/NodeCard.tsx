@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Handle, Position, useReactFlow, useNodes } from "@xyflow/react";
+import { Handle, Position, useNodes, useReactFlow } from "@xyflow/react";
 import React from "react";
 
 const NodeCard = ({
@@ -14,8 +14,7 @@ const NodeCard = ({
     isSelected: boolean;
 }) => {
     const { getNode, setCenter } = useReactFlow();
-    const nodes = useNodes(); // Get all nodes
-
+    const nodes = useNodes();
     const isFirstNode = nodes.length > 0 && nodes[0].id === nodeId;
 
     const onDoubleClick = () => {

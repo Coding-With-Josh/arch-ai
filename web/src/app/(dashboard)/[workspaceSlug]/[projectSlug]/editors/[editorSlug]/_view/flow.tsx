@@ -12,7 +12,9 @@ import {
   useReactFlow,
   Panel,
   NodeTypes,
-  MiniMap
+  MiniMap,
+  Connection,
+  Edge
 } from '@xyflow/react';
 import { NodeLibrary } from '@/editor/flow/components/NodeLibrary';
 import { EnhancedFlowNode, NodeType } from '@/editor/flow/flowTypes';
@@ -43,10 +45,10 @@ const nodeTypes: NodeTypes = {
 
 const FlowInner = () => {
   const { theme } = useTheme();
-  const { state: flowState, addNode, setNodes, setEdges } = useFlow();
+  const { state: flowState, addNode, setNodes, setEdges, addEdge } = useFlow();
   const [nodes, setFlowNodes, onNodesChange] = useNodesState([]);
   const [edges, setFlowEdges, onEdgesChange] = useEdgesState([]);
-  const { zoomIn, zoomOut, getZoom, screenToFlowPosition } = useReactFlow();
+  const { zoomIn, zoomOut, getZoom, screenToFlowPosition, fitView } = useReactFlow();
   const [bgStyle, setBgStyle] = useState(BackgroundVariant.Dots);
   const dropRef = useRef<HTMLDivElement>(null);
 
@@ -69,29 +71,9 @@ const FlowInner = () => {
 
       const newNode = NodeFactory.createNode(item.type as NodeType, position);
       addNode({
-        type: newNode.data.type,
+        type: newNode.type,
         position: newNode.position,
-        data: {
-          ...newNode,
-          data: {
-            inputs: [
-              {
-                name: "Wallet Type",
-                type: "STRING",
-                helperText: "Solana, Sui, Multichain, etc.",
-                required: true,
-                hideHandle: true
-              },
-              {
-                name: "Sender Address",
-                type: "STRING",
-                helperText: "0x1234567890abcdef...",
-                required: true,
-                hideHandle: true
-              }
-            ]
-          }
-        }
+        data: newNode.data
       });
     },
     collect: (monitor) => ({
@@ -102,15 +84,35 @@ const FlowInner = () => {
 
   drop(dropRef);
 
-  const handleNodesChange = useCallback((changes) => {
-    onNodesChange(changes);
-    setNodes(nodes);
-  }, [nodes, onNodesChange, setNodes]);
+  const onConnect = useCallback((connection: Connection) => {
+    const newEdge = {
+      ...connection,
+      id: `${connection.source}-${connection.sourceHandle}-${connection.target}-${connection.targetHandle}`,
+      data: {
+        type: 'default'
+      }
+    };
+    setFlowEdges((eds) => [...eds, newEdge]);
+    addEdge(newEdge);
+  }, [setFlowEdges, addEdge]);
 
-  const handleEdgesChange = useCallback((changes) => {
-    onEdgesChange(changes);
-    setEdges(edges);
-  }, [edges, onEdgesChange, setEdges]);
+  const handleNodesChange = useCallback(
+    (changes) => {
+      onNodesChange(changes);
+      // Update nodes in FlowProvider after ReactFlow processes changes
+      setNodes(nodes);
+    },
+    [nodes, onNodesChange, setNodes]
+  );
+
+  const handleEdgesChange = useCallback(
+    (changes) => {
+      onEdgesChange(changes);
+      // Update edges in FlowProvider after ReactFlow processes changes
+      setEdges(edges);
+    },
+    [edges, onEdgesChange, setEdges]
+  );
 
   const bgPresets = [
     { id: BackgroundVariant.Dots, name: 'Dots', icon: <DotIcon className="h-4 w-4" /> },
@@ -131,6 +133,7 @@ const FlowInner = () => {
           edges={edges}
           onNodesChange={handleNodesChange}
           onEdgesChange={handleEdgesChange}
+          onConnect={onConnect}
           nodeTypes={nodeTypes}
           fitView
         >
@@ -175,7 +178,7 @@ const FlowInner = () => {
                 className="rounded-full p-2 h-8 w-8"
                 size="sm"
                 variant="ghost"
-                onClick={() => zoomIn()}
+                onClick={() => fitView({ padding: 0.5 })}
               >
                 <Maximize className="h-4 w-4" />
               </Button>

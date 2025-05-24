@@ -1,3 +1,4 @@
+// NodeFactory.ts
 import { v4 as uuidv4 } from 'uuid';
 import { EnhancedFlowNode, NodeType } from '../flowTypes';
 import { Position, XYPosition } from '@xyflow/react';
@@ -21,14 +22,9 @@ export class NodeFactory {
         borderWidth: 1,
         borderRadius: 5
       },
-      ports: [],
       metadata: {
         created: Date.now(),
         createdBy: 'user'
-      },
-      data: {
-        type,
-        inputs: {}
       },
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
@@ -55,14 +51,14 @@ export class NodeFactory {
         return {
           dimensions: { width: 240, height: 120 },
           data: {
-            chain: 'ethereum',
             type: 'contract',
-            address: '',
-            abi: [],
-            methods: [],
             inputs: {
-
+              "Contract Address": "",
+              "ABI": "[]",
+              "Chain": "Ethereum"
             },
+            chain: 'ethereum',
+            methods: [],
             events: []
           }
         };
@@ -71,25 +67,11 @@ export class NodeFactory {
         return {
           dimensions: { width: 180, height: 80 },
           data: {
-            walletType: 'EOA',
-            address: '',
             type: 'wallet',
-            inputs: [
-              {
-                name: "Wallet Type",
-                type: "STRING",
-                helperText: "Solana, Sui, Multichain, etc.",
-                required: true,
-                hideHandle: true
-              },
-              {
-                name: "Sender Address",
-                type: "STRING",
-                helperText: "0x1234567890abcdef...",
-                required: true,
-                hideHandle: true
-              }
-            ],
+            inputs: {
+              "Wallet Type": "EOA",
+              "Sender Address": ""
+            },
             chain: 'ethereum'
           }
         };
@@ -98,11 +80,12 @@ export class NodeFactory {
         return {
           dimensions: { width: 200, height: 100 },
           data: {
-            standard: 'ERC20',
-            address: '',
             type: 'token',
-            symbol: '',
-            decimals: 18,
+            inputs: {
+              "Token Address": "",
+              "Standard": "ERC20",
+              "Decimals": "18"
+            },
             chain: 'ethereum'
           }
         };
@@ -111,10 +94,12 @@ export class NodeFactory {
         return {
           dimensions: { width: 220, height: 140 },
           data: {
-            standard: 'ERC721',
-            address: '',
-            tokenId: '',
             type: 'nft',
+            inputs: {
+              "Contract Address": "",
+              "Token ID": "",
+              "Standard": "ERC721"
+            },
             chain: 'ethereum'
           }
         };
@@ -123,8 +108,11 @@ export class NodeFactory {
         return {
           dimensions: { width: 180, height: 100 },
           data: {
-            logicType: 'if',
             type: 'logic',
+            inputs: {
+              "Condition": "",
+              "Operator": "AND"
+            },
             conditions: []
           }
         };
@@ -133,11 +121,12 @@ export class NodeFactory {
         return {
           dimensions: { width: 220, height: 120 },
           data: {
-            method: 'GET',
             type: 'api',
-            url: '',
-            headers: {},
-            params: {}
+            inputs: {
+              "Endpoint": "",
+              "Method": "GET",
+              "Headers": "{}"
+            }
           }
         };
 
@@ -145,10 +134,11 @@ export class NodeFactory {
         return {
           dimensions: { width: 200, height: 100 },
           data: {
-            source: 'ipfs',
             type: 'data',
-            cid: '',
-            query: ''
+            inputs: {
+              "Source": "ipfs",
+              "Query": ""
+            }
           }
         };
 
@@ -156,10 +146,11 @@ export class NodeFactory {
         return {
           dimensions: { width: 160, height: 80 },
           data: {
-            uiType: 'button',
-            label: 'Click me',
-            variant: 'primary',
             type: 'ui',
+            inputs: {
+              "Component": "button",
+              "Label": ""
+            }
           }
         };
 
@@ -167,11 +158,12 @@ export class NodeFactory {
         return {
           dimensions: { width: 240, height: 150 },
           data: {
-            language: 'javascript',
-            code: '',
-            inputs: [],
-            outputs: [],
             type: 'function',
+            inputs: {
+              "Code": "",
+              "Language": "javascript",
+              "Parameters": "[]"
+            }
           }
         };
 
@@ -179,9 +171,11 @@ export class NodeFactory {
         return {
           dimensions: { width: 180, height: 90 },
           data: {
-            eventName: '',
-            payloadSchema: {},
             type: 'event',
+            inputs: {
+              "Event Name": "",
+              "Payload": "{}"
+            }
           }
         };
 
@@ -189,15 +183,22 @@ export class NodeFactory {
         return {
           dimensions: { width: 160, height: 70 },
           data: {
-            varType: 'string',
-            value: '',
-            isConstant: false,
             type: 'variable',
+            inputs: {
+              "Name": "",
+              "Value": "",
+              "Type": "string"
+            }
           }
         };
 
       default:
-        return {};
+        return {
+          data: {
+            type,
+            inputs: {}
+          }
+        };
     }
   }
 }
