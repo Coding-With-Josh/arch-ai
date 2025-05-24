@@ -39,7 +39,7 @@ export const NodeInput = ({ input, nodeId, onChange }: NodeInputProps) => {
           type="target"
           position={Position.Left}
           className={cn(
-            "!bg-muted-foreground !border-2 !border-background !-left-2 !w-4 !h-4"
+            "!bg-muted-foreground !border-2 !border-background !-left-4 !w-4 !h-4"
           )}
         />
       )}

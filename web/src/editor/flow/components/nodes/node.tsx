@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useRef, useEffect, useState } from "react";
 import { NodeProps, Position } from "@xyflow/react";
 import NodeCard from "../NodeCard";
 import NodeHeader from "../NodeHeader";
@@ -8,10 +8,20 @@ import { NodeInput, NodeInputs } from "../NodeInputs";
 import { useFlow } from "../../flow-provider";
 import { EnhancedFlowNode } from "../../flowTypes";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
   const { data, id, selected = false } = props;
   const { updateNode } = useFlow();
+  const [contentHeight, setContentHeight] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Calculate content height for animation
+  useEffect(() => {
+    if (contentRef.current) {
+      setContentHeight(contentRef.current.scrollHeight);
+    }
+  }, [selected, data.inputs]);
 
   const handleInputChange = (paramName: string, value: any) => {
     updateNode(id, {
@@ -420,9 +430,37 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
   return (
     <NodeCard nodeId={id} isSelected={selected}>
       <NodeHeader nodeType={data.type} />
-      <NodeInputs>
-        {renderInputs()}
-      </NodeInputs>
+      
+      <div className="overflow-hidden">
+        <AnimatePresence>
+          {selected && (
+            <motion.div
+              ref={contentRef}
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ 
+                height: contentHeight,
+                opacity: 1,
+                transition: { 
+                  height: { duration: 0.2, ease: "easeInOut" },
+                  opacity: { duration: 0.1, delay: 0.05 }
+                }
+              }}
+              exit={{ 
+                height: 0,
+                opacity: 0,
+                transition: { 
+                  height: { duration: 0.2, ease: "easeInOut" },
+                  opacity: { duration: 0.1 }
+                }
+              }}
+            >
+              <NodeInputs>
+                {renderInputs()}
+              </NodeInputs>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </NodeCard>
   );
 });
