@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Handle, Position, useReactFlow } from "@xyflow/react";
+import { Handle, Position, useReactFlow, useNodes } from "@xyflow/react";
 import React from "react";
 
 const NodeCard = ({
@@ -14,6 +14,9 @@ const NodeCard = ({
     isSelected: boolean;
 }) => {
     const { getNode, setCenter } = useReactFlow();
+    const nodes = useNodes(); // Get all nodes
+
+    const isFirstNode = nodes.length > 0 && nodes[0].id === nodeId;
 
     const onDoubleClick = () => {
         const node = getNode(nodeId);
@@ -38,13 +41,27 @@ const NodeCard = ({
             )}
             onDoubleClick={onDoubleClick}
         >
+            {/* Top handle - only if not the first node */}
+            {!isFirstNode && (
+                <Handle
+                    id="target"
+                    type="target"
+                    position={Position.Top}
+                    className={cn(
+                        "!bg-muted-foreground !border-2 !border-background !w-4 !h-4"
+                    )}
+                />
+            )}
+
             {children}
+
+            {/* Bottom handle - always shown */}
             <Handle
-                id="target"
-                type="target"
+                id="source"
+                type="source"
                 position={Position.Bottom}
                 className={cn(
-                    "!bg-muted-foreground !border-2 !border-background !-left-2 !w-4 !h-4"
+                    "!bg-muted-foreground !border-2 !border-background !w-4 !h-4"
                 )}
             />
         </div>
