@@ -9,6 +9,14 @@ import { useFlow } from "../../flow-provider";
 import { EnhancedFlowNode } from "../../flowTypes";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
   const { data, id, selected = false } = props;
@@ -41,23 +49,34 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
             <NodeInput
               input={{
                 name: "Wallet Type",
-                type: "string",
+                type: "select",
                 value: data.inputs?.["Wallet Type"] || "EOA",
-                helperText: "Solana, Sui, Multichain, etc.",
-                required: true,
-                hideHandle: true
+                options: ["EOA", "Smart Contract", "Multisig", "Hardware"],
+                helperText: "Select wallet type",
+                required: true
               }}
               nodeId={id}
               onChange={handleInputChange}
             />
             <NodeInput
               input={{
-                name: "Sender Address",
+                name: "Chain",
+                type: "select",
+                value: data.inputs?.["Chain"] || "Ethereum",
+                options: ["Ethereum", "Solana", "Polygon", "Arbitrum"],
+                helperText: "Select blockchain network",
+                required: true
+              }}
+              nodeId={id}
+              onChange={handleInputChange}
+            />
+            <NodeInput
+              input={{
+                name: "Address",
                 type: "string",
-                value: data.inputs?.["Sender Address"] || "",
-                helperText: "0x1234567890abcdef...",
-                required: true,
-                hideHandle: true
+                value: data.inputs?.["Address"] || "",
+                helperText: "Wallet public address",
+                required: true
               }}
               nodeId={id}
               onChange={handleInputChange}
@@ -81,10 +100,11 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
             />
             <NodeInput
               input={{
-                name: "ABI",
-                type: "string",
-                value: data.inputs?.["ABI"] || "[]",
-                helperText: "Contract ABI JSON",
+                name: "Chain",
+                type: "select",
+                value: data.inputs?.["Chain"] || "Ethereum",
+                options: ["Ethereum", "Polygon", "Arbitrum", "Optimism"],
+                helperText: "Deployment network",
                 required: true
               }}
               nodeId={id}
@@ -92,10 +112,11 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
             />
             <NodeInput
               input={{
-                name: "Chain",
-                type: "string",
-                value: data.inputs?.["Chain"] || "Ethereum",
-                helperText: "Network where contract is deployed",
+                name: "ABI Version",
+                type: "select",
+                value: data.inputs?.["ABI Version"] || "V4",
+                options: ["V4", "V3", "V2", "V1"],
+                helperText: "Contract ABI version",
                 required: true
               }}
               nodeId={id}
@@ -109,10 +130,11 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
           <>
             <NodeInput
               input={{
-                name: "Token Address",
-                type: "string",
-                value: data.inputs?.["Token Address"] || "",
-                helperText: "0x...",
+                name: "Token Standard",
+                type: "select",
+                value: data.inputs?.["Token Standard"] || "ERC20",
+                options: ["ERC20", "ERC721", "ERC1155", "SPL"],
+                helperText: "Token standard type",
                 required: true
               }}
               nodeId={id}
@@ -120,10 +142,10 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
             />
             <NodeInput
               input={{
-                name: "Standard",
+                name: "Address",
                 type: "string",
-                value: data.inputs?.["Standard"] || "ERC20",
-                helperText: "Token standard",
+                value: data.inputs?.["Address"] || "",
+                helperText: "Token contract address",
                 required: true
               }}
               nodeId={id}
@@ -134,7 +156,7 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
                 name: "Decimals",
                 type: "number",
                 value: data.inputs?.["Decimals"] || 18,
-                helperText: "Token decimals",
+                helperText: "Token decimal places",
                 required: true
               }}
               nodeId={id}
@@ -146,6 +168,18 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
       case 'nft':
         return (
           <>
+            <NodeInput
+              input={{
+                name: "Collection Type",
+                type: "select",
+                value: data.inputs?.["Collection Type"] || "ERC721",
+                options: ["ERC721", "ERC1155", "SPL", "Other"],
+                helperText: "NFT collection standard",
+                required: true
+              }}
+              nodeId={id}
+              onChange={handleInputChange}
+            />
             <NodeInput
               input={{
                 name: "Contract Address",
@@ -162,19 +196,8 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
                 name: "Token ID",
                 type: "string",
                 value: data.inputs?.["Token ID"] || "",
-                helperText: "Specific NFT identifier",
+                helperText: "Unique NFT identifier",
                 required: false
-              }}
-              nodeId={id}
-              onChange={handleInputChange}
-            />
-            <NodeInput
-              input={{
-                name: "Standard",
-                type: "string",
-                value: data.inputs?.["Standard"] || "ERC721",
-                helperText: "NFT standard",
-                required: true
               }}
               nodeId={id}
               onChange={handleInputChange}
@@ -187,10 +210,11 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
           <>
             <NodeInput
               input={{
-                name: "Condition",
-                type: "string",
-                value: data.inputs?.["Condition"] || "",
-                helperText: "Logical condition to evaluate",
+                name: "Condition Type",
+                type: "select",
+                value: data.inputs?.["Condition Type"] || "AND",
+                options: ["AND", "OR", "XOR", "NAND"],
+                helperText: "Logical operator type",
                 required: true
               }}
               nodeId={id}
@@ -198,11 +222,22 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
             />
             <NodeInput
               input={{
-                name: "Operator",
-                type: "string",
-                value: data.inputs?.["Operator"] || "AND",
-                helperText: "Logical operator (AND/OR)",
+                name: "Inputs Required",
+                type: "number",
+                value: data.inputs?.["Inputs Required"] || 2,
+                helperText: "Number of required inputs",
                 required: true
+              }}
+              nodeId={id}
+              onChange={handleInputChange}
+            />
+            <NodeInput
+              input={{
+                name: "Strict Mode",
+                type: "boolean",
+                value: data.inputs?.["Strict Mode"] || false,
+                helperText: "Enable strict type checking",
+                required: false
               }}
               nodeId={id}
               onChange={handleInputChange}
@@ -213,6 +248,18 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
       case 'api':
         return (
           <>
+            <NodeInput
+              input={{
+                name: "HTTP Method",
+                type: "select",
+                value: data.inputs?.["HTTP Method"] || "GET",
+                options: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+                helperText: "Request method type",
+                required: true
+              }}
+              nodeId={id}
+              onChange={handleInputChange}
+            />
             <NodeInput
               input={{
                 name: "Endpoint",
@@ -226,21 +273,11 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
             />
             <NodeInput
               input={{
-                name: "Method",
-                type: "string",
-                value: data.inputs?.["Method"] || "GET",
-                helperText: "HTTP method",
-                required: true
-              }}
-              nodeId={id}
-              onChange={handleInputChange}
-            />
-            <NodeInput
-              input={{
-                name: "Headers",
-                type: "string",
-                value: data.inputs?.["Headers"] || "{}",
-                helperText: "Request headers JSON",
+                name: "Authentication",
+                type: "select",
+                value: data.inputs?.["Authentication"] || "None",
+                options: ["None", "Bearer Token", "API Key", "OAuth2"],
+                helperText: "Authentication method",
                 required: false
               }}
               nodeId={id}
@@ -254,10 +291,11 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
           <>
             <NodeInput
               input={{
-                name: "Source",
-                type: "string",
-                value: data.inputs?.["Source"] || "ipfs",
-                helperText: "Data source (ipfs, database, etc.)",
+                name: "Source Type",
+                type: "select",
+                value: data.inputs?.["Source Type"] || "IPFS",
+                options: ["IPFS", "SQL", "GraphQL", "REST"],
+                helperText: "Data source type",
                 required: true
               }}
               nodeId={id}
@@ -268,8 +306,19 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
                 name: "Query",
                 type: "string",
                 value: data.inputs?.["Query"] || "",
-                helperText: "Query or identifier",
+                helperText: "Data query or identifier",
                 required: true
+              }}
+              nodeId={id}
+              onChange={handleInputChange}
+            />
+            <NodeInput
+              input={{
+                name: "Cache Enabled",
+                type: "boolean",
+                value: data.inputs?.["Cache Enabled"] || true,
+                helperText: "Enable response caching",
+                required: false
               }}
               nodeId={id}
               onChange={handleInputChange}
@@ -282,10 +331,11 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
           <>
             <NodeInput
               input={{
-                name: "Component",
-                type: "string",
-                value: data.inputs?.["Component"] || "button",
-                helperText: "UI component type",
+                name: "Component Type",
+                type: "select",
+                value: data.inputs?.["Component Type"] || "Button",
+                options: ["Button", "Input", "Card", "Modal"],
+                helperText: "UI element type",
                 required: true
               }}
               nodeId={id}
@@ -302,6 +352,17 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
               nodeId={id}
               onChange={handleInputChange}
             />
+            <NodeInput
+              input={{
+                name: "Interactive",
+                type: "boolean",
+                value: data.inputs?.["Interactive"] || true,
+                helperText: "Enable user interaction",
+                required: false
+              }}
+              nodeId={id}
+              onChange={handleInputChange}
+            />
           </>
         );
 
@@ -310,20 +371,10 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
           <>
             <NodeInput
               input={{
-                name: "Code",
-                type: "string",
-                value: data.inputs?.["Code"] || "",
-                helperText: "Function logic",
-                required: true
-              }}
-              nodeId={id}
-              onChange={handleInputChange}
-            />
-            <NodeInput
-              input={{
                 name: "Language",
-                type: "string",
-                value: data.inputs?.["Language"] || "javascript",
+                type: "select",
+                value: data.inputs?.["Language"] || "JavaScript",
+                options: ["JavaScript", "Python", "Rust", "Solidity"],
                 helperText: "Programming language",
                 required: true
               }}
@@ -332,10 +383,21 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
             />
             <NodeInput
               input={{
-                name: "Parameters",
+                name: "Code",
                 type: "string",
-                value: data.inputs?.["Parameters"] || "[]",
-                helperText: "Input parameters",
+                value: data.inputs?.["Code"] || "",
+                helperText: "Function logic implementation",
+                required: true
+              }}
+              nodeId={id}
+              onChange={handleInputChange}
+            />
+            <NodeInput
+              input={{
+                name: "Async",
+                type: "boolean",
+                value: data.inputs?.["Async"] || false,
+                helperText: "Enable asynchronous execution",
                 required: false
               }}
               nodeId={id}
@@ -349,10 +411,11 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
           <>
             <NodeInput
               input={{
-                name: "Event Name",
-                type: "string",
-                value: data.inputs?.["Event Name"] || "",
-                helperText: "Event identifier",
+                name: "Event Type",
+                type: "select",
+                value: data.inputs?.["Event Type"] || "Custom",
+                options: ["Custom", "ERC20 Transfer", "NFT Mint", "Swap"],
+                helperText: "Event classification",
                 required: true
               }}
               nodeId={id}
@@ -360,11 +423,11 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
             />
             <NodeInput
               input={{
-                name: "Payload",
+                name: "Payload Schema",
                 type: "string",
-                value: data.inputs?.["Payload"] || "{}",
-                helperText: "Event data schema",
-                required: false
+                value: data.inputs?.["Payload Schema"] || "{}",
+                helperText: "JSON schema definition",
+                required: true
               }}
               nodeId={id}
               onChange={handleInputChange}
@@ -377,10 +440,11 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
           <>
             <NodeInput
               input={{
-                name: "Name",
-                type: "string",
-                value: data.inputs?.["Name"] || "",
-                helperText: "Variable identifier",
+                name: "Data Type",
+                type: "select",
+                value: data.inputs?.["Data Type"] || "String",
+                options: ["String", "Number", "Boolean", "Object"],
+                helperText: "Variable data type",
                 required: true
               }}
               nodeId={id}
@@ -399,11 +463,11 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
             />
             <NodeInput
               input={{
-                name: "Type",
-                type: "string",
-                value: data.inputs?.["Type"] || "string",
-                helperText: "Data type",
-                required: true
+                name: "Constant",
+                type: "boolean",
+                value: data.inputs?.["Constant"] || false,
+                helperText: "Immutable variable",
+                required: false
               }}
               nodeId={id}
               onChange={handleInputChange}

@@ -40,7 +40,7 @@ const NodeCard = ({
             )}
             onDoubleClick={onDoubleClick}
         >
-            {/* Top handle - only if not the first node */}
+            {/* Top handle - only if not the first node */} 
             {!isFirstNode && (
                 <Handle
                     id="target"

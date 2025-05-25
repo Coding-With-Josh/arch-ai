@@ -8,13 +8,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface NodeParamFieldProps {
-  param: NodeParameter & { 
+  param: NodeParameter & {
     value?: string | number | boolean;
     required?: boolean;
     helperText?: string;
     hideHandle?: boolean;
+    options?: string[];
   };
   nodeId: string;
   onChange?: (value: any) => void;
@@ -27,13 +35,13 @@ const NodeParamField = ({
 }: NodeParamFieldProps) => {
   const { getNode } = useFlow();
   const node = getNode(nodeId);
-  
+
   // Safely get the value with multiple fallbacks
-  const value = node?.data?.inputs?.[param.name] ?? 
-               param.value ?? 
-               (param.type === "string" ? "" : 
-                param.type === "number" ? 0 : 
-                param.type === "boolean" ? false : "");
+  const value = node?.data?.inputs?.[param.name] ??
+    param.value ??
+    (param.type === "string" ? "" :
+      param.type === "number" ? 0 :
+        param.type === "boolean" ? false : "");
 
   const updateNodeParamValue = useCallback(
     (newValue: any) => {
@@ -54,6 +62,36 @@ const NodeParamField = ({
         <div className="p-2 border rounded text-xs text-muted-foreground">
           Node inputs not properly initialized
         </div>
+      </div>
+    );
+  }
+
+  // Select Dropdown Parameter
+  if (param.options) {
+    return (
+      <div className="space-y-1 p-1 w-full">
+        <Label className="text-xs flex">
+          {param.name}
+          {param.required && <span className="text-red-400 px-1">*</span>}
+        </Label>
+        <Select
+          value={value as string}
+          onValueChange={updateNodeParamValue}
+        >
+          <SelectTrigger className="text-xs h-8">
+            <SelectValue placeholder={`Select ${param.name.toLowerCase()}`} />
+          </SelectTrigger>
+          <SelectContent>
+            {param.options.map((option) => (
+              <SelectItem key={option} value={option} className="text-xs">
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {param.helperText && (
+          <p className="text-xs text-muted-foreground px-1">{param.helperText}</p>
+        )}
       </div>
     );
   }
