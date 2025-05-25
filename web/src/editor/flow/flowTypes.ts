@@ -42,13 +42,14 @@ export interface FlowNodeMetadata {
     updated?: number;
     tags?: string[];
 }
-
-export type NodeValueType = 'string' | 'number' | 'boolean' | 'boolean[]' | 'object';
+    
+export type NodeValueType = 'string' | 'number' | 'boolean' | 'boolean[]' | 'object' | 'select';
 
 export interface NodeParameter {
     name: string;
     type: NodeValueType;
     label?: string;
+    options?: string[]; 
     helperText?: string;
     required?: boolean;
     hideHandle?: boolean;

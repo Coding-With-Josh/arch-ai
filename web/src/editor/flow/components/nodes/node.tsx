@@ -412,7 +412,7 @@ const NodeComponent = memo((props: NodeProps<EnhancedFlowNode>) => {
             <NodeInput
               input={{
                 name: "Event Type",
-                type: "select",
+                type: "uuuuuuuuu",
                 value: data.inputs?.["Event Type"] || "Custom",
                 options: ["Custom", "ERC20 Transfer", "NFT Mint", "Swap"],
                 helperText: "Event classification",
