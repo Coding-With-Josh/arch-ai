@@ -98,9 +98,9 @@ const ComponentsTab = () => {
   }, [searchQuery]);
 
   return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full z-10 rounded-lg bg-zinc-950/70 backdrop-blur-sm border border-muted overflow-hidden max-h-[53rem]">
         {/* Premium Header with Glass Morphism */}
-        <div className="px-3 pt-3 pb-0 bg-background/90 backdrop-blur-sm sticky top-0 z-10">
+        <div className="px-3 pt-3 pb-0 bg-zinc-900 backdrop-blur-sm sticky top-0 z-10">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold tracking-tight">Components Library</h3>
             <TooltipProvider><Tooltip>
@@ -200,7 +200,7 @@ const ComponentsTab = () => {
         </ScrollArea>
 
         {/* Footer with Quick Actions */}
-        <div className="px-3 py-2 border-t flex justify-between items-center bg-background/80 backdrop-blur-sm">
+        <div className="px-3 py-2 border-t flex justify-between items-center bg-background/70 backdrop-blur-sm">
           <span className="text-xs text-muted-foreground">
             {componentCategories.reduce((acc, cat) => acc + cat.items.length, 0)} components
           </span>

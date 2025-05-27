@@ -55,7 +55,7 @@ const ClientPage = ({ params }: ClientPageProps) => {
   return (
     <DndProvider backend={HTML5Backend}>
           <ReactFlowProvider>
-    <div className="h-screen w-screen overflow-hidden top-0 left-0 bottom-0 right-0 flex flex-col">
+    <div className="h-screen w-screen overflow-hidden top-0 left-0 bottom-0 right-0 flex flex-col bg-zinc-900">
       <Header state={state} editor={currentEditor} />
       
       {state.currentView === "flow" ? (

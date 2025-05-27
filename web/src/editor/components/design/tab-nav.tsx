@@ -20,7 +20,7 @@ const TabNav: React.FC = () => {
         <div className="flex h-full">
             <TooltipProvider delayDuration={0}>
                 <Tabs defaultValue="components" orientation="vertical" className="flex ">
-                    <TabsList className="flex flex-col h-full space-y-1 py-2 w-[3.6rem] bg-background border-r justify-start items-center">
+                    <TabsList className="flex flex-col h-full space-y-1 py-2 w-[3.6rem] bg-background/70 border-r rounded-lg justify-center items-center">
                         {tabs.map((tab) => (
                             <Tooltip key={tab.value}>
                                 <TooltipTrigger asChild>
@@ -37,7 +37,7 @@ const TabNav: React.FC = () => {
                             </Tooltip>
                         ))}
                     </TabsList>
-                    <ScrollArea className="h-full lg:w-[23rem] xl:w-[23rem] border-r">
+                    <ScrollArea className="h-full lg:w-[23rem] xl:w-[23rem]">
                         {tabs.map((tab) => (
                             <TabsContent key={tab.value} value={tab.value} className="p-3 text-sm">
                                 <Sheet>

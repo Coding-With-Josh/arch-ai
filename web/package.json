@@ -37,6 +37,8 @@
     "@civic/auth-web3": "^0.5.4",
     "@hookform/resolvers": "^3.10.0",
     "@inlang/paraglide-next": "0.7.9",
+    "@liveblocks/client": "^2.24.2",
+    "@liveblocks/react": "^2.24.2",
     "@prisma/client": "^6.2.1",
     "@radix-ui/react-accordion": "^1.2.4",
     "@radix-ui/react-alert-dialog": "^1.1.7",

@@ -9,10 +9,10 @@ const DesignView = () => {
     <div className="flex h-full w-full">
       <TabNav/>
       <ResizablePanelGroup direction="horizontal" className="flex-1">
-        <ResizablePanel defaultSize={80} minSize={60}>
+        {/* <ResizablePanel defaultSize={80} minSize={60}>
           <Canvas/>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
+        </ResizablePanel> */}
+        {/* <ResizableHandle withHandle /> */}
         {/* <ResizablePanel defaultSize={20} minSize={15} maxSize={30}> */}
           <PropertiesSheet/>
         {/* </ResizablePanel> */}

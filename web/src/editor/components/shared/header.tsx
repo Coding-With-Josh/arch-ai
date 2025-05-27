@@ -47,7 +47,7 @@ const Header = ({ state, editor }: { editor: Editor, state: EditorState }) => {
   };
 
   return (
-    <header className="relative top-0 min-h-fit py-2 border-b border-muted/75 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="relative top-0 min-h-fit py-2 border-b border-muted/75 bg-zinc-200 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/60">
       <div className="w-full px-5 h-full flex items-center justify-between">
         {/* Left Side - Logo & Project Info */}
         <div className="flex items-center gap-4">
